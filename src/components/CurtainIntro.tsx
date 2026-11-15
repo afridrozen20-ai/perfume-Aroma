@@ -29,6 +29,17 @@ export const CurtainIntro: React.FC<{ onOpen: () => void; onDone: () => void }> 
       <div className="pp-veil__sheet">
         <div className="pp-veil__sheen" />
         <div className="pp-veil__glitter">{Array.from({ length: 22 }, (_, i) => <i key={i} />)}</div>
+        <svg className="pp-veil__frame" viewBox="0 0 520 300" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="ppFrame" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="#c3c7cf" />
+              <stop offset=".5" stopColor="#f2f3f5" />
+              <stop offset="1" stopColor="#cdb489" />
+            </linearGradient>
+          </defs>
+          <ellipse cx="260" cy="150" rx="250" ry="140" stroke="url(#ppFrame)" />
+          <ellipse cx="260" cy="150" rx="240" ry="131" stroke="url(#ppFrame)" />
+        </svg>
         <div className="pp-veil__name">
           <span className="pp-veil__pure">Pure Portions</span>
           <i className="pp-veil__line"><b /></i>
