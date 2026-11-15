@@ -32,9 +32,9 @@ export const CurtainIntro: React.FC<{ onOpen: () => void; onDone: () => void }> 
         <svg className="pp-veil__frame" viewBox="0 0 520 300" preserveAspectRatio="none" aria-hidden="true">
           <defs>
             <linearGradient id="ppFrame" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stopColor="#c3c7cf" />
+              <stop offset="0" stopColor="#a9aeb7" />
               <stop offset=".5" stopColor="#f2f3f5" />
-              <stop offset="1" stopColor="#cdb489" />
+              <stop offset="1" stopColor="#bfa06a" />
             </linearGradient>
           </defs>
           <ellipse cx="260" cy="150" rx="250" ry="140" stroke="url(#ppFrame)" />

@@ -1273,8 +1273,8 @@ html,body{max-width:100%;overflow-x:hidden}
 @keyframes ppVeilShine{from{background-position:-60% 0,0 0}to{background-position:160% 0,0 0}}
 /* label-like oval frame drawn around the name */
 .pp-veil__frame{position:absolute;left:50%;top:50%;width:min(86vw,520px);height:min(56vw,300px);transform:translate(-50%,-50%);overflow:visible;pointer-events:none}
-.pp-veil__frame ellipse{fill:none;stroke-width:.8;stroke-dasharray:1200;stroke-dashoffset:1200;animation:ppVeilDraw 1.6s .2s cubic-bezier(.4,0,.2,1) forwards}
-.pp-veil__frame ellipse+ellipse{stroke-width:.5;opacity:.6;animation-delay:.45s}
+.pp-veil__frame ellipse{fill:none;stroke-width:1.4;stroke-dasharray:1200;stroke-dashoffset:1200;animation:ppVeilDraw 1.6s .2s cubic-bezier(.4,0,.2,1) forwards}
+.pp-veil__frame ellipse+ellipse{stroke-width:.8;opacity:.75;animation-delay:.45s}
 @keyframes ppVeilDraw{to{stroke-dashoffset:0}}
 .pp-veil.is-open .pp-veil__frame{opacity:0;transform:translate(-50%,-50%) scale(1.25);transition:opacity .6s,transform 1.2s cubic-bezier(.2,.8,.2,1)}
 .pp-veil__line{position:relative;display:block;height:1px;width:0;background:linear-gradient(90deg,transparent,#b9bec6 25%,#d8c39a 75%,transparent);animation:ppVeilLine 1s .45s cubic-bezier(.2,.8,.2,1) forwards}
