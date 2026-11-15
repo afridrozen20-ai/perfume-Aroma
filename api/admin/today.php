@@ -138,6 +138,12 @@ try {
     unset($w);
     $doneSt = $db->query("SELECT id, order_number, customer_name, order_status, tracking_number FROM orders
         WHERE order_status IN ('delivered','cancelled') AND tracking_number IS NOT NULL AND tracking_number <> '' AND created_at >= $since ORDER BY id DESC LIMIT 20")->fetchAll(PDO::FETCH_ASSOC);
+    $mlBack = $db->prepare("SELECT COUNT(*) FROM inventory_transactions WHERE order_id = ? AND transaction_type IN ('order_cancellation','order_refund')");
+    foreach ($doneSt as &$f) {
+        $f['ml_back'] = false;
+        if ($f['order_status'] === 'cancelled') { try { $mlBack->execute([$f['id']]); $f['ml_back'] = (int)$mlBack->fetchColumn() > 0; } catch (Throwable $e) {} }
+    }
+    unset($f);
 
     jsonResponse([
         'on_the_way' => $onWay,

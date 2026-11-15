@@ -20,7 +20,7 @@ type Low = { product_id: string; brand: string; name: string; remaining_ml: numb
 export type TodayData = {
   counts: { new: number; to_pack: number; shipped_today: number; unpaid_advance: number; low_stock: number };
   new_orders: Order[]; to_pack: Order[]; packing: PackRow[]; low_stock: Low[];
-  on_the_way?: Ship[]; finished?: { id: number; order_number: string; customer_name: string; order_status: string; tracking_number: string }[];
+  on_the_way?: Ship[]; finished?: { id: number; order_number: string; customer_name: string; order_status: string; tracking_number: string; ml_back?: boolean }[];
 };
 
 const ZONE: Record<string, string> = { narsingdi: 'Narsingdi', inside_dhaka: 'Dhaka', outside_dhaka: 'Other districts' };
@@ -96,6 +96,20 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
     if (demo) {
       const sent = qLog.filter((x) => x.ok).map((x) => x.id);
       setData((d) => d && { ...d, to_pack: d.to_pack.filter((o) => !sent.includes(o.id)), counts: { ...d.counts, to_pack: d.to_pack.filter((o) => !sent.includes(o.id)).length, shipped_today: d.counts.shipped_today + sent.length } });
+    } else await load();
+  };
+  const [cxMsg, setCxMsg] = useState('');
+  const afterCancel = async (orderId: number, msg: string) => {
+    setCxMsg(msg);
+    window.setTimeout(() => setCxMsg(''), 5000);
+    if (demo) {
+      setData((d) => d && {
+        ...d,
+        new_orders: d.new_orders.filter((o) => o.id !== orderId),
+        to_pack: d.to_pack.filter((o) => o.id !== orderId),
+        on_the_way: (d.on_the_way || []).filter((o) => o.id !== orderId),
+        finished: (d.finished || []).map((f) => (f.id === orderId ? { ...f, order_status: 'cancelled', ml_back: msg.includes('back') } : f)),
+      });
     } else await load();
   };
   const [tracking, setTracking] = useState(false);
@@ -325,6 +339,8 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
         <Stat label="Low stock" value={c.low_stock} tone={c.low_stock ? 'red' : 'mute'} />
       </div>
 
+      {cxMsg && <div className="pp-cxtoast">{cxMsg}</div>}
+
       {/* Steadfast result (shows wherever the booking was started) */}
       {sfResult && (
         <div className={`pp-sfres ${sfResult.failed ? 'has-fail' : ''}`}>
@@ -394,6 +410,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
               ) : (
                 <button className="pp-nord__go" disabled={busy === o.id} onClick={() => setStatus(o, { order_status: 'confirmed' })}>Confirm order</button>
               ))}
+              <div className="pp-cx__row"><CancelBox id={o.id} csrfToken={csrfToken} demo={!!demo} onDone={(m) => afterCancel(o.id, m)} /></div>
             </div>
           );
         })}
@@ -524,6 +541,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
                 )}
                 <button className="pp-today__link" disabled={busy === o.id} onClick={() => setStatus(o, { order_status: 'shipped' })}>Sent another way</button>
               </div>
+              <div className="pp-cx__row"><CancelBox id={o.id} csrfToken={csrfToken} demo={!!demo} onDone={(m) => afterCancel(o.id, m)} /></div>
             </div>
           );
         })}
@@ -554,6 +572,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
                     </p>
                   </div>
                   <span className={`pp-trk__st is-${tone}`}>{label}</span>
+                  <div className="pp-cx__row pp-cx__row--full"><CancelBox id={w.id} tracking={w.tracking_number} label="Cancel / returned" csrfToken={csrfToken} demo={!!demo} onDone={(m) => afterCancel(w.id, m)} /></div>
                 </div>
               );
             })}
@@ -566,6 +585,12 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
               <span key={f.id} className={f.order_status === 'delivered' ? 'is-ok' : 'is-bad'}>
                 {f.order_status === 'delivered' ? '✓' : '↩'} {f.customer_name.split(' ')[0]} · {f.order_number}
               </span>
+            ))}
+            {(data.finished || []).filter((f) => f.order_status === 'cancelled' && !f.ml_back).map((f) => (
+              <div key={`r${f.id}`} className="pp-ret">
+                <p><b>{f.customer_name.split(' ')[0]}’s parcel came back</b> · {f.order_number}</p>
+                <CancelBox id={f.id} label="Handle return" csrfToken={csrfToken} demo={!!demo} onDone={(m) => afterCancel(f.id, m)} />
+              </div>
             ))}
           </div>
         )}
@@ -677,6 +702,58 @@ const CustomerRisk: React.FC<{ o: Order; csrfToken: string; demo?: boolean; onCh
           <button disabled={busy} onClick={() => post('block')}>{busy ? '…' : 'Block'}</button>
         </div>
       )}
+    </div>
+  );
+};
+
+/** Inline cancel: put the ml back in stock (default) and remind to cancel on Steadfast. */
+const CancelBox: React.FC<{
+  id: number; tracking?: string | null; csrfToken: string; demo?: boolean; label?: string;
+  onDone: (msg: string) => void;
+}> = ({ id, tracking, csrfToken, demo, label = 'Cancel order', onDone }) => {
+  const [open, setOpen] = useState(false);
+  const [restore, setRestore] = useState(true);
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const go = async () => {
+    setBusy(true); setErr('');
+    try {
+      if (demo) { await new Promise((r) => setTimeout(r, 600)); onDone(restore ? 'Cancelled · ml put back in stock' : 'Cancelled · ml kept out'); return; }
+      const r = await fetch('/api/admin/order_cancel.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+        body: JSON.stringify({ id, restore, reason }),
+      });
+      const j = await r.json();
+      if (!j.success) { setErr(typeof j.error === 'string' ? j.error : 'Couldn’t cancel this order.'); return; }
+      const d = j.data;
+      onDone(d.restored ? `Cancelled · ${d.restored_ml}ml put back in stock` : d.already_restored ? 'Cancelled · ml was already back' : 'Cancelled · ml kept out');
+    } catch { setErr('Couldn’t reach the server.'); }
+    finally { setBusy(false); }
+  };
+
+  if (!open) return <button className="pp-cx__link" onClick={() => setOpen(true)}>{label}</button>;
+  return (
+    <div className="pp-cx">
+      {tracking && (
+        <p className="pp-cx__warn">
+          Already booked on Steadfast — cancel it there too.
+          <button onClick={async () => { try { await navigator.clipboard.writeText(tracking); setCopied(true); } catch { /* ignore */ } }}>{copied ? 'Copied ✓' : `Copy ${tracking}`}</button>
+        </p>
+      )}
+      <label className="pp-cx__check">
+        <input type="checkbox" checked={restore} onChange={(e) => setRestore(e.target.checked)} />
+        <span><b>Put the ml back in stock</b><small>Untick if the decant was already filled and can’t be reused.</small></span>
+      </label>
+      <input className="pp-cx__reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (optional)" maxLength={200} />
+      {err && <p className="pp-cx__err">{err}</p>}
+      <div className="pp-cx__btns">
+        <button className="pp-cx__back" onClick={() => setOpen(false)} disabled={busy}>Keep order</button>
+        <button className="pp-cx__go" onClick={go} disabled={busy}>{busy ? 'Cancelling…' : label}</button>
+      </div>
     </div>
   );
 };
