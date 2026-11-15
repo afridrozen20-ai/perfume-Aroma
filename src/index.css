@@ -1375,3 +1375,5 @@ html,body{max-width:100%;overflow-x:hidden}
 @keyframes ppSpLine{to{transform:scaleX(1)}}
 @keyframes ppSpGlint{0%{opacity:0;left:0}20%{opacity:1}100%{opacity:0;left:calc(100% - 90px)}}
 @media (min-width:768px){.pp-sp__logo{width:180px;height:180px}.pp-sp__tag{font-size:28px}}
+.pp-ed__name,.pp-ed__name b,.pp-ed__name em{font-family:'Cormorant Garamond',Georgia,serif!important;font-weight:400!important}
+.pp-sp__tag,.pp-sp__tag em{font-family:'Cormorant Garamond',Georgia,serif!important}
