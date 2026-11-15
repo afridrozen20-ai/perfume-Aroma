@@ -391,7 +391,7 @@ function StorefrontApp() {
       }}
     >
       {showCurtain && viewMode === 'storefront' && (
-        <CurtainIntro variant={introPick || 'e'} onOpen={() => setCurtainOpen(true)} onDone={() => setShowCurtain(false)} />
+        <CurtainIntro variant={introPick || 'f'} onOpen={() => setCurtainOpen(true)} onDone={() => setShowCurtain(false)} />
       )}
 
       {/* Toast Notification */}
