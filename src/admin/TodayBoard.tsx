@@ -51,6 +51,53 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
   const [sfReady, setSfReady] = useState<boolean | null>(demo ? true : null);
   const [sending, setSending] = useState(false);
   const [armed, setArmed] = useState<string | null>(null);
+  // One-by-one sending queue
+  const [queue, setQueue] = useState<number[] | null>(null);
+  const [qi, setQi] = useState(0);
+  const [qState, setQState] = useState<'review' | 'sending' | 'ok' | 'err'>('review');
+  const [qMsg, setQMsg] = useState('');
+  const [qLog, setQLog] = useState<{ id: number; order_number: string; name: string; ok: boolean; skipped?: boolean; tracking?: string }[]>([]);
+  const [qOrders, setQOrders] = useState<Order[]>([]);
+  const startQueue = (list: Order[]) => {
+    if (!list.length) return;
+    setQOrders(list); setQueue(list.map((o) => o.id)); setQi(0); setQState('review'); setQMsg(''); setQLog([]);
+  };
+  const nextInQueue = () => { setQState('review'); setQMsg(''); setQi((i) => i + 1); };
+  const sendOne = async (o: Order) => {
+    setQState('sending');
+    try {
+      let ok = false; let trk = ''; let err = '';
+      if (demo) {
+        await new Promise((r) => setTimeout(r, 900));
+        ok = true; trk = `SF${(0x7351 + o.id * 37).toString(16).toUpperCase()}A${o.id}`;
+      } else {
+        const r = await fetch('/api/admin/steadfast.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+          body: JSON.stringify({ action: 'send', order_ids: [o.id], confirm: o.order_status === 'pending' }),
+        });
+        const j = await r.json();
+        const res = j.success ? (j.data.results || [])[0] : null;
+        if (res && res.ok) { ok = true; trk = res.tracking_code; }
+        else err = res?.error || (typeof j.error === 'string' ? j.error : 'Steadfast didn’t accept this parcel.');
+      }
+      if (ok) {
+        setQLog((l) => [...l, { id: o.id, order_number: o.order_number, name: o.customer_name, ok: true, tracking: trk }]);
+        setQMsg(trk); setQState('ok');
+        window.setTimeout(() => nextInQueue(), 1300);
+      } else { setQMsg(err); setQState('err'); }
+    } catch {
+      setQMsg('Couldn’t reach the server. Check your connection.'); setQState('err');
+    }
+  };
+  const skipOne = (o: Order) => { setQLog((l) => [...l, { id: o.id, order_number: o.order_number, name: o.customer_name, ok: false, skipped: true }]); nextInQueue(); };
+  const closeQueue = async () => {
+    setQueue(null);
+    if (demo) {
+      const sent = qLog.filter((x) => x.ok).map((x) => x.id);
+      setData((d) => d && { ...d, to_pack: d.to_pack.filter((o) => !sent.includes(o.id)), counts: { ...d.counts, to_pack: d.to_pack.filter((o) => !sent.includes(o.id)).length, shipped_today: d.counts.shipped_today + sent.length } });
+    } else await load();
+  };
   const [tracking, setTracking] = useState(false);
   const [trackMsg, setTrackMsg] = useState('');
   const refreshCourier = async () => {
@@ -385,19 +432,72 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
         <div className="pp-today__hrow">
           <h3 className="pp-today__h"><Truck className="w-4 h-4" /> Ready to send <span>{data.to_pack.length}</span></h3>
         </div>
-        <p className="pp-today__hint">Confirmed orders with the advance received go to Steadfast in one tap.</p>
+        <p className="pp-today__hint">Check each parcel, then send it to Steadfast — one at a time.</p>
 
         {sfReady === false && (
           <p className="pp-sfnote">Steadfast isn’t connected yet. Add your keys in <b>Store Settings → Steadfast courier</b>.</p>
         )}
 
-        {data.to_pack.length > 0 && (
-          <button className={`pp-sfall ${armed && armed.startsWith('s:') && eligible.length > 1 && isArmed(eligible.map((o) => o.id)) ? 'is-armed' : ''}`} disabled={!sfReady || eligible.length === 0 || sending} onClick={() => sendSteadfast(eligible.map((o) => o.id))}>
+        {data.to_pack.length > 0 && !queue && (
+          <button className="pp-sfall" disabled={!sfReady || eligible.length === 0} onClick={() => startQueue(eligible)}>
             <Truck className="w-4 h-4" />
-            {sending ? 'Booking on Steadfast…' : !eligible.length ? 'No orders with advance yet' : isArmed(eligible.map((o) => o.id)) ? `Tap again to send ${eligible.length}` : `Send all to Steadfast (${eligible.length})`}
+            {!eligible.length ? 'Choose a payment type first' : `Send one by one (${eligible.length})`}
           </button>
         )}
 
+        {queue && (() => {
+          const total = qOrders.length;
+          const done = qi >= total;
+          const o = qOrders[Math.min(qi, total - 1)];
+          if (done) {
+            const sent = qLog.filter((x) => x.ok);
+            const skipped = qLog.filter((x) => x.skipped);
+            return (
+              <div className="pp-q is-done">
+                <p className="pp-q__big">{sent.length ? `${sent.length} sent to Steadfast` : 'Nothing sent'}</p>
+                {skipped.length > 0 && <p className="pp-q__sub">{skipped.length} skipped — still in Ready to send</p>}
+                <div className="pp-q__log">
+                  {qLog.map((x) => (
+                    <span key={x.id} className={x.ok ? 'is-ok' : 'is-skip'}>{x.ok ? '✓' : '–'} {x.name.split(' ')[0]} · {x.ok ? x.tracking : 'skipped'}</span>
+                  ))}
+                </div>
+                <button className="pp-q__send" onClick={closeQueue}>Done</button>
+              </div>
+            );
+          }
+          return (
+            <div className="pp-q" key={o.id}>
+              <div className="pp-q__top">
+                <p className="pp-q__count"><b>{qi + 1}</b> / {total}</p>
+                <div className="pp-q__dots">{qOrders.map((x, k) => <i key={x.id} className={k < qi ? (qLog[k]?.ok ? 'is-ok' : 'is-skip') : k === qi ? 'is-now' : ''} />)}</div>
+                <button className="pp-q__x" onClick={closeQueue} aria-label="Stop">Stop</button>
+              </div>
+
+              <p className="pp-q__name">{o.customer_name} <em>{o.order_number}</em></p>
+              <p className="pp-q__meta">{o.customer_phone}</p>
+              <p className="pp-q__meta">{o.shipping_address}</p>
+              <div className="pp-nord__chips">
+                {o.items.map((i, k) => <span key={k}>{i.product_name} <b>{i.selected_size}{i.quantity > 1 ? ` ×${i.quantity}` : ''}</b></span>)}
+              </div>
+              <CustomerRisk o={o} csrfToken={csrfToken} demo={!!demo} onChanged={(b) => { markBlocked(o, b); setQOrders((l) => l.map((x) => (x.customer_phone === o.customer_phone ? { ...x, blocked: b } : x))); }} />
+
+              <div className="pp-q__cod">
+                <span>{o.advance_type === 'full' ? 'Paid in full' : o.advance_type === 'delivery' ? 'Delivery charge paid' : o.advance_type === 'cod' ? 'Cash on delivery' : 'Advance received'}</span>
+                <b>Collect {money(cod(o))}</b>
+              </div>
+
+              {qState === 'ok' && <p className="pp-q__ok">✓ Booked · tracking {qMsg}</p>}
+              {qState === 'err' && <p className="pp-q__err">{qMsg}</p>}
+
+              <div className="pp-q__btns">
+                <button className="pp-q__skip" disabled={qState === 'sending' || qState === 'ok'} onClick={() => skipOne(o)}>Skip</button>
+                <button className="pp-q__send" disabled={qState === 'sending' || qState === 'ok'} onClick={() => sendOne(o)}>
+                  <Truck className="w-4 h-4" /> {qState === 'sending' ? 'Sending…' : qState === 'err' ? 'Try again' : qState === 'ok' ? 'Sent' : 'Send to Steadfast'}
+                </button>
+              </div>
+            </div>
+          );
+        })()}
 
         {data.to_pack.length === 0 ? <Empty text="No parcels waiting." /> : data.to_pack.map((o) => {
           return (
