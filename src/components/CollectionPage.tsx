@@ -14,11 +14,13 @@ import {
   Tag,
   ChevronDown,
   Plus,
-  Minus
+  Minus,
+  Search
 } from 'lucide-react';
 import { FragranceProduct, Collection, FilterState, DecantSize } from '../types';
 import { fetchCollectionBySlug, fetchPublicProducts } from '../services/api';
 import { thumb } from '../lib/img';
+import { fuzzySearch } from '../lib/fuzzySearch';
 import { trackSearchSubmission, trackSearchWhenIdle } from '../services/searchTracker';
 
 const getSprayEstimate = (sizeStr: string): string => {
@@ -435,6 +437,17 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
   const SEASON_OPTIONS = ['Spring', 'Summer', 'Autumn', 'Winter', 'All Seasons'];
   // Opened from a season card on the homepage → show e.g. "Summer Perfumes"
   const isTesterView = filters.size.length === 1 && filters.size[0] === '1.5ml';
+  // Quick search inside the 1.5ml testers (spelling-tolerant, short forms like "cdn")
+  const [testerQ, setTesterQ] = useState('');
+  const shownTesters = useMemo(
+    () => (isTesterView && testerQ.trim() ? fuzzySearch(filteredProducts, testerQ, 400) : filteredProducts),
+    [isTesterView, testerQ, filteredProducts],
+  );
+  useEffect(() => {
+    const q = testerQ.trim();
+    if (isTesterView && q.length >= 2) trackSearchWhenIdle(q, shownTesters.length);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [testerQ]);
   const seasonTitle =
     collectionSlug === 'all' && filters.size.length === 1 && filters.size[0] === '1.5ml' && !filters.season.length
       ? '1.5ml Testers'
@@ -812,6 +825,20 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
           <span className="pp-thead__eyebrow">1.5ml testers · {filteredProducts.length} scents</span>
           <h1 className="pp-thead__title">Wear it <em>first</em></h1>
           <p className="pp-thead__sub">Try any scent for a day or two before you buy the bottle.</p>
+          <div className="pp-tsearch">
+            <Search className="w-4 h-4" />
+            <input
+              type="search"
+              value={testerQ}
+              onChange={(e) => setTesterQ(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+              placeholder="Search a perfume or brand"
+              aria-label="Search 1.5ml testers"
+              enterKeyHint="search"
+            />
+            {testerQ && <button type="button" onClick={() => setTesterQ('')} aria-label="Clear search"><X className="w-3.5 h-3.5" /></button>}
+          </div>
+          {testerQ.trim() && <p className="pp-tsearch__count">{shownTesters.length ? `${shownTesters.length} tester${shownTesters.length === 1 ? '' : 's'} found` : ''}</p>}
         </div>
       ) : (
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -1104,8 +1131,14 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                 </div>
               </div>
             ) : (
+              isTesterView && testerQ.trim() && shownTesters.length === 0 ? (
+                <div className="pp-tsearch__none">
+                  <p>No tester matches “{testerQ.trim()}”.</p>
+                  <button type="button" onClick={() => setTesterQ('')}>Show all testers</button>
+                </div>
+              ) : (
               <div className={isTesterView ? "pp-tgrid" : "grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6"}>
-                {filteredProducts.map((product) => (
+                {(isTesterView ? shownTesters : filteredProducts).map((product) => (
                   isTesterView ? (
                     <TesterCard
                       key={product.id}
@@ -1125,6 +1158,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                   )
                 ))}
               </div>
+              )
             )}
           </div>
         </div>
