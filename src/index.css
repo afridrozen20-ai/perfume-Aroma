@@ -810,7 +810,7 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-sfres p{margin:0}
 .pp-sfres .is-ok{color:#1e6b3a;font-family:ui-monospace,monospace;font-size:11.5px}
 .pp-sfres .is-bad{color:#a1231b;font-size:11.5px}
-.pp-today__pill.is-wait{background:#fdf3e2;color:#8a5208;cursor:default}
+.pp-today__pill.is-wait{background:#fdf3e2;color:#8a5208}
 .pp-today__link{border:0;background:none;color:#8a8a86;font-size:12px;text-decoration:underline;cursor:pointer;padding:0 6px}
 .pp-sf{background:#fff;border:1px solid #EAEAEA;padding:20px;display:flex;flex-direction:column;gap:14px}
 .pp-sf__head{display:flex;align-items:center;gap:12px}
@@ -840,3 +840,22 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-sf__msg{margin:0;padding:9px 12px;border-radius:10px;font-size:12.5px}
 .pp-sf__msg.is-ok{background:#e8f4ec;color:#1e6b3a}
 .pp-sf__msg.is-bad{background:#fdf0ee;color:#a1231b}
+/* New order card — guided */
+.pp-nord{padding:14px 0 16px;border-top:.5px solid rgba(0,0,0,.08)}
+.pp-nord__chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pp-nord__chips span{font-size:12px;padding:4px 10px;border-radius:999px;background:#f6f5f2;color:#3a3a38}
+.pp-nord__chips b{font-weight:700;color:#141414;margin-left:2px}
+.pp-steps{list-style:none;margin:14px 0 12px;padding:0;display:flex;align-items:center;gap:0}
+.pp-steps li{flex:1;display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:#a3a29e;position:relative}
+.pp-steps li:not(:last-child)::after{content:"";flex:1;height:1.5px;margin:0 8px;background:#e6e4df;border-radius:2px}
+.pp-steps i{flex:0 0 22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;font-weight:700;background:#f1f0ed;color:#a3a29e}
+.pp-steps li.is-done{color:#1e6b3a}
+.pp-steps li.is-done i{background:#1e6b3a;color:#fff}
+.pp-steps li.is-done::after{background:#1e6b3a}
+.pp-steps li.is-now{color:#141414}
+.pp-steps li.is-now i{background:#141414;color:#fff;box-shadow:0 0 0 4px rgba(20,20,20,.08)}
+.pp-nord__go{width:100%;height:46px;border:0;border-radius:14px;background:#141414;color:#fff;font-size:13.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform .2s}
+.pp-nord__go:active{transform:scale(.98)}
+.pp-nord__go:disabled{opacity:.5}
+.pp-nord__link{display:block;margin:8px auto 0;border:0;background:none;color:#8a8a86;font-size:12px;text-decoration:underline;cursor:pointer}
+.pp-today .pp-sfres{margin:0}

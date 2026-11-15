@@ -96,7 +96,9 @@ if ($action === 'remove_keys') {
 if ($action === 'send') {
     if ($key === '' || $secret === '') jsonError('Add your Steadfast keys in Store Settings first.', 422);
 
-    $where = "order_status IN ('confirmed','processing') AND payment_status = 'paid'";
+    // "confirm": the admin tapped "Confirm & send" on a new order, so pending orders are allowed too
+    $allowPending = !empty($in['confirm']);
+    $where = "order_status IN (" . ($allowPending ? "'pending'," : '') . "'confirmed','processing') AND payment_status = 'paid'";
     $params = [];
     $ids = array_values(array_filter(array_map('intval', (array)($in['order_ids'] ?? []))));
     if ($ids) {

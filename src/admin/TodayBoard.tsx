@@ -40,7 +40,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
   const [copied, setCopied] = useState<string | null>(null);
   const [sfReady, setSfReady] = useState<boolean | null>(demo ? true : null);
   const [sending, setSending] = useState(false);
-  type SfRes = { sent: number; failed: number; results: { id: number; order_number: string; ok: boolean; tracking_code?: string; error?: string }[] };
+  type SfRes = { sent: number; failed: number; note?: string; results: { id: number; order_number: string; ok: boolean; tracking_code?: string; error?: string }[] };
   const [sfResult, setSfResult] = useState<SfRes | null>(null);
 
   useEffect(() => {
@@ -49,30 +49,46 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
       .then((r) => r.json()).then((j) => setSfReady(!!j?.data?.configured)).catch(() => setSfReady(false));
   }, [csrfToken, demo]);
 
-  const sendSteadfast = async (ids: number[]) => {
+  const sendSteadfast = async (ids: number[], confirmFirst = false) => {
     if (!ids.length) return;
-    if (!window.confirm(ids.length === 1 ? 'Book this parcel on Steadfast?' : `Book ${ids.length} parcels on Steadfast?`)) return;
+    const q = confirmFirst
+      ? 'Confirm this order and book the parcel on Steadfast?'
+      : ids.length === 1 ? 'Book this parcel on Steadfast?' : `Book ${ids.length} parcels on Steadfast?`;
+    if (!window.confirm(q)) return;
     setSending(true);
     setSfResult(null);
     try {
       if (demo) {
         await new Promise((r) => setTimeout(r, 900));
-        const results = data!.to_pack.filter((o) => ids.includes(o.id)).map((o, i) => ({ id: o.id, order_number: o.order_number, ok: true, tracking_code: `SF${(7351 + i * 37).toString(16).toUpperCase()}A${o.id}` }));
+        const pool = [...data!.to_pack, ...data!.new_orders];
+        const results = pool.filter((o) => ids.includes(o.id)).map((o, i) => ({ id: o.id, order_number: o.order_number, ok: true, tracking_code: `SF${(7351 + i * 37).toString(16).toUpperCase()}A${o.id}` }));
         setSfResult({ sent: results.length, failed: 0, results });
-        setData((d) => d && { ...d, to_pack: d.to_pack.filter((o) => !ids.includes(o.id)), counts: { ...d.counts, to_pack: d.to_pack.length - results.length, shipped_today: d.counts.shipped_today + results.length } });
+        setData((d) => d && {
+          ...d,
+          to_pack: d.to_pack.filter((o) => !ids.includes(o.id)),
+          new_orders: d.new_orders.filter((o) => !ids.includes(o.id)),
+          counts: { ...d.counts, new: d.new_orders.filter((o) => !ids.includes(o.id)).length, to_pack: d.to_pack.filter((o) => !ids.includes(o.id)).length, shipped_today: d.counts.shipped_today + results.length },
+        });
         return;
       }
       const r = await fetch('/api/admin/steadfast.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
-        body: JSON.stringify({ action: 'send', order_ids: ids }),
+        body: JSON.stringify({ action: 'send', order_ids: ids, confirm: confirmFirst }),
       });
       const j = await r.json();
-      if (j.success) setSfResult(j.data);
-      else setSfResult({ sent: 0, failed: ids.length, results: ids.map((id) => ({ id, order_number: String(id), ok: false, error: typeof j.error === 'string' ? j.error : 'Steadfast booking failed' })) });
+      if (j.success) {
+        const d: SfRes = j.data;
+        if (!d.results.length) d.note = 'No matching order. It needs the ৳200 advance marked as received first.';
+        setSfResult(d);
+      } else {
+        const msg = typeof j.error === 'string' ? j.error : (j.message || 'Steadfast booking failed');
+        setSfResult({ sent: 0, failed: ids.length, results: [], note: msg });
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       await load();
     } catch {
-      setSfResult({ sent: 0, failed: ids.length, results: [] });
+      setSfResult({ sent: 0, failed: ids.length, results: [], note: 'Couldn’t reach the server. Check your connection and try again.' });
     } finally {
       setSending(false);
     }
@@ -157,28 +173,61 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
         <Stat label="Low stock" value={c.low_stock} tone={c.low_stock ? 'red' : 'mute'} />
       </div>
 
-      {/* 1. New orders */}
+      {/* Steadfast result (shows wherever the booking was started) */}
+      {sfResult && (
+        <div className={`pp-sfres ${sfResult.failed ? 'has-fail' : ''}`}>
+          <p>{sfResult.sent ? <><b>{sfResult.sent}</b> sent to Steadfast</> : 'Nothing was sent to Steadfast'}{sfResult.failed ? <> · <b>{sfResult.failed}</b> not sent</> : null}</p>
+          {sfResult.results.filter((r) => r.ok).map((r) => <span key={r.id} className="is-ok">✓ {r.order_number} · tracking {r.tracking_code}</span>)}
+          {sfResult.results.filter((r) => !r.ok).map((r) => <span key={r.id} className="is-bad">✕ {r.order_number} · {r.error}</span>)}
+          {sfResult.note && <span className="is-bad">{sfResult.note}</span>}
+        </div>
+      )}
+
+      {/* 1. New orders — one clear next step per order */}
       <section className="pp-today__card">
         <h3 className="pp-today__h"><Wallet className="w-4 h-4" /> New orders <span>{data.new_orders.length}</span></h3>
-        <p className="pp-today__hint">Check the ৳200 bKash advance, then confirm.</p>
-        {data.new_orders.length === 0 ? <Empty text="No new orders right now." /> : data.new_orders.map((o) => (
-          <div key={o.id} className="pp-today__order">
-            <div className="pp-today__orow">
-              <div className="min-w-0">
-                <p className="pp-today__oname">{o.customer_name} <em>{o.order_number}</em></p>
-                <p className="pp-today__osub">{o.customer_phone} · {ZONE[o.city_zone] || o.city_zone} · {ago(o)}</p>
+        <p className="pp-today__hint">Each order: ① advance received → ② confirm &amp; send to Steadfast.</p>
+        {sfReady === false && data.new_orders.length > 0 && (
+          <p className="pp-sfnote">Steadfast isn’t connected, so confirmed orders wait in “Ready to send”. Add your keys in <b>Store Settings → Steadfast courier</b>.</p>
+        )}
+        {data.new_orders.length === 0 ? <Empty text="No new orders right now." /> : data.new_orders.map((o) => {
+          const paid = o.payment_status === 'paid';
+          return (
+            <div key={o.id} className="pp-nord">
+              <div className="pp-today__orow">
+                <div className="min-w-0">
+                  <p className="pp-today__oname">{o.customer_name} <em>{o.order_number}</em></p>
+                  <p className="pp-today__osub">{o.customer_phone} · {ZONE[o.city_zone] || o.city_zone} · {ago(o)}</p>
+                </div>
+                <p className="pp-today__total">{money(o.total_amount)}</p>
               </div>
-              <p className="pp-today__total">{money(o.total_amount)}</p>
+              <div className="pp-nord__chips">
+                {o.items.map((i, k) => <span key={k}>{i.product_name} <b>{i.selected_size}{i.quantity > 1 ? ` ×${i.quantity}` : ''}</b></span>)}
+              </div>
+
+              <ol className="pp-steps" aria-label="Order progress">
+                <li className={paid ? 'is-done' : 'is-now'}><i>{paid ? <Check className="w-3 h-3" /> : '1'}</i>Advance</li>
+                <li className={paid ? 'is-now' : ''}><i>2</i>Confirm</li>
+                <li><i>3</i>Steadfast</li>
+              </ol>
+
+              {!paid ? (
+                <>
+                  <button className="pp-nord__go" disabled={busy === o.id} onClick={() => setStatus(o, { payment_status: 'paid' })}>
+                    <Check className="w-4 h-4" /> ৳200 advance received
+                  </button>
+                  <button className="pp-nord__link" disabled={busy === o.id} onClick={() => setStatus(o, { order_status: 'confirmed' })}>Confirm without advance</button>
+                </>
+              ) : sfReady ? (
+                <button className="pp-nord__go" disabled={sending || busy === o.id} onClick={() => sendSteadfast([o.id], true)}>
+                  <Truck className="w-4 h-4" /> {sending ? 'Sending…' : 'Confirm & send to Steadfast'}
+                </button>
+              ) : (
+                <button className="pp-nord__go" disabled={busy === o.id} onClick={() => setStatus(o, { order_status: 'confirmed' })}>Confirm order</button>
+              )}
             </div>
-            <p className="pp-today__items">{o.items.map((i) => `${i.product_name} ${i.selected_size}${i.quantity > 1 ? ` ×${i.quantity}` : ''}`).join(' · ')}</p>
-            <div className="pp-today__actions">
-              {o.payment_status === 'paid'
-                ? <span className="pp-today__pill is-ok"><Check className="w-3 h-3" /> Advance received</span>
-                : <button className="pp-today__pill" disabled={busy === o.id} onClick={() => setStatus(o, { payment_status: 'paid' })}>Mark advance received</button>}
-              <button className="pp-today__btn" disabled={busy === o.id} onClick={() => setStatus(o, { order_status: 'confirmed' })}>Confirm order</button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </section>
 
       {/* 2. Packing list */}
@@ -227,13 +276,6 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
           </button>
         )}
 
-        {sfResult && (
-          <div className={`pp-sfres ${sfResult.failed ? 'has-fail' : ''}`}>
-            <p><b>{sfResult.sent}</b> booked{sfResult.failed ? <> · <b>{sfResult.failed}</b> not booked</> : null}</p>
-            {sfResult.results.filter((r) => r.ok).map((r) => <span key={r.id} className="is-ok">{r.order_number} · {r.tracking_code}</span>)}
-            {sfResult.results.filter((r) => !r.ok).map((r) => <span key={r.id} className="is-bad">{r.order_number} · {r.error}</span>)}
-          </div>
-        )}
 
         {data.to_pack.length === 0 ? <Empty text="No parcels waiting." /> : data.to_pack.map((o) => {
           const ok = o.payment_status === 'paid';
@@ -252,7 +294,9 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
                     <Truck className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />Send to Steadfast
                   </button>
                 ) : (
-                  <span className="pp-today__pill is-wait">Waiting for advance</span>
+                  <button className="pp-today__pill is-wait" disabled={busy === o.id} onClick={() => setStatus(o, { payment_status: 'paid' })}>
+                    <Check className="w-3 h-3" /> ৳200 advance received
+                  </button>
                 )}
                 <button className="pp-today__link" disabled={busy === o.id} onClick={() => setStatus(o, { order_status: 'shipped' })}>Sent another way</button>
               </div>
