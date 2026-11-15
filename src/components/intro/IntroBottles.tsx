@@ -16,15 +16,35 @@ const cutout = (url: string): Promise<Shot> => new Promise((resolve) => {
       const x = c.getContext('2d', { willReadFrequently: true })!;
       x.drawImage(img, 0, 0);
       const data = x.getImageData(0, 0, w, h); const d = data.data;
-      const at = (i: number) => [d[i], d[i + 1], d[i + 2], d[i + 3]];
-      const corner = at(0);
-      if (corner[3] > 200) {
-        // opaque background: fade out pixels close to the corner colour
-        const [br, bg, bb] = corner;
-        for (let i = 0; i < d.length; i += 4) {
-          const dist = Math.abs(d[i] - br) + Math.abs(d[i + 1] - bg) + Math.abs(d[i + 2] - bb);
-          if (dist < 30) d[i + 3] = 0;
-          else if (dist < 60) d[i + 3] = Math.round(d[i + 3] * ((dist - 30) / 30));
+      if (d[3] > 200) {
+        // opaque photo: remove the light backdrop connected to the edges (flood fill), soften the rim
+        const isBg = (i: number) => {
+          const r = d[i], g = d[i + 1], bl = d[i + 2];
+          const mx = Math.max(r, g, bl), mn = Math.min(r, g, bl);
+          return r + g + bl > 600 && mx - mn < 45;
+        };
+        const seen = new Uint8Array(w * h);
+        const stack: number[] = [];
+        for (let xx = 0; xx < w; xx++) { stack.push(xx, (h - 1) * w + xx); }
+        for (let y = 0; y < h; y++) { stack.push(y * w, y * w + w - 1); }
+        while (stack.length) {
+          const p = stack.pop()!;
+          if (seen[p]) continue;
+          seen[p] = 1;
+          if (!isBg(p * 4)) continue;
+          d[p * 4 + 3] = 0;
+          const x0 = p % w, y0 = (p / w) | 0;
+          if (x0 > 0) stack.push(p - 1);
+          if (x0 < w - 1) stack.push(p + 1);
+          if (y0 > 0) stack.push(p - w);
+          if (y0 < h - 1) stack.push(p + w);
+        }
+        // feather pixels touching the removed area
+        for (let p = 0; p < w * h; p++) {
+          if (d[p * 4 + 3] === 0) continue;
+          const x0 = p % w, y0 = (p / w) | 0;
+          const n = (x0 > 0 && d[(p - 1) * 4 + 3] === 0) || (x0 < w - 1 && d[(p + 1) * 4 + 3] === 0) || (y0 > 0 && d[(p - w) * 4 + 3] === 0) || (y0 < h - 1 && d[(p + w) * 4 + 3] === 0);
+          if (n && d[p * 4] + d[p * 4 + 1] + d[p * 4 + 2] > 540) d[p * 4 + 3] = 110;
         }
         x.putImageData(data, 0, 0);
       }
