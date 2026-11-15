@@ -50,14 +50,8 @@ const splosh = () => {
 
 const Poop: React.FC<{ className: string }> = ({ className }) => (
   <svg className={className} viewBox="0 0 120 110" aria-hidden="true">
-    <defs>
-      <linearGradient id="ppPoo" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stopColor="#9a6234" />
-        <stop offset="1" stopColor="#5e3517" />
-      </linearGradient>
-    </defs>
     <ellipse cx="60" cy="102" rx="50" ry="6" fill="rgba(0,0,0,.12)" />
-    <path d="M10 92 C6 74 26 66 38 68 C30 56 40 44 54 46 C50 34 58 22 66 14 C68 28 80 32 82 44 C96 44 102 56 92 66 C106 66 116 78 110 92 C104 102 18 104 10 92 Z" fill="url(#ppPoo)" />
+    <path d="M10 92 C6 74 26 66 38 68 C30 56 40 44 54 46 C50 34 58 22 66 14 C68 28 80 32 82 44 C96 44 102 56 92 66 C106 66 116 78 110 92 C104 102 18 104 10 92 Z" fill="#7b4a25" />
     <path d="M22 84 C40 90 80 90 100 84" stroke="#4a2a12" strokeWidth="2.5" fill="none" strokeLinecap="round" opacity=".6" />
     <path d="M38 66 C52 72 74 72 88 66" stroke="#4a2a12" strokeWidth="2.5" fill="none" strokeLinecap="round" opacity=".6" />
     <path d="M52 46 C60 50 72 50 80 46" stroke="#4a2a12" strokeWidth="2.2" fill="none" strokeLinecap="round" opacity=".6" />
