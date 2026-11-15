@@ -912,7 +912,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
             </button>
 
             <span className="text-xs font-sans opacity-80" style={{ color: 'var(--theme-text-secondary)' }}>
-              Showing <strong className="font-mono font-bold" style={{ color: 'var(--theme-primary)' }}>{filteredProducts.length}</strong> fragrances
+              Showing <strong className="font-mono font-bold" style={{ color: 'var(--theme-primary)' }}>{(isTesterView ? shownTesters : filteredProducts).length}</strong> fragrances
             </span>
           </div>
 
