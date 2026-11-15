@@ -90,7 +90,10 @@ function StorefrontApp() {
   }, [viewMode]);
 
   // Opening curtain: once per visit, on the storefront only
+  // Preview: ?intro=a|b|c always plays that opening, so options can be compared
+  const introPick = (() => { const v = new URLSearchParams(window.location.search).get('intro'); return v === 'a' || v === 'b' || v === 'c' ? v : null; })();
   const [showCurtain, setShowCurtain] = useState<boolean>(() => {
+    if (introPick) return true;
     try {
       if (window.location.hash === '#admin' || window.location.pathname.startsWith('/admin')) return false;
       if (sessionStorage.getItem('pp_curtain_seen') === '1') return false;
@@ -388,7 +391,7 @@ function StorefrontApp() {
       }}
     >
       {showCurtain && viewMode === 'storefront' && (
-        <CurtainIntro onOpen={() => setCurtainOpen(true)} onDone={() => setShowCurtain(false)} />
+        <CurtainIntro variant={introPick || 'a'} onOpen={() => setCurtainOpen(true)} onDone={() => setShowCurtain(false)} />
       )}
 
       {/* Toast Notification */}
