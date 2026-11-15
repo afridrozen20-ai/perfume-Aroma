@@ -25,7 +25,8 @@ $todayStart = $isSqlite ? "date('now','localtime')" : 'CURDATE()';
 
 try {
     $open = $db->query("SELECT id, order_number, customer_name, customer_phone, shipping_address, city_zone, total_amount, delivery_fee,
-                               payment_method, payment_status, order_status, created_at
+                               payment_method, payment_status, order_status, created_at,
+                               " . ($isSqlite ? "CAST((julianday('now','localtime') - julianday(created_at)) * 1440 AS INTEGER)" : "TIMESTAMPDIFF(MINUTE, created_at, NOW())") . " AS age_min
                         FROM orders
                         WHERE order_status IN ('pending','confirmed','processing')
                         ORDER BY created_at ASC")->fetchAll(PDO::FETCH_ASSOC);
