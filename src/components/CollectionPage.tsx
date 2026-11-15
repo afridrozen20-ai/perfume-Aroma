@@ -35,9 +35,14 @@ const CollectionProductCard: React.FC<{
   product: FragranceProduct;
   onNavigateToProduct: (product: FragranceProduct) => void;
   onAddToCart: (product: FragranceProduct, size: string, price: number, qty: number) => void;
-}> = ({ product, onNavigateToProduct, onAddToCart }) => {
+  testerMode?: boolean;
+}> = ({ product, onNavigateToProduct, onAddToCart, testerMode = false }) => {
   const defaultSize = product.sizes?.[0] || { size: '3ml', price: product.startingPrice };
   const [selectedSize, setSelectedSize] = useState<DecantSize>(defaultSize);
+  const tester = testerMode
+    ? product.sizes?.find((s) => parseFloat(String(s.size).replace(/[^\d.]/g, '')) === 1.5)
+    : undefined;
+  const [testerAdded, setTesterAdded] = useState(false);
 
   return (
     <div
@@ -81,7 +86,7 @@ const CollectionProductCard: React.FC<{
           </div>
 
           {/* Quick Add Overlay Button */}
-          <button
+          {!tester && <button
             onClick={(e) => {
               e.stopPropagation();
               onAddToCart(product, selectedSize.size, selectedSize.price, 1);
@@ -95,7 +100,8 @@ const CollectionProductCard: React.FC<{
             title={`Quick add ${selectedSize.size}`}
           >
             <Plus className="w-3.5 h-3.5" />
-          </button>
+          </button>}
+          {tester && <span className="pp-tester-badge">1.5ml</span>}
         </div>
 
         {/* Product Info */}
@@ -108,11 +114,40 @@ const CollectionProductCard: React.FC<{
           >
             {product.name}
           </h3>
+          {tester ? (
+            <p className="text-xs font-sans text-zinc-500 tabular-nums">
+              1.5ml · <span className="text-zinc-950 font-semibold">৳ {tester.price}</span>
+            </p>
+          ) : (
           <p className="text-xs font-sans text-zinc-500 tabular-nums">
             From <span className="text-zinc-950">৳ {Math.min(...(product.sizes && product.sizes.length ? product.sizes.map((x) => Number(x.price) || 0) : [product.startingPrice]))}</span>
           </p>
+          )}
         </div>
       </div>
+
+      {tester && (
+        <button
+          type="button"
+          disabled={!!tester.soldOut}
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddToCart(product, tester.size, tester.price, 1);
+            setTesterAdded(true);
+            window.setTimeout(() => setTesterAdded(false), 1400);
+          }}
+          className={`pp-tester-add ${testerAdded ? 'is-added' : ''}`}
+          aria-label={`Add 1.5ml ${product.name} to bag`}
+        >
+          {tester.soldOut ? (
+            <span>Sold out</span>
+          ) : testerAdded ? (
+            <><Check className="w-3.5 h-3.5" /><span>Added</span></>
+          ) : (
+            <><Plus className="w-3.5 h-3.5" /><span>Add 1.5ml</span></>
+          )}
+        </button>
+      )}
 
       {/* Sizes Dropdown & Price CTA */}
       <div className="pp-min-hide pt-3 mt-3 border-t border-zinc-150 space-y-2.5" onClick={(e) => e.stopPropagation()}>
@@ -1012,6 +1047,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                     product={product}
                     onNavigateToProduct={onNavigateToProduct}
                     onAddToCart={onAddToCart}
+                    testerMode={filters.size.length === 1 && filters.size[0] === '1.5ml'}
                   />
                 ))}
               </div>

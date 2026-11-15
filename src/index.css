@@ -704,3 +704,11 @@ circle.pp-leaf{transform-origin:center}
    that made phones zoom out for a moment when going back Home. */
 html,body{max-width:100%;overflow-x:hidden}
 @supports (overflow:clip){html,body{overflow-x:clip}}
+
+/* 1.5ml tester page: one-tap add */
+.pp-tester-add{margin-top:10px;width:100%;height:36px;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:999px;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#141414;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(240,241,244,.85));box-shadow:inset 0 1px 0 #fff,0 0 0 .5px rgba(120,124,135,.45),0 8px 18px -12px rgba(0,0,0,.35);transition:transform .25s cubic-bezier(.3,1.6,.5,1),background .3s,color .3s}
+.pp-tester-add:active{transform:scale(.95)}
+.pp-tester-add.is-added{background:#141414;color:#fff;box-shadow:none;animation:ppTesterPop .45s cubic-bezier(.3,1.6,.5,1)}
+.pp-tester-add:disabled{opacity:.45;cursor:not-allowed}
+@keyframes ppTesterPop{0%{transform:scale(.92)}60%{transform:scale(1.04)}100%{transform:none}}
+.pp-tester-badge{position:absolute;top:8px;right:8px;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:999px;color:#2b2d31;background:rgba(255,255,255,.85);box-shadow:inset 0 0 0 .5px rgba(120,124,135,.4)}
