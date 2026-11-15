@@ -1460,3 +1460,5 @@ html,body{max-width:100%;overflow-x:hidden}
 @keyframes ppRainFall{from{transform:translateY(var(--from)) rotate(0)}to{transform:translateY(0) rotate(var(--r))}}
 @keyframes ppRainLand{0%{transform:translateY(0) rotate(var(--r)) scale(1.06,.9)}50%{transform:translateY(-6px) rotate(var(--r))}100%{transform:translateY(0) rotate(var(--r))}}
 @media (min-width:768px){.pp-rain__logo{width:190px;height:190px;margin:-95px 0 0 -95px}}
+.pp-rain.is-drop .pp-rain__sheet{transition:none;animation:ppRainDrop 1s cubic-bezier(.55,0,.9,.35) forwards}
+@keyframes ppRainDrop{0%{transform:translateY(26px) rotate(.4deg)}12%{transform:translateY(18px) rotate(-.6deg)}100%{transform:translateY(118vh) rotate(5deg)}}
