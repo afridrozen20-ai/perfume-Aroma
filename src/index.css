@@ -736,3 +736,4 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-tcard__price{margin:4px 2px 0;font-size:13px;font-weight:600;color:#141414;display:flex;align-items:baseline;gap:6px}
 .pp-tcard__price span{font-size:11px;font-weight:500;color:#9a9a96}
 .pp-lite .pp-tcard__add{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,.95)}
+.pp-tcard__stage{isolation:isolate;z-index:0}
