@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import logoRound from '../assets/brand/logo-round.webp';
+import marble from '../assets/brand/marble.webp';
 
 /**
  * Opening built around the round logo: a silver ring draws, the marble logo rises with a light sweep,
@@ -7,7 +8,7 @@ import logoRound from '../assets/brand/logo-round.webp';
  * while the marble veil clears outward. Once per visit, ~3.2s, tap to skip, instant for reduced-motion.
  */
 export const CurtainIntro: React.FC<{ onOpen: () => void; onDone: () => void }> = ({ onOpen, onDone }) => {
-  const [phase, setPhase] = useState<'show' | 'spray' | 'open'>('show');
+  const [phase, setPhase] = useState<'show' | 'spray' | 'lift' | 'open'>('show');
   const rootRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
 
@@ -36,9 +37,10 @@ export const CurtainIntro: React.FC<{ onOpen: () => void; onDone: () => void }> 
     if (reduce) { onOpen(); onDone(); return; }
     document.documentElement.style.overflow = 'hidden';
     const t0 = window.setTimeout(() => setPhase('spray'), 1250);
-    const t1 = window.setTimeout(open, 2050);
-    const t2 = window.setTimeout(() => { document.documentElement.style.overflow = ''; onDone(); }, 3400);
-    return () => { [t0, t1, t2].forEach((t) => window.clearTimeout(t)); document.documentElement.style.overflow = ''; };
+    const tl = window.setTimeout(() => setPhase('lift'), 2250);
+    const t1 = window.setTimeout(open, 2650);
+    const t2 = window.setTimeout(() => { document.documentElement.style.overflow = ''; onDone(); }, 4100);
+    return () => { [t0, tl, t1, t2].forEach((t) => window.clearTimeout(t)); document.documentElement.style.overflow = ''; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -51,13 +53,16 @@ export const CurtainIntro: React.FC<{ onOpen: () => void; onDone: () => void }> 
   return (
     <div ref={rootRef} className={`pp-intro is-${phase}`} onClick={skip} aria-hidden="true">
       <div className="pp-intro__veil">
+        <div className="pp-intro__stone" style={{ backgroundImage: `url(${marble})` }} />
         <div className="pp-intro__marble" style={{ backgroundImage: `url(${logoRound})` }} />
         <div className="pp-intro__glow" />
         <div className="pp-intro__glitter">{Array.from({ length: 24 }, (_, i) => <i key={i} />)}</div>
       </div>
 
+      <div className="pp-intro__burst" />
       <div className="pp-intro__stage">
         <div ref={logoRef} className="pp-intro__logo">
+ <span className="pp-intro__halo" />
           <svg className="pp-intro__ring" viewBox="0 0 200 200">
             <defs>
               <linearGradient id="ppRing" x1="0" y1="0" x2="1" y2="1">
@@ -76,7 +81,9 @@ export const CurtainIntro: React.FC<{ onOpen: () => void; onDone: () => void }> 
           </div>
           {/* mist from the little atomizer on the logo */}
           <div className="pp-intro__spray">
-            {Array.from({ length: 12 }, (_, i) => <i key={i} style={{ '--a': `${-70 + i * 12}deg`, '--d': `${(i % 4) * 0.05}s` } as React.CSSProperties} />)}
+            <b className="pp-intro__puff" />
+            {Array.from({ length: 22 }, (_, i) => <i key={i} style={{ '--a': `${-80 + i * 7}deg`, '--d': `${(i % 5) * 0.06}s`, '--l': `${170 + (i % 3) * 60}px` } as React.CSSProperties} />)}
+            {Array.from({ length: 14 }, (_, i) => <em key={i} style={{ '--a': `${-75 + i * 11}deg`, '--d': `${0.1 + (i % 4) * 0.08}s`, '--l': `${120 + (i % 4) * 55}px` } as React.CSSProperties} />)}
           </div>
         </div>
         <p className="pp-intro__tag">Authentic perfume decants</p>

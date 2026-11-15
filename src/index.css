@@ -1290,3 +1290,38 @@ html,body{max-width:100%;overflow-x:hidden}
 @media (min-width:768px){.pp-intro__logo{width:250px;height:250px}.pp-intro__tag{font-size:12px}}
 .pp-lite .pp-intro__marble{filter:blur(24px);animation:none}
 .pp-lite .pp-intro__glitter{display:none}
+/* intro v2: marble stone + stronger spray / lift / open */
+.pp-intro__stone{position:absolute;inset:-4%;background-size:cover;background-position:center;animation:ppIntroStone 7s ease-out forwards}
+@keyframes ppIntroStone{from{transform:scale(1.08)}to{transform:scale(1)}}
+.pp-intro__marble{opacity:.22;mix-blend-mode:multiply}
+.pp-intro__glow{background:
+  radial-gradient(30% 22% at 50% 44%,rgba(255,255,255,.92),rgba(255,255,255,0) 72%),
+  radial-gradient(70% 50% at 50% 46%,rgba(255,255,255,.35),transparent 70%),
+  radial-gradient(60% 40% at 90% 6%,rgba(196,201,210,.35),transparent 70%),
+  radial-gradient(60% 40% at 10% 96%,rgba(226,206,168,.35),transparent 70%)}
+.pp-intro__halo{position:absolute;inset:-40px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.95) 30%,rgba(240,232,214,.55) 52%,rgba(255,255,255,0) 70%);opacity:.7;transition:opacity .5s,transform .6s cubic-bezier(.2,.8,.2,1)}
+.pp-intro__disc{box-shadow:0 22px 46px -16px rgba(60,62,70,.45),0 0 0 1.5px rgba(255,255,255,.9),0 0 0 3px rgba(190,194,202,.5)}
+/* lift: the logo rises before it glides away */
+.pp-intro.is-lift .pp-intro__logo{transform:translateY(-14px) scale(1.08);transition:transform .45s cubic-bezier(.2,.8,.2,1.2)}
+.pp-intro.is-lift .pp-intro__halo{opacity:1;transform:scale(1.25)}
+.pp-intro.is-lift .pp-intro__disc{box-shadow:0 34px 60px -18px rgba(60,62,70,.5),0 0 0 1.5px #fff,0 0 0 4px rgba(200,175,128,.55)}
+.pp-intro.is-open .pp-intro__logo{transition:transform 1.4s cubic-bezier(.65,0,.2,1)}
+.pp-intro.is-open .pp-intro__halo{opacity:0;transform:scale(.6)}
+/* stronger, more visible mist */
+.pp-intro__spray i{left:-10px;top:-10px;width:20px;height:20px;background:radial-gradient(circle,rgba(255,255,255,1),rgba(186,192,203,.8) 42%,rgba(214,192,150,.25) 62%,rgba(255,255,255,0) 74%);filter:blur(1.5px)}
+.pp-intro__spray i:nth-child(3n){width:30px;height:30px;left:-15px;top:-15px}
+.pp-intro.is-spray .pp-intro__spray i,.pp-intro.is-lift .pp-intro__spray i,.pp-intro.is-open .pp-intro__spray i{animation:ppIntroMist2 1.7s var(--d) cubic-bezier(.12,.7,.3,1) forwards}
+@keyframes ppIntroMist2{0%{opacity:0;transform:rotate(var(--a)) translateX(0) scale(.3)}18%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateX(var(--l)) scale(3.6)}}
+.pp-intro__spray em{position:absolute;left:-1.5px;top:-1.5px;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 6px 2px rgba(255,255,255,.95),0 0 2px rgba(200,170,110,.9);opacity:0}
+.pp-intro.is-spray .pp-intro__spray em,.pp-intro.is-lift .pp-intro__spray em{animation:ppIntroSpark 1.4s var(--d) ease-out forwards}
+@keyframes ppIntroSpark{0%{opacity:0;transform:rotate(var(--a)) translateX(0)}30%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateX(var(--l))}}
+.pp-intro__puff{position:absolute;left:-45px;top:-45px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.95),rgba(205,210,220,.55) 45%,rgba(255,255,255,0) 70%);filter:blur(6px);opacity:0}
+.pp-intro.is-spray .pp-intro__puff,.pp-intro.is-lift .pp-intro__puff{animation:ppIntroPuff 1.5s ease-out forwards}
+@keyframes ppIntroPuff{0%{opacity:0;transform:translate(0,0) scale(.3)}25%{opacity:.95}100%{opacity:0;transform:translate(60px,-30px) scale(2.8)}}
+/* silver light ring that sweeps out as the page opens */
+.pp-intro__burst{position:absolute;left:50%;top:46%;width:240px;height:240px;margin:-120px 0 0 -120px;border-radius:50%;opacity:0;pointer-events:none;
+  box-shadow:0 0 0 1.5px rgba(255,255,255,.95),0 0 30px 8px rgba(255,255,255,.75),inset 0 0 40px rgba(232,214,178,.55)}
+.pp-intro.is-open .pp-intro__burst{animation:ppIntroBurst 1.3s cubic-bezier(.3,.6,.2,1) forwards}
+@keyframes ppIntroBurst{0%{opacity:0;transform:scale(.5)}15%{opacity:1}100%{opacity:0;transform:scale(5.5)}}
+.pp-intro.is-open .pp-intro__veil{transition:--pp-r 1.4s .05s cubic-bezier(.6,0,.2,1),opacity .7s .75s ease}
+.pp-lite .pp-intro__spray em,.pp-lite .pp-intro__stone{animation:none}
