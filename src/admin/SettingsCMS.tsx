@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, Save, ShieldCheck } from 'lucide-react';
 import { getErrorMessage } from '../services/api';
+import SteadfastSettings from './SteadfastSettings';
 
 interface SettingsCMSProps {
   csrfToken: string;
@@ -72,6 +73,8 @@ export const SettingsCMS: React.FC<SettingsCMSProps> = ({ csrfToken }) => {
   };
 
   return (
+    <div className="space-y-6">
+    <SteadfastSettings csrfToken={csrfToken} />
     <form onSubmit={handleSave} className="space-y-6 font-sans">
       <div className="bg-white border border-[#EAEAEA] p-6 flex items-center justify-between">
         <div>
@@ -192,5 +195,6 @@ export const SettingsCMS: React.FC<SettingsCMSProps> = ({ csrfToken }) => {
         </div>
       </div>
     </form>
+    </div>
   );
 };

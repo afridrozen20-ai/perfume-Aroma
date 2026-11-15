@@ -38,6 +38,45 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState<number | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [sfReady, setSfReady] = useState<boolean | null>(demo ? true : null);
+  const [sending, setSending] = useState(false);
+  type SfRes = { sent: number; failed: number; results: { id: number; order_number: string; ok: boolean; tracking_code?: string; error?: string }[] };
+  const [sfResult, setSfResult] = useState<SfRes | null>(null);
+
+  useEffect(() => {
+    if (demo) return;
+    fetch('/api/admin/steadfast.php', { headers: { 'X-CSRF-Token': csrfToken } })
+      .then((r) => r.json()).then((j) => setSfReady(!!j?.data?.configured)).catch(() => setSfReady(false));
+  }, [csrfToken, demo]);
+
+  const sendSteadfast = async (ids: number[]) => {
+    if (!ids.length) return;
+    if (!window.confirm(ids.length === 1 ? 'Book this parcel on Steadfast?' : `Book ${ids.length} parcels on Steadfast?`)) return;
+    setSending(true);
+    setSfResult(null);
+    try {
+      if (demo) {
+        await new Promise((r) => setTimeout(r, 900));
+        const results = data!.to_pack.filter((o) => ids.includes(o.id)).map((o, i) => ({ id: o.id, order_number: o.order_number, ok: true, tracking_code: `SF${(7351 + i * 37).toString(16).toUpperCase()}A${o.id}` }));
+        setSfResult({ sent: results.length, failed: 0, results });
+        setData((d) => d && { ...d, to_pack: d.to_pack.filter((o) => !ids.includes(o.id)), counts: { ...d.counts, to_pack: d.to_pack.length - results.length, shipped_today: d.counts.shipped_today + results.length } });
+        return;
+      }
+      const r = await fetch('/api/admin/steadfast.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+        body: JSON.stringify({ action: 'send', order_ids: ids }),
+      });
+      const j = await r.json();
+      if (j.success) setSfResult(j.data);
+      else setSfResult({ sent: 0, failed: ids.length, results: ids.map((id) => ({ id, order_number: String(id), ok: false, error: typeof j.error === 'string' ? j.error : 'Steadfast booking failed' })) });
+      await load();
+    } catch {
+      setSfResult({ sent: 0, failed: ids.length, results: [] });
+    } finally {
+      setSending(false);
+    }
+  };
 
   const load = useCallback(async () => {
     if (demo) return;
@@ -96,6 +135,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
   if (error && !data) return <div className="pp-today"><p className="pp-today__err">{error}</p><button className="pp-today__btn" onClick={load}>Try again</button></div>;
   if (!data) return null;
   const c = data.counts;
+  const eligible = data.to_pack.filter((o) => o.payment_status === 'paid');
 
   return (
     <div className="pp-today">
@@ -169,27 +209,56 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
         )}
       </section>
 
-      {/* 3. Ready to send */}
+      {/* 3. Ready to send — booked straight on Steadfast */}
       <section className="pp-today__card">
-        <h3 className="pp-today__h"><Truck className="w-4 h-4" /> Ready to send <span>{data.to_pack.length}</span></h3>
-        <p className="pp-today__hint">Copy the courier details for Steadfast, then mark as sent.</p>
-        {data.to_pack.length === 0 ? <Empty text="No parcels waiting." /> : data.to_pack.map((o) => (
-          <div key={o.id} className="pp-today__order">
-            <div className="pp-today__orow">
-              <div className="min-w-0">
-                <p className="pp-today__oname">{o.customer_name} <em>{o.order_number}</em></p>
-                <p className="pp-today__osub">{o.shipping_address}</p>
-              </div>
-              <p className="pp-today__total">{money(o.total_amount)}<span>COD {money(cod(o))}</span></p>
-            </div>
-            <div className="pp-today__actions">
-              <button className="pp-today__pill" onClick={() => copy(`c${o.id}`, courierText(o))}>
-                {copied === `c${o.id}` ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy for courier</>}
-              </button>
-              <button className="pp-today__btn" disabled={busy === o.id} onClick={() => setStatus(o, { order_status: 'shipped' })}>Mark as sent</button>
-            </div>
+        <div className="pp-today__hrow">
+          <h3 className="pp-today__h"><Truck className="w-4 h-4" /> Ready to send <span>{data.to_pack.length}</span></h3>
+        </div>
+        <p className="pp-today__hint">Confirmed orders with the advance received go to Steadfast in one tap.</p>
+
+        {sfReady === false && (
+          <p className="pp-sfnote">Steadfast isn’t connected yet. Add your keys in <b>Store Settings → Steadfast courier</b>.</p>
+        )}
+
+        {data.to_pack.length > 0 && (
+          <button className="pp-sfall" disabled={!sfReady || eligible.length === 0 || sending} onClick={() => sendSteadfast(eligible.map((o) => o.id))}>
+            <Truck className="w-4 h-4" />
+            {sending ? 'Booking on Steadfast…' : eligible.length ? `Send all to Steadfast (${eligible.length})` : 'No orders with advance yet'}
+          </button>
+        )}
+
+        {sfResult && (
+          <div className={`pp-sfres ${sfResult.failed ? 'has-fail' : ''}`}>
+            <p><b>{sfResult.sent}</b> booked{sfResult.failed ? <> · <b>{sfResult.failed}</b> not booked</> : null}</p>
+            {sfResult.results.filter((r) => r.ok).map((r) => <span key={r.id} className="is-ok">{r.order_number} · {r.tracking_code}</span>)}
+            {sfResult.results.filter((r) => !r.ok).map((r) => <span key={r.id} className="is-bad">{r.order_number} · {r.error}</span>)}
           </div>
-        ))}
+        )}
+
+        {data.to_pack.length === 0 ? <Empty text="No parcels waiting." /> : data.to_pack.map((o) => {
+          const ok = o.payment_status === 'paid';
+          return (
+            <div key={o.id} className="pp-today__order">
+              <div className="pp-today__orow">
+                <div className="min-w-0">
+                  <p className="pp-today__oname">{o.customer_name} <em>{o.order_number}</em></p>
+                  <p className="pp-today__osub">{o.customer_phone} · {o.shipping_address}</p>
+                </div>
+                <p className="pp-today__total">{money(o.total_amount)}<span>COD {money(cod(o))}</span></p>
+              </div>
+              <div className="pp-today__actions">
+                {ok ? (
+                  <button className="pp-today__btn" disabled={!sfReady || sending} onClick={() => sendSteadfast([o.id])}>
+                    <Truck className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />Send to Steadfast
+                  </button>
+                ) : (
+                  <span className="pp-today__pill is-wait">Waiting for advance</span>
+                )}
+                <button className="pp-today__link" disabled={busy === o.id} onClick={() => setStatus(o, { order_status: 'shipped' })}>Sent another way</button>
+              </div>
+            </div>
+          );
+        })}
       </section>
 
       {/* 4. Low stock */}

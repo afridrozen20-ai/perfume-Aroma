@@ -15,6 +15,8 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 if ($method === 'GET') {
     $stmt = $db->query("SELECT setting_key, setting_value FROM store_settings");
     $settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
+    // Courier keys stay on the server (managed via /admin/steadfast.php)
+    foreach (array_keys($settings) as $k) { if (strpos((string)$k, 'steadfast_') === 0) unset($settings[$k]); }
     jsonResponse($settings, 200);
 
 } elseif ($method === 'POST' || $method === 'PUT') {
@@ -32,6 +34,7 @@ if ($method === 'GET') {
 
         foreach ($input as $key => $val) {
             $key = sanitizeString($key);
+            if (strpos((string)$key, 'steadfast_') === 0) continue; // only via /admin/steadfast.php
             $val = is_array($val) ? json_encode($val) : (string)$val;
 
             if ($isSqlite) {
