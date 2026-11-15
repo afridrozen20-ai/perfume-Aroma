@@ -4,7 +4,8 @@ import { Sun, PackageCheck, AlertTriangle, Truck, Check, Copy, Printer, RefreshC
 type Item = { product_id: string; product_name: string; brand_name: string; selected_size: string; quantity: number };
 type Order = {
   id: number; order_number: string; customer_name: string; customer_phone: string; shipping_address: string;
-  city_zone: string; total_amount: number | string; payment_status: string; payment_method?: string; age_min?: number | string; order_status: string; created_at: string; items: Item[];
+  city_zone: string; total_amount: number | string; payment_status: string; payment_method?: string; age_min?: number | string;
+  delivery_fee?: number | string; advance_type?: 'delivery' | 'full' | 'cod' | null; cod_amount?: number; ready?: boolean; order_status: string; created_at: string; items: Item[];
 };
 type PackRow = { product_id: string; brand: string; name: string; total_ml: number; remaining_ml: number | null; short: boolean; lines: { size: string; ml: number; qty: number }[] };
 type Low = { product_id: string; brand: string; name: string; remaining_ml: number; threshold_ml: number; bottle_size_ml: number; status: 'out' | 'low' };
@@ -142,11 +143,43 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
     window.setTimeout(() => setCopied(null), 1400);
   };
 
-  // Cash to collect: offline + paid = nothing; website + advance received = total − ৳200; otherwise the full total
+  // Cash the courier collects (same rules as the server)
   const cod = (o: Order) => {
     const t = Number(o.total_amount) || 0;
+    const fee = Number(o.delivery_fee) || 0;
+    if (o.advance_type === 'full') return 0;
+    if (o.advance_type === 'delivery') return Math.max(0, t - fee);
+    if (o.advance_type === 'cod') return t;
+    if (typeof o.cod_amount === 'number') return o.cod_amount;
     if (o.payment_status !== 'paid') return t;
     return o.payment_method === 'offline' ? 0 : Math.max(0, t - 200);
+  };
+  const isReady = (o: Order) => o.advance_type === 'cod' || o.payment_status === 'paid';
+  const PAY: { id: 'delivery' | 'full' | 'cod'; label: string; sub: (o: Order) => string }[] = [
+    { id: 'delivery', label: 'Delivery charge', sub: (o) => `${money(o.delivery_fee || 0)} paid first` },
+    { id: 'full', label: 'Full payment', sub: (o) => `${money(o.total_amount)} paid first` },
+    { id: 'cod', label: 'Cash on delivery', sub: () => 'Nothing in advance' },
+  ];
+  const setPayment = async (o: Order, type: 'delivery' | 'full' | 'cod') => {
+    if (demo) {
+      setData((d) => d && {
+        ...d,
+        new_orders: d.new_orders.map((x) => (x.id === o.id ? { ...x, advance_type: type, payment_status: type === 'cod' ? 'unpaid' : 'paid' } : x)),
+        to_pack: d.to_pack.map((x) => (x.id === o.id ? { ...x, advance_type: type, payment_status: type === 'cod' ? 'unpaid' : 'paid' } : x)),
+      });
+      return;
+    }
+    setBusy(o.id);
+    try {
+      await fetch('/api/admin/order_payment.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+        body: JSON.stringify({ id: o.id, advance_type: type }),
+      });
+      await load();
+    } finally {
+      setBusy(null);
+    }
   };
   const courierText = (o: Order) =>
     `${o.customer_name}\n${o.customer_phone}\n${o.shipping_address}\nCOD: ${money(cod(o))}\nNote: ${o.items.map((i) => `${i.product_name} ${i.selected_size}×${i.quantity}`).join(', ')}`;
@@ -157,7 +190,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
   if (error && !data) return <div className="pp-today"><p className="pp-today__err">{error}</p><button className="pp-today__btn" onClick={load}>Try again</button></div>;
   if (!data) return null;
   const c = data.counts;
-  const eligible = data.to_pack.filter((o) => o.payment_status === 'paid');
+  const eligible = data.to_pack.filter((o) => isReady(o));
 
   return (
     <div className="pp-today">
@@ -192,12 +225,13 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
       {/* 1. New orders — one clear next step per order */}
       <section className="pp-today__card">
         <h3 className="pp-today__h"><Wallet className="w-4 h-4" /> New orders <span>{data.new_orders.length}</span></h3>
-        <p className="pp-today__hint">Each order: ① advance received → ② confirm &amp; send to Steadfast.</p>
+        <p className="pp-today__hint">Each order: ① choose how it’s paid → ② confirm &amp; send to Steadfast.</p>
         {sfReady === false && data.new_orders.length > 0 && (
           <p className="pp-sfnote">Steadfast isn’t connected, so confirmed orders wait in “Ready to send”. Add your keys in <b>Store Settings → Steadfast courier</b>.</p>
         )}
         {data.new_orders.length === 0 ? <Empty text="No new orders right now." /> : data.new_orders.map((o) => {
-          const paid = o.payment_status === 'paid';
+          const chosen = o.advance_type || (o.payment_status === 'paid' ? 'legacy' : null);
+          const ready = isReady(o);
           return (
             <div key={o.id} className="pp-nord">
               <div className="pp-today__orow">
@@ -205,32 +239,46 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
                   <p className="pp-today__oname">{o.customer_name} <em>{o.order_number}</em></p>
                   <p className="pp-today__osub">{o.customer_phone} · {ZONE[o.city_zone] || o.city_zone} · {ago(o)}</p>
                 </div>
-                <p className="pp-today__total">{money(o.total_amount)}</p>
+                <p className="pp-today__total">{money(o.total_amount)}<span>Delivery {money(o.delivery_fee || 0)}</span></p>
               </div>
               <div className="pp-nord__chips">
                 {o.items.map((i, k) => <span key={k}>{i.product_name} <b>{i.selected_size}{i.quantity > 1 ? ` ×${i.quantity}` : ''}</b></span>)}
               </div>
 
               <ol className="pp-steps" aria-label="Order progress">
-                <li className={paid ? 'is-done' : 'is-now'}><i>{paid ? <Check className="w-3 h-3" /> : '1'}</i>Advance</li>
-                <li className={paid ? 'is-now' : ''}><i>2</i>Confirm</li>
+                <li className={ready ? 'is-done' : 'is-now'}><i>{ready ? <Check className="w-3 h-3" /> : '1'}</i>Payment</li>
+                <li className={ready ? 'is-now' : ''}><i>2</i>Confirm</li>
                 <li><i>3</i>Steadfast</li>
               </ol>
 
-              {!paid ? (
-                <>
-                  <button className="pp-nord__go" disabled={busy === o.id} onClick={() => setStatus(o, { payment_status: 'paid' })}>
-                    <Check className="w-4 h-4" /> ৳200 advance received
+              <p className="pp-pay__q">How is this order paid?</p>
+              <div className="pp-pay">
+                {PAY.map((p) => (
+                  <button
+                    key={p.id}
+                    className={`pp-pay__opt ${o.advance_type === p.id ? 'is-on' : ''}`}
+                    disabled={busy === o.id}
+                    onClick={() => setPayment(o, p.id)}
+                  >
+                    <b>{p.label}</b>
+                    <span>{p.sub(o)}</span>
                   </button>
-                  <button className="pp-nord__link" disabled={busy === o.id} onClick={() => setStatus(o, { order_status: 'confirmed' })}>Confirm without advance</button>
-                </>
-              ) : sfReady ? (
+                ))}
+              </div>
+
+              {ready && (
+                <p className="pp-pay__sum">
+                  {chosen === 'legacy' ? 'Advance received · ' : ''}Courier collects <b>{money(cod(o))}</b>
+                </p>
+              )}
+
+              {ready && (sfReady ? (
                 <button className={`pp-nord__go ${isArmed([o.id], true) ? 'is-armed' : ''}`} disabled={sending || busy === o.id} onClick={() => sendSteadfast([o.id], true)}>
                   <Truck className="w-4 h-4" /> {sending ? 'Sending…' : isArmed([o.id], true) ? 'Tap again to confirm & send' : 'Confirm & send to Steadfast'}
                 </button>
               ) : (
                 <button className="pp-nord__go" disabled={busy === o.id} onClick={() => setStatus(o, { order_status: 'confirmed' })}>Confirm order</button>
-              )}
+              ))}
             </div>
           );
         })}
@@ -284,7 +332,6 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
 
 
         {data.to_pack.length === 0 ? <Empty text="No parcels waiting." /> : data.to_pack.map((o) => {
-          const ok = o.payment_status === 'paid';
           return (
             <div key={o.id} className="pp-today__order">
               <div className="pp-today__orow">
@@ -295,14 +342,16 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
                 <p className="pp-today__total">{money(o.total_amount)}<span>COD {money(cod(o))}</span></p>
               </div>
               <div className="pp-today__actions">
-                {ok ? (
+                {isReady(o) ? (
                   <button className="pp-today__btn" disabled={!sfReady || sending} onClick={() => sendSteadfast([o.id])}>
                     <Truck className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />{isArmed([o.id]) ? 'Tap again to send' : 'Send to Steadfast'}
                   </button>
                 ) : (
-                  <button className="pp-today__pill is-wait" disabled={busy === o.id} onClick={() => setStatus(o, { payment_status: 'paid' })}>
-                    <Check className="w-3 h-3" /> ৳200 advance received
-                  </button>
+                  <div className="pp-pay pp-pay--mini">
+                    {PAY.map((p) => (
+                      <button key={p.id} className="pp-pay__opt" disabled={busy === o.id} onClick={() => setPayment(o, p.id)}><b>{p.label}</b></button>
+                    ))}
+                  </div>
                 )}
                 <button className="pp-today__link" disabled={busy === o.id} onClick={() => setStatus(o, { order_status: 'shipped' })}>Sent another way</button>
               </div>

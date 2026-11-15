@@ -13,6 +13,7 @@
 
 require_once __DIR__ . '/../helpers.php';
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../order_payment_helpers.php';
 
 sendCorsAndHeaders();
 $admin = requireAdminAuth();
@@ -98,7 +99,10 @@ if ($action === 'send') {
 
     // "confirm": the admin tapped "Confirm & send" on a new order, so pending orders are allowed too
     $allowPending = !empty($in['confirm']);
-    $where = "order_status IN (" . ($allowPending ? "'pending'," : '') . "'confirmed','processing') AND payment_status = 'paid'";
+    ensureAdvanceTypeColumn($db);
+    $hasAdv = true;
+    try { $db->query("SELECT advance_type FROM orders LIMIT 1"); } catch (Throwable $e) { $hasAdv = false; }
+    $where = "order_status IN (" . ($allowPending ? "'pending'," : '') . "'confirmed','processing') AND (payment_status = 'paid'" . ($hasAdv ? " OR advance_type = 'cod'" : '') . ")";
     $params = [];
     $ids = array_values(array_filter(array_map('intval', (array)($in['order_ids'] ?? []))));
     if ($ids) {
@@ -118,9 +122,7 @@ if ($action === 'send') {
         $itemsSt->execute([$o['id']]);
         $items = $itemsSt->fetchAll(PDO::FETCH_ASSOC);
         $desc = implode(', ', array_map(fn($i) => $i['product_name'] . ' ' . $i['selected_size'] . ' x' . (int)$i['quantity'], $items));
-        $total = (float)$o['total_amount'];
-        // Website orders: ৳200 advance already paid → collect the rest. Offline + paid → nothing to collect.
-        $cod = ($o['payment_method'] ?? '') === 'offline' ? 0 : max(0, $total - 200);
+        $cod = orderCodAmount($o);
         $phone = preg_replace('/\D+/', '', (string)$o['customer_phone']);
         if (strlen($phone) === 13 && substr($phone, 0, 3) === '880') $phone = substr($phone, 2);
 

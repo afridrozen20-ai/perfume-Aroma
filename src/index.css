@@ -860,3 +860,18 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-nord__link{display:block;margin:8px auto 0;border:0;background:none;color:#8a8a86;font-size:12px;text-decoration:underline;cursor:pointer}
 .pp-today .pp-sfres{margin:0}
 .pp-sfall.is-armed,.pp-nord__go.is-armed{background:#1e6b3a}
+/* Payment type picker */
+.pp-pay__q{margin:2px 0 8px;font-size:12px;font-weight:600;color:#3a3a38}
+.pp-pay{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pp-pay__opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px;border-radius:14px;border:0;background:#f6f5f2;color:#141414;text-align:left;cursor:pointer;box-shadow:inset 0 0 0 1px transparent;transition:background .2s,box-shadow .2s,transform .2s}
+.pp-pay__opt:active{transform:scale(.97)}
+.pp-pay__opt b{font-size:12px;font-weight:700;line-height:1.2}
+.pp-pay__opt span{font-size:10.5px;color:#8a8a86;line-height:1.25}
+.pp-pay__opt.is-on{background:#fff;box-shadow:inset 0 0 0 1.5px #141414}
+.pp-pay__opt.is-on b::before{content:"✓ ";color:#1e6b3a}
+.pp-pay__opt:disabled{opacity:.5}
+.pp-pay--mini{width:100%}
+.pp-pay--mini .pp-pay__opt{padding:8px;align-items:center;text-align:center}
+.pp-pay__sum{margin:10px 0 0;padding:9px 12px;border-radius:12px;background:#e8f4ec;color:#1e6b3a;font-size:12.5px}
+.pp-pay__sum b{color:#141414}
+.pp-nord .pp-nord__go{margin-top:10px}
