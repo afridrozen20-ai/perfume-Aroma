@@ -57,6 +57,7 @@ export const IntroRain: React.FC<{ onOpen: () => void; onDone: () => void }> = (
   const [phase, setPhase] = useState<Phase>('wait');
   const [pieces, setPieces] = useState<Piece[]>([]);
   const timers = useRef<number[]>([]);
+  const rainLen = useRef(1.3);
   const finish = () => { document.documentElement.style.overflow = ''; onDone(); };
 
   const drop = (doneIn: number) => {
@@ -93,25 +94,26 @@ export const IntroRain: React.FC<{ onOpen: () => void; onDone: () => void }> = (
           src: s.src, ar: s.ar, h,
           x: c * colW + (colW - h * s.ar) / 2 + (Math.random() - 0.5) * colW * 0.5,
           y, r: (Math.random() - 0.5) * 36,
-          delay: 0.25 + i * (1.7 / shots.length) + Math.random() * 0.05,
-          dur: 0.45 + Math.random() * 0.2,
+          delay: 0.05 + i * (0.85 / shots.length) + Math.random() * 0.04,
+          dur: 0.36 + Math.random() * 0.12,
         };
       });
       setPieces(out);
       setPhase('rain');
       // thuds as bottles land (thinned out so it stays a rhythm, not noise)
-      const step = Math.max(1, Math.round(out.length / 22));
+      const step = Math.max(1, Math.round(out.length / 14));
       timers.current = out.filter((_, i) => i % step === 0).map((p, i) =>
         window.setTimeout(() => dub(0.8 + Math.random() * 0.5, i < 3 ? 0.55 : 0.38), (p.delay + p.dur) * 1000));
       const last = Math.max(...out.map((p) => p.delay + p.dur));
-      timers.current.push(window.setTimeout(() => drop(1100), (last + 0.55) * 1000));
+      rainLen.current = last;
+      timers.current.push(window.setTimeout(() => drop(800), (last + 0.12) * 1000));
     };
 
-    const giveUp = window.setTimeout(() => begin([]), 2600);
+    const giveUp = window.setTimeout(() => begin([]), 1500);
     (async () => {
       try {
         const list = await fetchPublicProducts();
-        const max = window.innerWidth < 768 ? 46 : 80;
+        const max = window.innerWidth < 768 ? 36 : 64;
         const pick = shuffle(list.filter((p) => p.image)).slice(0, Math.round(max * 1.6));
         const shots = ((await Promise.all(pick.map((p) => cutout(thumb(p.image, 160))))).filter((s) => s && s.clean) as { src: string; ar: number }[]).slice(0, max);
         window.clearTimeout(giveUp);
@@ -124,7 +126,7 @@ export const IntroRain: React.FC<{ onOpen: () => void; onDone: () => void }> = (
   }, []);
 
   return (
-    <div className={`pp-rain is-${phase}`} onClick={() => phase === 'rain' && drop(900)} aria-hidden="true">
+    <div className={`pp-rain is-${phase}`} style={{ '--rainT': `${rainLen.current}s` } as React.CSSProperties} onClick={() => phase === 'rain' && drop(700)} aria-hidden="true">
       <div className="pp-rain__sheet">
         <img className="pp-rain__logo" src={logoRound} alt="" decoding="async" />
         {pieces.map((p, i) => (

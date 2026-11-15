@@ -1462,3 +1462,12 @@ html,body{max-width:100%;overflow-x:hidden}
 @media (min-width:768px){.pp-rain__logo{width:190px;height:190px;margin:-95px 0 0 -95px}}
 .pp-rain.is-drop .pp-rain__sheet{transition:none;animation:ppRainDrop 1s cubic-bezier(.55,0,.9,.35) forwards}
 @keyframes ppRainDrop{0%{transform:translateY(26px) rotate(.4deg)}12%{transform:translateY(18px) rotate(-.6deg)}100%{transform:translateY(118vh) rotate(5deg)}}
+/* Intro F v2: shorter, smoother */
+.pp-rain.is-rain .pp-rain__sheet{animation:ppRainSag2 var(--rainT,1.3s) .1s cubic-bezier(.3,0,.5,1) forwards}
+@keyframes ppRainSag2{from{transform:none}to{transform:translateY(18px) rotate(.3deg)}}
+.pp-rain.is-drop .pp-rain__sheet{animation:ppRainDrop2 .75s cubic-bezier(.5,0,.8,.3) forwards}
+@keyframes ppRainDrop2{0%{transform:translateY(18px) rotate(.3deg)}100%{transform:translateY(112vh) rotate(3deg)}}
+.pp-rain__b{filter:none;will-change:transform;animation:ppRainFall var(--t) var(--d) cubic-bezier(.45,0,.9,.5) forwards,ppRainLand2 .22s calc(var(--d) + var(--t)) ease-out forwards}
+@keyframes ppRainLand2{0%{transform:translateY(0) rotate(var(--r)) scale(1.04,.94)}100%{transform:translateY(0) rotate(var(--r))}}
+.pp-rain__logo{animation-duration:.45s}
+@media (min-width:768px){.pp-rain__b{filter:drop-shadow(0 6px 6px rgba(30,32,40,.2))}}
