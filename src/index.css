@@ -1442,3 +1442,5 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-bt__bottle--av .pp-bt__mist{left:50%;top:3px}
 .pp-bt__bottle--gg .pp-bt__mist{left:82%;top:3px;transform:scaleX(-1)}
 @media (min-width:768px){.pp-bt__bottle.is-photo{height:132px;width:calc(132px * var(--ar,.6))}.pp-bt__bottle--gg.is-photo{height:108px;width:calc(108px * var(--ar,1.2))}}
+.pp-bt__bottle--gg.is-photo{height:104px;width:calc(104px * var(--ar,.5))}
+@media (min-width:768px){.pp-bt__bottle--gg.is-photo{height:132px;width:calc(132px * var(--ar,.5))}}
