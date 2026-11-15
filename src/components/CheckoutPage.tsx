@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Lock, ChevronDown, Check, Minus, Plus } from 'lucide-react';
+import { ArrowLeft, Lock, Check, Minus, Plus } from 'lucide-react';
 import { CartItem } from '../types';
 import { submitOrder, getErrorMessage } from '../services/api';
 import { thumb } from '../lib/img';
@@ -37,7 +37,6 @@ export const CheckoutPage: React.FC<Props> = ({ isOpen, items, storeSettings, on
   const [email, setEmail] = useState<string>(saved.email || '');
   const [showEmail, setShowEmail] = useState(!!saved.email);
   const [note, setNote] = useState('');
-  const [showSummary, setShowSummary] = useState(false);
   const [touched, setTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -189,12 +188,11 @@ export const CheckoutPage: React.FC<Props> = ({ isOpen, items, storeSettings, on
             <p className="pp-co__eyebrow">{count} decant{count === 1 ? '' : 's'} · {money(subtotal)}</p>
             <h1 className="pp-co__title">Check<em>out</em></h1>
 
-            {/* Mobile: collapsible order summary */}
-            <button type="button" className={`pp-co__sumtoggle ${showSummary ? 'is-open' : ''}`} onClick={() => setShowSummary((v) => !v)}>
-              <span>{showSummary ? 'Hide' : 'Show'} order summary</span>
-              <b>{money(total)} <ChevronDown className="w-4 h-4" /></b>
-            </button>
-            {showSummary && <div className="pp-co__sumcard pp-co__mobile">{Summary}</div>}
+            {/* Phones: order summary always open */}
+            <div className="pp-co__sumcard pp-co__mobile">
+              <div className="pp-co__sumhead"><span>Your order</span><button type="button" onClick={onClose}>Edit bag</button></div>
+              {Summary}
+            </div>
 
             {error && <p className="pp-co__error">{error}</p>}
 

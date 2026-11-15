@@ -1152,3 +1152,10 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-co__tick path{stroke-dasharray:36;stroke-dashoffset:36;animation:ppCoDraw .45s .55s ease forwards}
 @keyframes ppCoDraw{to{stroke-dashoffset:0}}
 @media (prefers-reduced-motion:reduce){.pp-co,.pp-co__mobile{animation:none}.pp-co__tick circle,.pp-co__tick path{animation:none;stroke-dashoffset:0}}
+/* Checkout: summary always open on phones */
+.pp-co__mobile{margin-top:22px;padding:16px 18px 18px;animation:none}
+.pp-co__sumhead{display:flex;align-items:center;justify-content:space-between;padding-bottom:4px}
+.pp-co__sumhead span{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#8a8a86;font-weight:600}
+.pp-co__sumhead button{border:0;background:none;padding:4px 0;font:inherit;font-size:12px;font-weight:600;color:#9a7b4f;cursor:pointer}
+.pp-co__mobile .pp-co__item:last-of-type{border-bottom:.5px solid rgba(0,0,0,.07)}
+.pp-co__mobile .pp-co__sums .is-total span:last-child{font-size:26px}
