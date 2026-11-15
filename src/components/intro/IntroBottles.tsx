@@ -97,8 +97,8 @@ const useMist = (n: number, seed: number) => useMemo(() => {
 export const IntroBottles: React.FC<{ onOpen: () => void; onDone: () => void }> = ({ onOpen, onDone }) => {
   const [phase, setPhase] = useState<Phase>('in');
   const timers = useRef<number[]>([]);
-  const mistL = useMist(34, 7);
-  const mistR = useMist(34, 19);
+  const mistL = useMist(52, 7);
+  const mistR = useMist(52, 19);
   const finish = () => { document.documentElement.style.overflow = ''; onDone(); };
   const open = (doneIn: number) => { setPhase('out'); onOpen(); timers.current.push(window.setTimeout(finish, doneIn)); };
 

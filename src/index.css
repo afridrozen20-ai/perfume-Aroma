@@ -1428,3 +1428,6 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-bt.is-spray .pp-bt__bottle--r .pp-bt__mist i{animation-delay:calc(var(--d) + .16s)}
 @keyframes ppBtSpeck{0%{opacity:0;transform:rotate(var(--a)) translateX(0)}15%{opacity:.95}100%{opacity:0;transform:rotate(var(--a)) translateX(var(--l)) translateY(-6px)}}
 @media (min-width:768px){.pp-bt__stage{width:190px;height:190px}.pp-bt__bottle{width:70px;height:116px}.pp-bt__bottle--l{left:-92px}.pp-bt__bottle--r{right:-92px}.pp-bt__mist{left:50px;top:11px}}
+.pp-bt__mist i{background:radial-gradient(circle,rgba(150,157,170,.95) 0%,rgba(170,176,188,.75) 45%,rgba(170,176,188,0) 75%);box-shadow:none}
+.pp-bt__mist i:nth-child(4n){background:radial-gradient(circle,rgba(196,166,112,.9),rgba(196,166,112,0) 75%)}
+.pp-bt__mist::before{background:radial-gradient(ellipse at 0 50%,rgba(176,182,194,.55),rgba(196,200,210,.32) 40%,rgba(255,255,255,0) 72%);filter:blur(4px)}
