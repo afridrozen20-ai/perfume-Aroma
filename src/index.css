@@ -1159,3 +1159,6 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-co__sumhead button{border:0;background:none;padding:4px 0;font:inherit;font-size:12px;font-weight:600;color:#9a7b4f;cursor:pointer}
 .pp-co__mobile .pp-co__item:last-of-type{border-bottom:.5px solid rgba(0,0,0,.07)}
 .pp-co__mobile .pp-co__sums .is-total span:last-child{font-size:26px}
+.pp-co__brand{white-space:nowrap;font-size:18px}
+.pp-co__brand em{font-style:italic;color:#9a7b4f}
+@media (max-width:360px){.pp-co__brand{font-size:16px}.pp-co__lock{font-size:0;gap:0}}

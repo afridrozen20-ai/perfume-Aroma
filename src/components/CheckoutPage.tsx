@@ -173,7 +173,7 @@ export const CheckoutPage: React.FC<Props> = ({ isOpen, items, storeSettings, on
     <div className="pp-co" ref={topRef}>
       <header className="pp-co__bar">
         <button className="pp-co__back" onClick={onClose}><ArrowLeft className="w-4 h-4" /> Bag</button>
-        <p className="pp-co__brand">Pure Portions</p>
+        <p className="pp-co__brand">Pure Portions <em>by Arrina</em></p>
         <span className="pp-co__lock"><Lock className="w-3.5 h-3.5" /> Secure</span>
       </header>
 
