@@ -1360,3 +1360,7 @@ html,body{max-width:100%;overflow-x:hidden}
 @keyframes ppDropHit{0%{opacity:0;transform:scale(0)}60%{opacity:1;transform:scale(1.18,.86)}100%{opacity:1;transform:scale(1)}}
 @keyframes ppDropSlide{0%{opacity:1;transform:translateY(0) scale(1)}70%{opacity:.85}100%{opacity:0;transform:translateY(var(--fall)) scale(.92,1.12)}}
 .pp-lite .pp-intro__drops i{-webkit-backdrop-filter:none;backdrop-filter:none}
+.pp-intro--spray.is-open .pp-intro__veil{opacity:0;transition:opacity .35s ease}
+.pp-intro--spray.is-hit .pp-intro__veil{transition:opacity .35s .2s ease}
+.pp-intro__jet i{background:radial-gradient(circle,rgba(255,255,255,.95),rgba(214,218,226,.6) 38%,rgba(232,220,196,.22) 58%,rgba(255,255,255,0) 72%);filter:blur(3px)}
+@keyframes ppJetPuff{0%{opacity:0;transform:rotate(var(--a)) translateX(0) scale(.25);filter:blur(2px)}20%{opacity:.9}100%{opacity:.85;transform:rotate(var(--a)) translateX(var(--l)) scale(var(--s));filter:blur(10px)}}
