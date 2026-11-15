@@ -21,6 +21,7 @@ import { ProductDetailPage } from './components/ProductDetailPage';
 import { CollectionPage } from './components/CollectionPage';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutPage } from './components/CheckoutPage';
+import { CurtainIntro } from './components/CurtainIntro';
 import { SearchModal } from './components/SearchModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { PerfumeFinder } from './components/PerfumeFinder';
@@ -88,9 +89,19 @@ function StorefrontApp() {
     prepareReveal();
   }, [viewMode]);
 
+  // Opening curtain: once per visit, on the storefront only
+  const [showCurtain, setShowCurtain] = useState<boolean>(() => {
+    try {
+      if (window.location.hash === '#admin' || window.location.pathname.startsWith('/admin')) return false;
+      if (sessionStorage.getItem('pp_curtain_seen') === '1') return false;
+      sessionStorage.setItem('pp_curtain_seen', '1');
+    } catch { return false; }
+    return true;
+  });
+  const [curtainOpen, setCurtainOpen] = useState(!showCurtain);
   useEffect(() => {
-    if (viewMode === 'storefront') startReveal();
-  }, [viewMode]);
+    if (viewMode === 'storefront' && curtainOpen) startReveal();
+  }, [viewMode, curtainOpen]);
   const [adminUser, setAdminUser] = useState<any | null>(null);
   const [csrfToken, setCsrfToken] = useState<string>('');
 
@@ -376,6 +387,10 @@ function StorefrontApp() {
         color: 'var(--theme-text-primary)',
       }}
     >
+      {showCurtain && viewMode === 'storefront' && (
+        <CurtainIntro onOpen={() => setCurtainOpen(true)} onDone={() => setShowCurtain(false)} />
+      )}
+
       {/* Toast Notification */}
       {toastMessage && (
         <div

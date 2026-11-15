@@ -1213,3 +1213,29 @@ html,body{max-width:100%;overflow-x:hidden}
 @media (prefers-reduced-motion:reduce){.pp-co__sec,.pp-co__mobile,.pp-co__steps,.pp-co__tag,.pp-co__done{animation:none}.pp-co__cta.is-ready::after{animation:none;opacity:0}}
 .pp-lite .pp-co__sumcard{backdrop-filter:none;-webkit-backdrop-filter:none;background:#fff}
 .pp-lite .pp-co__thumb::before{display:none}
+
+/* ── Opening curtain ───────────────────────────── */
+.pp-curtain{position:fixed;inset:0;z-index:200;cursor:pointer;overflow:hidden;pointer-events:auto}
+.pp-curtain.is-open{pointer-events:none}
+.pp-curtain__half{position:absolute;top:-2%;bottom:-2%;width:51%;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,.55) 22px,rgba(160,128,84,.10) 46px,rgba(255,255,255,0) 64px),
+    linear-gradient(180deg,#f6efe4 0%,#efe4d2 55%,#e8dac3 100%);
+  transition:transform 1.25s cubic-bezier(.77,0,.18,1);will-change:transform}
+.pp-curtain__half--l{left:0;transform-origin:left center;box-shadow:inset -18px 0 30px -18px rgba(120,90,50,.35)}
+.pp-curtain__half--r{right:0;transform-origin:right center;box-shadow:inset 18px 0 30px -18px rgba(120,90,50,.35)}
+.pp-curtain__half::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,transparent,#c9a46a,transparent);opacity:.7}
+.pp-curtain.is-open .pp-curtain__half--l{transform:translateX(-102%) skewY(-1.5deg)}
+.pp-curtain.is-open .pp-curtain__half--r{transform:translateX(102%) skewY(1.5deg)}
+.pp-curtain__name{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;transition:opacity .45s ease,transform .9s cubic-bezier(.2,.8,.2,1),filter .6s}
+.pp-curtain.is-open .pp-curtain__name{opacity:0;transform:scale(1.06);filter:blur(4px)}
+.pp-curtain__pure{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;font-size:44px;line-height:1;color:#1d1a16;letter-spacing:.02em;opacity:0;animation:ppCurtName 1s .15s cubic-bezier(.2,.8,.2,1) forwards}
+.pp-curtain__by{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;color:#9a7b4f;letter-spacing:.06em;opacity:0;animation:ppCurtBy .8s .55s ease forwards}
+.pp-curtain__line{display:block;height:1px;width:0;background:linear-gradient(90deg,transparent,#b89566,transparent);animation:ppCurtLine .9s .4s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes ppCurtName{from{opacity:0;letter-spacing:.3em;filter:blur(6px)}to{opacity:1;letter-spacing:.02em;filter:none}}
+@keyframes ppCurtBy{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes ppCurtLine{to{width:140px}}
+@media (min-width:768px){.pp-curtain__pure{font-size:64px}.pp-curtain__by{font-size:28px}@keyframes ppCurtLine{to{width:200px}}}
+.pp-lite .pp-curtain__name{filter:none!important}
+.pp-lite .pp-curtain__pure{animation-name:ppCurtNameLite}
+@keyframes ppCurtNameLite{from{opacity:0}to{opacity:1}}
