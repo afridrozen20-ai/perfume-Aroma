@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import TodayBoard from './TodayBoard';
 import {
   BarChart3,
   Package,
@@ -48,7 +49,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   onLogout,
   onSwitchToStorefront
 }) => {
-  const [activeTab, setActiveTab] = useState<'analytics' | 'search_analytics' | 'perfumes' | 'products' | 'inventory' | 'collections' | 'orders' | 'customers' | 'homepage' | 'settings' | 'media'>('analytics');
+  const [activeTab, setActiveTab] = useState<'today' | 'analytics' | 'search_analytics' | 'perfumes' | 'products' | 'inventory' | 'collections' | 'orders' | 'customers' | 'homepage' | 'settings' | 'media'>('today');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -62,6 +63,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   };
 
   const navItems = [
+    { id: 'today', label: 'Today', icon: Sun, desc: 'New orders, packing & low stock' },
     { id: 'analytics', label: 'Analytics & Insights', icon: BarChart3, desc: 'Sales performance & metrics' },
     { id: 'search_analytics', label: 'Search Analytics', icon: Search, desc: 'What customers look for' },
     { id: 'perfumes', label: 'Perfumes & Stock', icon: FlaskConical, desc: 'Prices, ml left & offline orders' },
@@ -362,6 +364,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             ? 'bg-[#121212] border-[#27272a] text-zinc-100'
             : 'bg-white border-[#EAEAEA] text-[#111111]'
         }`}>
+          {activeTab === 'today' && <TodayBoard csrfToken={csrfToken} />}
           {activeTab === 'analytics' && <AnalyticsDashboard csrfToken={csrfToken} />}
           {activeTab === 'search_analytics' && <SearchInsights csrfToken={csrfToken} />}
           {activeTab === 'perfumes' && (
