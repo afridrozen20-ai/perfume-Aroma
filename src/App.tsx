@@ -23,7 +23,6 @@ import { CartDrawer } from './components/CartDrawer';
 import { CheckoutPage } from './components/CheckoutPage';
 import { SearchModal } from './components/SearchModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
-import { IntroSequence } from './components/IntroSequence';
 import { PerfumeFinder } from './components/PerfumeFinder';
 import { AdminLogin } from './admin/AdminLogin';
 import { AdminLayout } from './admin/AdminLayout';
@@ -46,16 +45,6 @@ export default function App() {
 }
 
 function StorefrontApp() {
-  // Show the intro only once per visit (not on every page change or reload in the same visit)
-  const [showIntro, setShowIntro] = useState<boolean>(() => {
-    try {
-      if (sessionStorage.getItem('pp_intro_seen') === '1') return false;
-      sessionStorage.setItem('pp_intro_seen', '1');
-    } catch {}
-    return true;
-  });
-  const [introKey, setIntroKey] = useState<number>(0);
-  const [isPageTransitionIntro, setIsPageTransitionIntro] = useState<boolean>(false);
 
   const [products, setProducts] = useState<FragranceProduct[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -99,11 +88,9 @@ function StorefrontApp() {
     prepareReveal();
   }, [viewMode]);
 
-  const [introLeaving, setIntroLeaving] = useState(false);
   useEffect(() => {
-    // Bring products in while the intro curtain is lifting, so the two motions flow into one
-    if (viewMode === 'storefront' && (!showIntro || introLeaving)) startReveal();
-  }, [viewMode, showIntro, introLeaving]);
+    if (viewMode === 'storefront') startReveal();
+  }, [viewMode]);
   const [adminUser, setAdminUser] = useState<any | null>(null);
   const [csrfToken, setCsrfToken] = useState<string>('');
 
@@ -389,18 +376,6 @@ function StorefrontApp() {
         color: 'var(--theme-text-primary)',
       }}
     >
-      {/* Editorial Pure Portions opening intro sequence */}
-      {showIntro && (
-        <IntroSequence
-          key={`intro-${introKey}`}
-          isPageTransition={isPageTransitionIntro}
-          onExitStart={() => setTimeout(() => setIntroLeaving(true), 350)}
-          onComplete={() => setShowIntro(false)}
-        />
-      )}
-
-
-
       {/* Toast Notification */}
       {toastMessage && (
         <div
