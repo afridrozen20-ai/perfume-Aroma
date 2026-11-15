@@ -3,7 +3,7 @@ import logoRound from '../../assets/brand/logo-round.webp';
 import { thumb } from '../../lib/img';
 import { fetchPublicProducts } from '../../services/api';
 
-type Shot = { src: string; ar: number } | null;
+type Shot = { src: string; ar: number; clean: boolean } | null;
 
 /** Loads a product photo, removes a plain light background if it has one, and trims the empty edges. */
 export const cutout = (url: string): Promise<Shot> => new Promise((resolve) => {
@@ -48,6 +48,11 @@ export const cutout = (url: string): Promise<Shot> => new Promise((resolve) => {
         }
         x.putImageData(data, 0, 0);
       }
+      // how much of the photo's outer edge is still solid (a coloured backdrop we couldn't lift)
+      let edge = 0, solid = 0;
+      for (let xx = 0; xx < w; xx += 2) { edge += 2; if (d[xx * 4 + 3] > 24) solid++; if (d[((h - 1) * w + xx) * 4 + 3] > 24) solid++; }
+      for (let y = 0; y < h; y += 2) { edge += 2; if (d[(y * w) * 4 + 3] > 24) solid++; if (d[(y * w + w - 1) * 4 + 3] > 24) solid++; }
+      const clean = solid / Math.max(1, edge) < 0.12;
       let minX = w, minY = h, maxX = 0, maxY = 0;
       for (let y = 0; y < h; y++) for (let xx = 0; xx < w; xx++) {
         if (d[(y * w + xx) * 4 + 3] > 24) { if (xx < minX) minX = xx; if (xx > maxX) maxX = xx; if (y < minY) minY = y; if (y > maxY) maxY = y; }
@@ -56,7 +61,7 @@ export const cutout = (url: string): Promise<Shot> => new Promise((resolve) => {
       const cw = maxX - minX + 1, ch = maxY - minY + 1;
       const o = document.createElement('canvas'); o.width = cw; o.height = ch;
       o.getContext('2d')!.drawImage(c, minX, minY, cw, ch, 0, 0, cw, ch);
-      resolve({ src: o.toDataURL('image/png'), ar: cw / ch });
+      resolve({ src: o.toDataURL('image/png'), ar: cw / ch, clean });
     } catch { resolve(null); }
   };
   img.onerror = () => resolve(null);

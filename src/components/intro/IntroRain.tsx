@@ -112,8 +112,8 @@ export const IntroRain: React.FC<{ onOpen: () => void; onDone: () => void }> = (
       try {
         const list = await fetchPublicProducts();
         const max = window.innerWidth < 768 ? 46 : 80;
-        const pick = shuffle(list.filter((p) => p.image)).slice(0, max);
-        const shots = (await Promise.all(pick.map((p) => cutout(thumb(p.image, 160))))).filter(Boolean) as { src: string; ar: number }[];
+        const pick = shuffle(list.filter((p) => p.image)).slice(0, Math.round(max * 1.6));
+        const shots = ((await Promise.all(pick.map((p) => cutout(thumb(p.image, 160))))).filter((s) => s && s.clean) as { src: string; ar: number }[]).slice(0, max);
         window.clearTimeout(giveUp);
         begin(shots.filter((s) => s.ar > 0.25 && s.ar < 1.6));
       } catch { window.clearTimeout(giveUp); begin([]); }
