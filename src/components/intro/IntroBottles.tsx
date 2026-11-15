@@ -6,7 +6,7 @@ import { fetchPublicProducts } from '../../services/api';
 type Shot = { src: string; ar: number } | null;
 
 /** Loads a product photo, removes a plain light background if it has one, and trims the empty edges. */
-const cutout = (url: string): Promise<Shot> => new Promise((resolve) => {
+export const cutout = (url: string): Promise<Shot> => new Promise((resolve) => {
   const img = new Image();
   img.crossOrigin = 'anonymous';
   img.onload = () => {

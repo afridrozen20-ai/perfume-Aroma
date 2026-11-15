@@ -91,7 +91,7 @@ function StorefrontApp() {
 
   // Opening curtain: once per visit, on the storefront only
   // Preview: ?intro=a|b|c always plays that opening, so options can be compared
-  const introPick = (() => { const v = new URLSearchParams(window.location.search).get('intro'); return v === 'a' || v === 'b' || v === 'c' || v === 'd' || v === 'e' ? v : null; })();
+  const introPick = (() => { const v = new URLSearchParams(window.location.search).get('intro'); return v === 'a' || v === 'b' || v === 'c' || v === 'd' || v === 'e' || v === 'f' ? v : null; })();
   const [showCurtain, setShowCurtain] = useState<boolean>(() => {
     if (introPick) return true;
     try {

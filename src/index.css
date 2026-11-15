@@ -1444,3 +1444,19 @@ html,body{max-width:100%;overflow-x:hidden}
 @media (min-width:768px){.pp-bt__bottle.is-photo{height:132px;width:calc(132px * var(--ar,.6))}.pp-bt__bottle--gg.is-photo{height:108px;width:calc(108px * var(--ar,1.2))}}
 .pp-bt__bottle--gg.is-photo{height:104px;width:calc(104px * var(--ar,.5))}
 @media (min-width:768px){.pp-bt__bottle--gg.is-photo{height:132px;width:calc(132px * var(--ar,.5))}}
+
+/* ── Intro F: bottle rain ───────────────────────────── */
+.pp-rain{position:fixed;inset:0;z-index:200;overflow:hidden;cursor:pointer}
+.pp-rain.is-drop{pointer-events:none}
+.pp-rain__sheet{position:absolute;inset:0;background:#faf8f4;box-shadow:0 -20px 60px rgba(30,30,30,.15);transform-origin:50% 0}
+.pp-rain.is-rain .pp-rain__sheet{animation:ppRainSag 2.6s .5s cubic-bezier(.4,0,.6,1) forwards}
+@keyframes ppRainSag{0%{transform:none}20%{transform:translateY(3px)}22%{transform:translateY(1px)}45%{transform:translateY(9px) rotate(.2deg)}47%{transform:translateY(6px)}70%{transform:translateY(16px) rotate(-.3deg)}72%{transform:translateY(12px)}100%{transform:translateY(26px) rotate(.4deg)}}
+.pp-rain.is-drop .pp-rain__sheet{transform:translateY(118vh) rotate(5deg);transition:transform 1s cubic-bezier(.55,0,.9,.35)}
+.pp-rain__logo{position:absolute;left:50%;top:34%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;box-shadow:0 16px 34px -18px rgba(40,42,50,.4);opacity:0;transform:scale(.9);animation:ppRainLogo .6s .05s cubic-bezier(.2,.9,.3,1.25) forwards}
+.pp-rain.is-wait .pp-rain__logo{animation-duration:.6s}
+@keyframes ppRainLogo{to{opacity:1;transform:none}}
+.pp-rain__b{position:absolute;object-fit:contain;transform:translateY(var(--from));filter:drop-shadow(0 6px 6px rgba(30,32,40,.22));
+  animation:ppRainFall var(--t) var(--d) cubic-bezier(.5,0,.95,.45) forwards,ppRainLand .35s calc(var(--d) + var(--t)) ease-out forwards}
+@keyframes ppRainFall{from{transform:translateY(var(--from)) rotate(0)}to{transform:translateY(0) rotate(var(--r))}}
+@keyframes ppRainLand{0%{transform:translateY(0) rotate(var(--r)) scale(1.06,.9)}50%{transform:translateY(-6px) rotate(var(--r))}100%{transform:translateY(0) rotate(var(--r))}}
+@media (min-width:768px){.pp-rain__logo{width:190px;height:190px;margin:-95px 0 0 -95px}}
