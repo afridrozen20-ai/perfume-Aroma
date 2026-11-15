@@ -34,6 +34,9 @@ import { Shield } from 'lucide-react';
 import { ThemeProvider } from './context/ThemeContext';
 import { initSmoothScroll, prepareReveal, startReveal, scrollToTop } from './lib/motion';
 
+// The hidden preview page never sends real orders (checked once, before any in-app navigation)
+const IS_PREVIEW = typeof window !== 'undefined' && window.location.pathname.includes('preview.html');
+
 export default function App() {
   return (
     <ThemeProvider>
@@ -584,7 +587,7 @@ function StorefrontApp() {
         onClearCart={() => setCart([])}
         onClose={() => { closeCheckout(); setIsCartOpen(true); }}
         onDone={() => closeCheckout()}
-        demo={window.location.pathname.includes('preview.html')}
+        demo={IS_PREVIEW}
       />
 
       <SearchModal
