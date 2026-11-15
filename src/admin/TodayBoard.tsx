@@ -8,11 +8,19 @@ type Order = {
   delivery_fee?: number | string; invoice_key?: string;
   history?: { orders: number; delivered: number; cancelled: number; returned: number; open: number }; blocked?: boolean; block_reason?: string | null; advance_type?: 'delivery' | 'full' | 'cod' | null; cod_amount?: number; ready?: boolean; order_status: string; created_at: string; items: Item[];
 };
+type Ship = { id: number; order_number: string; customer_name: string; customer_phone: string; city_zone: string; total_amount: number | string; cod_amount?: number; tracking_number: string; courier_status: string | null; created_at: string; age_min?: number | string };
+const SF_LABEL: Record<string, [string, string]> = {
+  in_review: ['In review', 'wait'], pending: ['On the way', 'go'], hold: ['On hold', 'warn'],
+  delivered_approval_pending: ['Delivered · confirming', 'ok'], partial_delivered_approval_pending: ['Part delivered · confirming', 'warn'],
+  cancelled_approval_pending: ['Returning', 'bad'], unknown_approval_pending: ['Check with Steadfast', 'warn'], unknown: ['Check with Steadfast', 'warn'],
+  delivered: ['Delivered', 'ok'], partial_delivered: ['Part delivered', 'warn'], cancelled: ['Returned', 'bad'],
+};
 type PackRow = { product_id: string; brand: string; name: string; total_ml: number; remaining_ml: number | null; short: boolean; lines: { size: string; ml: number; qty: number }[] };
 type Low = { product_id: string; brand: string; name: string; remaining_ml: number; threshold_ml: number; bottle_size_ml: number; status: 'out' | 'low' };
 export type TodayData = {
   counts: { new: number; to_pack: number; shipped_today: number; unpaid_advance: number; low_stock: number };
   new_orders: Order[]; to_pack: Order[]; packing: PackRow[]; low_stock: Low[];
+  on_the_way?: Ship[]; finished?: { id: number; order_number: string; customer_name: string; order_status: string; tracking_number: string }[];
 };
 
 const ZONE: Record<string, string> = { narsingdi: 'Narsingdi', inside_dhaka: 'Dhaka', outside_dhaka: 'Other districts' };
@@ -43,6 +51,35 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
   const [sfReady, setSfReady] = useState<boolean | null>(demo ? true : null);
   const [sending, setSending] = useState(false);
   const [armed, setArmed] = useState<string | null>(null);
+  const [tracking, setTracking] = useState(false);
+  const [trackMsg, setTrackMsg] = useState('');
+  const refreshCourier = async () => {
+    setTracking(true);
+    setTrackMsg('');
+    try {
+      if (demo) {
+        await new Promise((r) => setTimeout(r, 900));
+        setData((d) => d && { ...d, on_the_way: (d.on_the_way || []).map((w, i) => (i === 0 ? { ...w, courier_status: 'pending' } : w)) });
+        setTrackMsg('Updated just now');
+        return;
+      }
+      const r = await fetch('/api/admin/steadfast.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+        body: JSON.stringify({ action: 'track' }),
+      });
+      const j = await r.json();
+      if (j.success) {
+        const fin = (j.data.results || []).filter((x: { final?: string }) => x.final).length;
+        setTrackMsg(`Checked ${j.data.checked} parcel${j.data.checked === 1 ? '' : 's'}${fin ? ` · ${fin} finished` : ''} · just now`);
+      } else setTrackMsg(typeof j.error === 'string' ? j.error : 'Couldn’t reach Steadfast.');
+      await load();
+    } catch {
+      setTrackMsg('Couldn’t reach the server.');
+    } finally {
+      setTracking(false);
+    }
+  };
   const isArmed = (ids: number[], c = false) => armed === `${c ? 'c' : 's'}:${ids.join(',')}`;
   type SfRes = { sent: number; failed: number; note?: string; results: { id: number; order_number: string; ok: boolean; tracking_code?: string; error?: string }[] };
   const [sfResult, setSfResult] = useState<SfRes | null>(null);
@@ -390,6 +427,46 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
             </div>
           );
         })}
+      </section>
+
+      {/* 4. With the courier — live Steadfast status */}
+      <section className="pp-today__card">
+        <div className="pp-today__hrow">
+          <h3 className="pp-today__h"><Truck className="w-4 h-4" /> With the courier <span>{(data.on_the_way || []).length}</span></h3>
+          <button className="pp-trk__refresh" disabled={tracking || !(data.on_the_way || []).length} onClick={refreshCourier}>
+            <RefreshCw className={`w-3.5 h-3.5 ${tracking ? 'animate-spin' : ''}`} /> {tracking ? 'Checking…' : 'Refresh status'}
+          </button>
+        </div>
+        <p className="pp-today__hint">{trackMsg || 'Tap Refresh to get the latest status from Steadfast. Delivered and returned parcels update by themselves.'}</p>
+        {(data.on_the_way || []).length === 0 ? <Empty text="No parcels with the courier right now." /> : (
+          <div className="pp-trk">
+            {(data.on_the_way || []).map((w) => {
+              const [label, tone] = w.courier_status ? (SF_LABEL[w.courier_status] || [w.courier_status, 'wait']) : ['Sent', 'wait'];
+              return (
+                <div key={w.id} className="pp-trk__row">
+                  <div className="min-w-0">
+                    <p className="pp-trk__name">{w.customer_name} <em>{w.order_number}</em></p>
+                    <p className="pp-trk__meta">
+                      <button onClick={() => copy(`t${w.id}`, w.tracking_number)}>{copied === `t${w.id}` ? 'Copied ✓' : w.tracking_number}</button>
+                      {' · '}COD {money(w.cod_amount ?? w.total_amount)} · {ago(w)}
+                    </p>
+                  </div>
+                  <span className={`pp-trk__st is-${tone}`}>{label}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {(data.finished || []).length > 0 && (
+          <div className="pp-trk__done">
+            <p>Recently finished</p>
+            {(data.finished || []).slice(0, 6).map((f) => (
+              <span key={f.id} className={f.order_status === 'delivered' ? 'is-ok' : 'is-bad'}>
+                {f.order_status === 'delivered' ? '✓' : '↩'} {f.customer_name.split(' ')[0]} · {f.order_number}
+              </span>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* 4. Low stock */}

@@ -937,3 +937,23 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-risk__form input{flex:1;height:32px;padding:0 10px;border:1px solid #eee;border-radius:10px;font-size:12px;background:#fff;outline:none}
 .pp-risk__form input:focus{border-color:#a1231b}
 .pp-risk__form button{height:32px;padding:0 14px;border:0;border-radius:10px;background:#a1231b;color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+/* With the courier */
+.pp-trk__refresh{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;border:0;background:#141414;color:#fff;font-size:11.5px;font-weight:600;cursor:pointer}
+.pp-trk__refresh:disabled{opacity:.4}
+.pp-trk{display:flex;flex-direction:column}
+.pp-trk__row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-top:.5px solid rgba(0,0,0,.08)}
+.pp-trk__name{margin:0;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-trk__name em{font-style:normal;font-size:11px;font-weight:500;color:#9a9a96;margin-left:4px}
+.pp-trk__meta{margin:2px 0 0;font-size:11.5px;color:#8a8a86;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-trk__meta button{border:0;background:none;padding:0;font:inherit;font-family:ui-monospace,monospace;color:#3a3a38;text-decoration:underline dotted;cursor:pointer}
+.pp-trk__st{flex:0 0 auto;font-size:11px;font-weight:700;padding:5px 10px;border-radius:999px;white-space:nowrap}
+.pp-trk__st.is-wait{background:#f1f0ed;color:#5f5e5a}
+.pp-trk__st.is-go{background:#e8f0fb;color:#1f4f8a}
+.pp-trk__st.is-warn{background:#fdf3e2;color:#8a5208}
+.pp-trk__st.is-ok{background:#e8f4ec;color:#1e6b3a}
+.pp-trk__st.is-bad{background:#fdecea;color:#a1231b}
+.pp-trk__done{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 14px;padding-top:10px;border-top:.5px solid rgba(0,0,0,.08)}
+.pp-trk__done p{flex-basis:100%;margin:0 0 2px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#8a8a86;font-weight:600}
+.pp-trk__done span{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px}
+.pp-trk__done .is-ok{background:#eef7f1;color:#1e6b3a}
+.pp-trk__done .is-bad{background:#fdeeec;color:#a1231b}

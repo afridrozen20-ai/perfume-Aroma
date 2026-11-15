@@ -150,4 +150,35 @@ if ($action === 'send') {
     jsonResponse(['sent' => count(array_filter($results, fn($x) => $x['ok'])), 'failed' => count(array_filter($results, fn($x) => !$x['ok'])), 'results' => $results]);
 }
 
+if ($action === 'track') {
+    if ($key === '' || $secret === '') jsonError('Add your Steadfast keys in Store Settings first.', 422);
+    $hasCol = ensureCourierStatusColumn($db);
+    $rows = $db->query("SELECT id, order_number, tracking_number, order_status FROM orders
+                        WHERE order_status = 'shipped' AND tracking_number IS NOT NULL AND tracking_number <> ''
+                        ORDER BY id DESC LIMIT 80")->fetchAll(PDO::FETCH_ASSOC);
+    $setCs = $hasCol ? $db->prepare("UPDATE orders SET courier_status = ? WHERE id = ?") : null;
+    $setSt = $db->prepare("UPDATE orders SET order_status = ? WHERE id = ?");
+    $hist = $db->prepare("INSERT INTO order_status_history (order_id, old_status, new_status, note, changed_by) VALUES (?, 'shipped', ?, ?, 'steadfast')");
+    $out = [];
+    foreach ($rows as $r) {
+        $res = sfCall('GET', '/status_by_invoice/' . rawurlencode($r['order_number']), $key, $secret);
+        $ds = $res['json']['delivery_status'] ?? null;
+        if (!$ds) {
+            $res = sfCall('GET', '/status_by_trackingcode/' . rawurlencode($r['tracking_number']), $key, $secret);
+            $ds = $res['json']['delivery_status'] ?? null;
+        }
+        if (!$ds) { $out[] = ['id' => (int)$r['id'], 'order_number' => $r['order_number'], 'status' => null]; continue; }
+        if ($setCs) $setCs->execute([$ds, $r['id']]);
+        $final = null;
+        if ($ds === 'delivered' || $ds === 'partial_delivered') $final = 'delivered';
+        elseif ($ds === 'cancelled') $final = 'cancelled';
+        if ($final) {
+            $setSt->execute([$final, $r['id']]);
+            try { $hist->execute([$r['id'], $final, 'Steadfast: ' . $ds]); } catch (Throwable $e) {}
+        }
+        $out[] = ['id' => (int)$r['id'], 'order_number' => $r['order_number'], 'status' => $ds, 'final' => $final];
+    }
+    jsonResponse(['checked' => count($out), 'results' => $out]);
+}
+
 jsonError('Unknown action', 400);

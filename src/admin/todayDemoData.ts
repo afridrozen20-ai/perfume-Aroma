@@ -20,6 +20,16 @@ export const TODAY_DEMO: TodayData = {
     { id: 882, order_number: 'PP-4815', customer_name: 'Mim Akter', customer_phone: '01555-000000', shipping_address: 'Messenger order', city_zone: 'inside_dhaka', total_amount: 590, delivery_fee: 100, advance_type: 'full', payment_status: 'paid', payment_method: 'offline', order_status: 'processing', created_at: t(300), blocked: true, block_reason: 'Returned 2 parcels', history: { orders: 2, delivered: 0, cancelled: 0, returned: 2, open: 0 },
       items: [{ product_id: 'd', product_name: 'Aventus', brand_name: 'Creed', selected_size: '1.5ml', quantity: 1 }] },
   ],
+  on_the_way: [
+    { id: 860, order_number: 'PP-4790', customer_name: 'Farzana Islam', customer_phone: '01700-000000', city_zone: 'outside_dhaka', total_amount: 1250, cod_amount: 1120, tracking_number: 'SF7DB724A65D4', courier_status: 'in_review', created_at: t(1500), age_min: 1500 } as any,
+    { id: 861, order_number: 'PP-4794', customer_name: 'Arif Chowdhury', customer_phone: '01800-000000', city_zone: 'inside_dhaka', total_amount: 760, cod_amount: 660, tracking_number: 'SF91C2B07E1A0', courier_status: 'pending', created_at: t(2900), age_min: 2900 } as any,
+    { id: 862, order_number: 'PP-4797', customer_name: 'Lamia Haque', customer_phone: '01900-000000', city_zone: 'narsingdi', total_amount: 450, cod_amount: 0, tracking_number: 'SF2A6F31D9C44', courier_status: 'delivered_approval_pending', created_at: t(4300), age_min: 4300 } as any,
+  ],
+  finished: [
+    { id: 850, order_number: 'PP-4771', customer_name: 'Nadia Karim', order_status: 'delivered', tracking_number: 'SF11' },
+    { id: 851, order_number: 'PP-4775', customer_name: 'Sabbir Hossain', order_status: 'cancelled', tracking_number: 'SF12' },
+    { id: 852, order_number: 'PP-4779', customer_name: 'Tasnim Ara', order_status: 'delivered', tracking_number: 'SF13' },
+  ],
   packing: [
     { product_id: 'd', brand: 'Creed', name: 'Aventus', total_ml: 3, remaining_ml: 6, short: false, lines: [{ size: '1.5ml', ml: 1.5, qty: 2 }] },
     { product_id: 'a', brand: 'Lattafa', name: 'Khamrah', total_ml: 16, remaining_ml: 42, short: false, lines: [{ size: '3ml', ml: 3, qty: 2 }, { size: '10ml', ml: 10, qty: 1 }] },
