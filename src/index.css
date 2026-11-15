@@ -699,3 +699,8 @@ circle.pp-leaf{transform-origin:center}
 .pp-lite .pp-dock__glass,.pp-lite .pp-announce,.pp-lite .pp-header.is-glass,.pp-lite [class*="backdrop-blur"]{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .pp-lite .pp-dock__glass{background:rgba(250,250,250,.96)!important}
 .pp-lite .pp-header.is-glass{background:rgba(255,255,255,.96)!important}
+
+/* Mobile: never let a wide row (e.g. a side-scrolling carousel mounting on page change) widen the page —
+   that made phones zoom out for a moment when going back Home. */
+html,body{max-width:100%;overflow-x:hidden}
+@supports (overflow:clip){html,body{overflow-x:clip}}
