@@ -441,13 +441,15 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
         {(data.on_the_way || []).length === 0 ? <Empty text="No parcels with the courier right now." /> : (
           <div className="pp-trk">
             {(data.on_the_way || []).map((w) => {
-              const [label, tone] = w.courier_status ? (SF_LABEL[w.courier_status] || [w.courier_status, 'wait']) : ['Sent', 'wait'];
+              const [label, tone] = w.courier_status ? (SF_LABEL[w.courier_status] || [w.courier_status, 'wait']) : w.tracking_number ? ['Sent', 'wait'] : ['Sent', 'wait'];
               return (
                 <div key={w.id} className="pp-trk__row">
                   <div className="min-w-0">
                     <p className="pp-trk__name">{w.customer_name} <em>{w.order_number}</em></p>
                     <p className="pp-trk__meta">
-                      <button onClick={() => copy(`t${w.id}`, w.tracking_number)}>{copied === `t${w.id}` ? 'Copied ✓' : w.tracking_number}</button>
+                      {w.tracking_number
+                        ? <button onClick={() => copy(`t${w.id}`, w.tracking_number)}>{copied === `t${w.id}` ? 'Copied ✓' : w.tracking_number}</button>
+                        : <span>Not via Steadfast</span>}
                       {' · '}COD {money(w.cod_amount ?? w.total_amount)} · {ago(w)}
                     </p>
                   </div>
