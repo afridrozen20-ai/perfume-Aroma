@@ -29,3 +29,24 @@ function orderCodAmount(array $o): float {
     if (($o['payment_status'] ?? '') !== 'paid') return $total;
     return ($o['payment_method'] ?? '') === 'offline' ? 0 : max(0, $total - 200);
 }
+
+/** Secret for invoice links (created once, kept in store_settings). */
+function invoiceSecret(PDO $db): string {
+    $s = $db->prepare("SELECT setting_value FROM store_settings WHERE setting_key = 'invoice_link_secret' LIMIT 1");
+    $s->execute();
+    $v = (string)($s->fetchColumn() ?: '');
+    if ($v !== '') return $v;
+    $v = bin2hex(random_bytes(24));
+    $isSqlite = $db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite';
+    try {
+        if ($isSqlite) $db->prepare("INSERT OR IGNORE INTO store_settings (setting_key, setting_value) VALUES ('invoice_link_secret', ?)")->execute([$v]);
+        else $db->prepare("INSERT IGNORE INTO store_settings (setting_key, setting_value) VALUES ('invoice_link_secret', ?)")->execute([$v]);
+    } catch (Throwable $e) {}
+    $s->execute();
+    return (string)($s->fetchColumn() ?: $v);
+}
+
+/** Short signature so only the customer with the link can open their invoice. */
+function invoiceToken(PDO $db, string $orderNumber): string {
+    return substr(hash_hmac('sha256', $orderNumber, invoiceSecret($db)), 0, 16);
+}

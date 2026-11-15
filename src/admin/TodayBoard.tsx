@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Sun, PackageCheck, AlertTriangle, Truck, Check, Copy, Printer, RefreshCw, Wallet } from 'lucide-react';
+import { MessageCircle, Sun, PackageCheck, AlertTriangle, Truck, Check, Copy, Printer, RefreshCw, Wallet } from 'lucide-react';
 
 type Item = { product_id: string; product_name: string; brand_name: string; selected_size: string; quantity: number };
 type Order = {
   id: number; order_number: string; customer_name: string; customer_phone: string; shipping_address: string;
   city_zone: string; total_amount: number | string; payment_status: string; payment_method?: string; age_min?: number | string;
-  delivery_fee?: number | string; advance_type?: 'delivery' | 'full' | 'cod' | null; cod_amount?: number; ready?: boolean; order_status: string; created_at: string; items: Item[];
+  delivery_fee?: number | string; invoice_key?: string; advance_type?: 'delivery' | 'full' | 'cod' | null; cod_amount?: number; ready?: boolean; order_status: string; created_at: string; items: Item[];
 };
 type PackRow = { product_id: string; brand: string; name: string; total_ml: number; remaining_ml: number | null; short: boolean; lines: { size: string; ml: number; qty: number }[] };
 type Low = { product_id: string; brand: string; name: string; remaining_ml: number; threshold_ml: number; bottle_size_ml: number; status: 'out' | 'low' };
@@ -155,6 +155,28 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
     return o.payment_method === 'offline' ? 0 : Math.max(0, t - 200);
   };
   const isReady = (o: Order) => o.advance_type === 'cod' || o.payment_status === 'paid';
+
+  // WhatsApp: open the customer's chat with their order + a link to the PDF invoice
+  const waLink = (o: Order) => {
+    let d = String(o.customer_phone || '').replace(/\D/g, '');
+    if (d.startsWith('0')) d = '88' + d;
+    else if (d.length === 10 && d.startsWith('1')) d = '880' + d;
+    const url = `${window.location.origin}/invoice/${encodeURIComponent(o.order_number)}?k=${o.invoice_key || ''}`;
+    const items = o.items.map((i) => `• ${i.product_name} ${i.selected_size}${Number(i.quantity) > 1 ? ` ×${i.quantity}` : ''}`).join('\n');
+    const due = cod(o);
+    const text =
+      `Hi ${o.customer_name.split(' ')[0]}, thank you for your order from Pure Portions by Arrina.\n\n` +
+      `Order ${o.order_number}\n${items}\n\n` +
+      `Total: ${money(o.total_amount)}\n` +
+      (o.advance_type || o.payment_status === 'paid' ? `To pay on delivery: ${money(due)}\n` : '') +
+      `\nYour invoice (PDF): ${url}`;
+    return `https://wa.me/${d}?text=${encodeURIComponent(text)}`;
+  };
+  const WaButton = ({ o }: { o: Order }) => (
+    <a className="pp-wa" href={waLink(o)} target="_blank" rel="noreferrer" aria-label={`Send invoice to ${o.customer_name} on WhatsApp`} title="Send invoice on WhatsApp" onClick={(e) => { if (!o.invoice_key && !demo) { e.preventDefault(); } }}>
+      <MessageCircle className="w-4 h-4" />
+    </a>
+  );
   const PAY: { id: 'delivery' | 'full' | 'cod'; label: string; sub: (o: Order) => string }[] = [
     { id: 'delivery', label: 'Delivery charge', sub: (o) => `${money(o.delivery_fee || 0)} paid first` },
     { id: 'full', label: 'Full payment', sub: (o) => `${money(o.total_amount)} paid first` },
@@ -239,7 +261,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
                   <p className="pp-today__oname">{o.customer_name} <em>{o.order_number}</em></p>
                   <p className="pp-today__osub">{o.customer_phone} · {ZONE[o.city_zone] || o.city_zone} · {ago(o)}</p>
                 </div>
-                <p className="pp-today__total">{money(o.total_amount)}<span>Delivery {money(o.delivery_fee || 0)}</span></p>
+                <div className="pp-orow__right"><WaButton o={o} /><p className="pp-today__total">{money(o.total_amount)}<span>Delivery {money(o.delivery_fee || 0)}</span></p></div>
               </div>
               <div className="pp-nord__chips">
                 {o.items.map((i, k) => <span key={k}>{i.product_name} <b>{i.selected_size}{i.quantity > 1 ? ` ×${i.quantity}` : ''}</b></span>)}
@@ -339,7 +361,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
                   <p className="pp-today__oname">{o.customer_name} <em>{o.order_number}</em></p>
                   <p className="pp-today__osub">{o.customer_phone} · {o.shipping_address}</p>
                 </div>
-                <p className="pp-today__total">{money(o.total_amount)}<span>COD {money(cod(o))}</span></p>
+                <div className="pp-orow__right"><WaButton o={o} /><p className="pp-today__total">{money(o.total_amount)}<span>COD {money(cod(o))}</span></p></div>
               </div>
               <div className="pp-today__actions">
                 {isReady(o) ? (

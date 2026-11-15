@@ -875,3 +875,50 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-pay__sum{margin:10px 0 0;padding:9px 12px;border-radius:12px;background:#e8f4ec;color:#1e6b3a;font-size:12.5px}
 .pp-pay__sum b{color:#141414}
 .pp-nord .pp-nord__go{margin-top:10px}
+/* WhatsApp invoice button */
+.pp-orow__right{display:flex;align-items:flex-start;gap:10px}
+.pp-wa{flex:0 0 34px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e7f7ec;color:#128c3e;box-shadow:inset 0 0 0 .5px rgba(18,140,62,.25);transition:transform .2s,background .2s}
+.pp-wa:hover{background:#d3f1dd}
+.pp-wa:active{transform:scale(.9)}
+
+/* Customer invoice */
+.pp-inv{min-height:100vh;background:#f6f5f2;padding:24px 14px 40px;display:flex;flex-direction:column;align-items:center;gap:16px;color:#141414}
+.pp-inv__paper{width:100%;max-width:560px;background:#fff;border-radius:24px;padding:26px 22px;box-shadow:0 0 0 .5px rgba(0,0,0,.06),0 24px 50px -36px rgba(0,0,0,.4)}
+.pp-inv__head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.pp-inv__head img{width:56px;height:56px;border-radius:50%}
+.pp-inv__eyebrow{margin:0;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:#8a8a86;font-weight:600}
+.pp-inv__no{margin:4px 0 0;font-size:14px;font-weight:700}
+.pp-inv__date{margin:2px 0 0;font-size:12px;color:#6b6a66}
+.pp-inv__thanks{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:34px;line-height:1.05;margin:22px 0 18px}
+.pp-inv__thanks em{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic}
+.pp-inv__to{padding:14px 16px;border-radius:16px;background:#f8f7f4;font-size:13px;line-height:1.55}
+.pp-inv__to p{margin:0}
+.pp-inv__label{font-size:10px!important;letter-spacing:.2em;text-transform:uppercase;color:#8a8a86;font-weight:600;margin-bottom:4px!important}
+.pp-inv__strong{font-weight:700}
+.pp-inv__items{width:100%;border-collapse:collapse;margin:20px 0 6px;font-size:13px}
+.pp-inv__items th{text-align:left;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#8a8a86;font-weight:600;padding:0 0 8px;border-bottom:.5px solid rgba(0,0,0,.12)}
+.pp-inv__items th:last-child,.pp-inv__items td:last-child{text-align:right}
+.pp-inv__items th:nth-child(2),.pp-inv__items th:nth-child(3),.pp-inv__items td:nth-child(2),.pp-inv__items td:nth-child(3){text-align:center}
+.pp-inv__items td{padding:11px 0;border-bottom:.5px solid rgba(0,0,0,.08);vertical-align:top}
+.pp-inv__items td:first-child span{display:block;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#8a8a86}
+.pp-inv__items td:first-child{font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;font-weight:600}
+.pp-inv__totals{margin-left:auto;max-width:280px;font-size:13px}
+.pp-inv__totals p{display:flex;justify-content:space-between;margin:7px 0;color:#5f5e5a}
+.pp-inv__totals .is-total{color:#141414;font-weight:700;padding-top:8px;border-top:.5px solid rgba(0,0,0,.12)}
+.pp-inv__totals .is-paid{color:#1e6b3a}
+.pp-inv__totals .is-due{margin-top:10px;padding:10px 12px;border-radius:12px;background:#141414;color:#fff;font-weight:700;font-size:14px}
+.pp-inv__pay{margin:16px 0 0;font-size:12px;color:#6b6a66;text-align:right}
+.pp-inv__foot{margin-top:26px;padding-top:14px;border-top:.5px solid rgba(0,0,0,.08);text-align:center;font-size:11px;color:#9a9a96;letter-spacing:.08em}
+.pp-inv__foot p{margin:2px 0}
+.pp-inv__actions{width:100%;max-width:560px;display:flex;gap:8px}
+.pp-inv__actions>*{flex:1;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13.5px;font-weight:600;cursor:pointer;text-decoration:none}
+.pp-inv__actions button{border:0;background:#141414;color:#fff}
+.pp-inv__actions a{background:#fff;color:#141414;box-shadow:0 0 0 .5px rgba(0,0,0,.1)}
+.pp-inv__err{color:#b3261e;font-size:14px;text-align:center;margin:20px 0}
+.pp-inv__muted{color:#8a8a86;font-size:14px;text-align:center;margin:20px 0}
+@media print{
+  .pp-inv{background:#fff;padding:0}
+  .pp-inv__actions{display:none!important}
+  .pp-inv__paper{box-shadow:none;max-width:none;border-radius:0;padding:12mm}
+  .pp-inv__totals .is-due{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}

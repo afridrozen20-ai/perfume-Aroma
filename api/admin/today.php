@@ -51,6 +51,7 @@ try {
         $o['items'] = $itemsBy[$o['id']] ?? [];
         $o['cod_amount'] = orderCodAmount($o);
         $o['ready'] = orderReadyForCourier($o);
+        $o['invoice_key'] = invoiceToken($db, (string)$o['order_number']);
         if ($o['order_status'] === 'pending') {
             $newOrders[] = $o;
         } else {

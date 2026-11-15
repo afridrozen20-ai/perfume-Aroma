@@ -5,7 +5,16 @@ import { initPerfMode } from './lib/perfMode';
 
 initPerfMode();
 
-if (window.location.hash === '#today-demo') {
+const invMatch = window.location.pathname.match(/^\/invoice\/([A-Za-z0-9_-]+)/);
+const invParam = new URLSearchParams(window.location.search).get('invoice');
+if (invMatch || invParam) {
+  // Customer invoice page (link sent on WhatsApp)
+  const k = new URLSearchParams(window.location.search).get('k') || '';
+  import('./components/InvoicePage').then((m) => {
+    const InvoicePage = m.default;
+    createRoot(document.getElementById('root')!).render(<InvoicePage orderNumber={(invMatch ? invMatch[1] : invParam) as string} token={k} />);
+  });
+} else if (window.location.hash === '#today-demo') {
   // Preview of the admin Today board with sample data (no login, not real orders)
   Promise.all([import('./admin/TodayBoard'), import('./admin/todayDemoData')]).then(([m, d]) => {
     const TodayBoard = m.default;
