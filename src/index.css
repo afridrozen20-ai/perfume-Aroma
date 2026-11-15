@@ -717,7 +717,7 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-thead{max-width:720px;margin:0 auto;padding:28px 22px 18px;text-align:center}
 .pp-thead__eyebrow{font-size:10px;letter-spacing:.3em;text-transform:uppercase;font-weight:600;color:#8a8a86}
 .pp-thead__title{font-family:'Cormorant Garamond',Georgia,serif!important;font-weight:500;font-size:44px;line-height:1;margin:10px 0 8px;color:#141414;letter-spacing:-.015em}
-.pp-thead__title em{font-style:italic;background:linear-gradient(100deg,#141414 0%,#141414 32%,#9a9aa2 46%,#f1f1f4 50%,#9a9aa2 54%,#141414 68%,#141414 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:ppSilverSweep 7s 1s ease-in-out infinite;padding-right:4px}
+.pp-thead__title em{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-style:italic;background:linear-gradient(100deg,#141414 0%,#141414 32%,#9a9aa2 46%,#f1f1f4 50%,#9a9aa2 54%,#141414 68%,#141414 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:ppSilverSweep 7s 1s ease-in-out infinite;padding-right:4px}
 .pp-thead__sub{font-size:13px;color:#6b6a66;margin:0}
 .pp-tgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px;row-gap:28px}
 @media (min-width:640px){.pp-tgrid{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:20px;row-gap:36px}}
