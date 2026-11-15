@@ -1325,3 +1325,38 @@ html,body{max-width:100%;overflow-x:hidden}
 @keyframes ppIntroBurst{0%{opacity:0;transform:scale(.5)}15%{opacity:1}100%{opacity:0;transform:scale(5.5)}}
 .pp-intro.is-open .pp-intro__veil{transition:--pp-r 1.4s .05s cubic-bezier(.6,0,.2,1),opacity .7s .75s ease}
 .pp-lite .pp-intro__spray em,.pp-lite .pp-intro__stone{animation:none}
+/* ── intro v3: spray to camera ─────────────────── */
+.pp-intro--spray .pp-intro__veil{-webkit-mask:none;mask:none;transition:opacity .5s ease}
+.pp-intro--spray.is-open .pp-intro__veil{opacity:0}
+.pp-intro--spray .pp-intro__logo{transition:transform 1s cubic-bezier(.5,0,.8,.4),filter .9s ease}
+.pp-intro--spray.is-spray .pp-intro__logo,.pp-intro--spray.is-hit .pp-intro__logo{transform:scale(1.12);filter:blur(1.5px)}
+.pp-intro--spray.is-spray .pp-intro__tag,.pp-intro--spray.is-hit .pp-intro__tag{opacity:0;transition:opacity .4s}
+/* jet origin = the atomizer on the logo */
+.pp-intro__jet{position:absolute;left:var(--sx,62%);top:var(--sy,48%);width:0;height:0;z-index:3;pointer-events:none}
+.pp-intro__fog{position:absolute;left:-30vmax;top:-30vmax;width:60vmax;height:60vmax;border-radius:50%;opacity:0;
+  background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(244,245,248,.95) 28%,rgba(214,218,226,.75) 46%,rgba(232,220,196,.35) 60%,rgba(255,255,255,0) 72%);
+  transform:scale(.02);filter:blur(4px)}
+.pp-intro--spray.is-spray .pp-intro__fog,.pp-intro--spray.is-hit .pp-intro__fog{animation:ppJetFog 1s cubic-bezier(.55,0,.9,.45) forwards}
+@keyframes ppJetFog{0%{opacity:.2;transform:scale(.02)}30%{opacity:.85}100%{opacity:1;transform:scale(4.2)}}
+.pp-intro__jet i{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;opacity:0;
+  background:radial-gradient(circle,rgba(255,255,255,1),rgba(200,205,215,.85) 40%,rgba(226,206,168,.35) 60%,rgba(255,255,255,0) 72%);filter:blur(1px)}
+.pp-intro--spray.is-spray .pp-intro__jet i,.pp-intro--spray.is-hit .pp-intro__jet i{animation:ppJetPuff .95s var(--d) cubic-bezier(.6,0,.9,.5) forwards}
+@keyframes ppJetPuff{0%{opacity:0;transform:rotate(var(--a)) translateX(0) scale(.2)}20%{opacity:.95}100%{opacity:.9;transform:rotate(var(--a)) translateX(var(--l)) scale(var(--s));filter:blur(6px)}}
+/* milky haze when the mist reaches the glass */
+.pp-intro__haze{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;
+  background:radial-gradient(120% 90% at var(--sx,60%) var(--sy,50%),rgba(255,255,255,.97),rgba(246,246,248,.94) 45%,rgba(236,232,224,.9));
+  transition:opacity .25s ease}
+.pp-intro--spray.is-hit .pp-intro__haze{opacity:1}
+.pp-intro--spray.is-open .pp-intro__haze{opacity:0;transition:opacity 1.2s .15s cubic-bezier(.4,0,.2,1)}
+.pp-intro--spray.is-open .pp-intro__jet{opacity:0;transition:opacity .5s}
+/* droplets on the glass */
+.pp-intro__drops{position:absolute;inset:0;z-index:5;pointer-events:none}
+.pp-intro__drops i{position:absolute;margin:-12px 0 0 -12px;border-radius:50% 50% 47% 53%/56% 54% 46% 44%;opacity:0;transform:scale(0);
+  background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.98) 0 9%,rgba(255,255,255,.35) 18%,rgba(255,255,255,.06) 45%,rgba(150,156,168,.22) 70%,rgba(255,255,255,.75) 80%,rgba(255,255,255,0) 84%);
+  box-shadow:0 3px 6px -2px rgba(40,44,52,.28),inset 0 -3px 5px rgba(255,255,255,.55),inset 0 2px 3px rgba(120,126,138,.25);
+  -webkit-backdrop-filter:blur(1.2px) saturate(1.4) brightness(1.06);backdrop-filter:blur(1.2px) saturate(1.4) brightness(1.06)}
+.pp-intro--spray.is-hit .pp-intro__drops i{animation:ppDropHit .32s var(--d) cubic-bezier(.2,1.6,.4,1) forwards}
+.pp-intro--spray.is-open .pp-intro__drops i{opacity:1;transform:scale(1);animation:ppDropSlide 1.7s calc(.55s + var(--d) * 2) cubic-bezier(.5,0,.75,1) forwards}
+@keyframes ppDropHit{0%{opacity:0;transform:scale(0)}60%{opacity:1;transform:scale(1.18,.86)}100%{opacity:1;transform:scale(1)}}
+@keyframes ppDropSlide{0%{opacity:1;transform:translateY(0) scale(1)}70%{opacity:.85}100%{opacity:0;transform:translateY(var(--fall)) scale(.92,1.12)}}
+.pp-lite .pp-intro__drops i{-webkit-backdrop-filter:none;backdrop-filter:none}
