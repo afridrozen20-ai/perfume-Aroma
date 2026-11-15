@@ -499,7 +499,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
           );
         })()}
 
-        {data.to_pack.length === 0 ? <Empty text="No parcels waiting." /> : data.to_pack.map((o) => {
+        {queue ? null : data.to_pack.length === 0 ? <Empty text="No parcels waiting." /> : data.to_pack.map((o) => {
           return (
             <div key={o.id} className="pp-today__order">
               <div className="pp-today__orow">
