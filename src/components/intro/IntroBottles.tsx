@@ -1,5 +1,48 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import logoRound from '../../assets/brand/logo-round.webp';
+import { thumb } from '../../lib/img';
+import { fetchPublicProducts } from '../../services/api';
+
+type Shot = { src: string; ar: number } | null;
+
+/** Loads a product photo, removes a plain light background if it has one, and trims the empty edges. */
+const cutout = (url: string): Promise<Shot> => new Promise((resolve) => {
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    try {
+      const w = img.naturalWidth, h = img.naturalHeight;
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      const x = c.getContext('2d', { willReadFrequently: true })!;
+      x.drawImage(img, 0, 0);
+      const data = x.getImageData(0, 0, w, h); const d = data.data;
+      const at = (i: number) => [d[i], d[i + 1], d[i + 2], d[i + 3]];
+      const corner = at(0);
+      if (corner[3] > 200) {
+        // opaque background: fade out pixels close to the corner colour
+        const [br, bg, bb] = corner;
+        for (let i = 0; i < d.length; i += 4) {
+          const dist = Math.abs(d[i] - br) + Math.abs(d[i + 1] - bg) + Math.abs(d[i + 2] - bb);
+          if (dist < 30) d[i + 3] = 0;
+          else if (dist < 60) d[i + 3] = Math.round(d[i + 3] * ((dist - 30) / 30));
+        }
+        x.putImageData(data, 0, 0);
+      }
+      let minX = w, minY = h, maxX = 0, maxY = 0;
+      for (let y = 0; y < h; y++) for (let xx = 0; xx < w; xx++) {
+        if (d[(y * w + xx) * 4 + 3] > 24) { if (xx < minX) minX = xx; if (xx > maxX) maxX = xx; if (y < minY) minY = y; if (y > maxY) maxY = y; }
+      }
+      if (maxX <= minX || maxY <= minY) { resolve(null); return; }
+      const cw = maxX - minX + 1, ch = maxY - minY + 1;
+      const o = document.createElement('canvas'); o.width = cw; o.height = ch;
+      o.getContext('2d')!.drawImage(c, minX, minY, cw, ch, 0, 0, cw, ch);
+      resolve({ src: o.toDataURL('image/png'), ar: cw / ch });
+    } catch { resolve(null); }
+  };
+  img.onerror = () => resolve(null);
+  img.src = url;
+});
+
 
 /**
  * E — Two perfume bottles drop in beside the round logo ("top, top"), each gives one fine
@@ -95,28 +138,52 @@ const useMist = (n: number, seed: number) => useMemo(() => {
 }, [n, seed]);
 
 export const IntroBottles: React.FC<{ onOpen: () => void; onDone: () => void }> = ({ onOpen, onDone }) => {
-  const [phase, setPhase] = useState<Phase>('in');
+  const [phase, setPhase] = useState<Phase | 'wait'>('wait');
+  const [shots, setShots] = useState<{ l: Shot; r: Shot }>({ l: null, r: null });
   const timers = useRef<number[]>([]);
   const mistL = useMist(52, 7);
   const mistR = useMist(52, 19);
   const finish = () => { document.documentElement.style.overflow = ''; onDone(); };
   const open = (doneIn: number) => { setPhase('out'); onOpen(); timers.current.push(window.setTimeout(finish, doneIn)); };
 
+  // Use the shop's own Aventus and Good Girl photos; fall back to drawn bottles if they can't load in time
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { onOpen(); onDone(); return; }
     document.documentElement.style.overflow = 'hidden';
+    let started = false;
     const unlock = () => audio();
     window.addEventListener('pointerdown', unlock, { once: true });
-    timers.current = [
-      window.setTimeout(() => top(1), 980),
-      window.setTimeout(() => top(0.86), 1380),
-      window.setTimeout(() => { setPhase('spray'); psst(); }, 1900),
-      window.setTimeout(() => psst(), 2060),
-      window.setTimeout(() => open(750), 2950),
-    ];
-    return () => { timers.current.forEach((t) => window.clearTimeout(t)); window.removeEventListener('pointerdown', unlock); document.documentElement.style.overflow = ''; };
+    const start = () => {
+      if (started) return;
+      started = true;
+      setPhase('in');
+      timers.current = [
+        window.setTimeout(() => top(1), 980),
+        window.setTimeout(() => top(0.86), 1380),
+        window.setTimeout(() => { setPhase('spray'); psst(); }, 1900),
+        window.setTimeout(() => psst(), 2060),
+        window.setTimeout(() => open(750), 2950),
+      ];
+    };
+    const giveUp = window.setTimeout(start, 1200);
+    (async () => {
+      try {
+        const list = await fetchPublicProducts();
+        const find = (re: RegExp) => list.find((p) => re.test(p.name));
+        const av = find(/^aventus$/i), gg = find(/^good girl$/i);
+        const [l, r] = await Promise.all([
+          av?.image ? cutout(thumb(av.image, 480)) : Promise.resolve(null),
+          gg?.image ? cutout(thumb(gg.image, 480)) : Promise.resolve(null),
+        ]);
+        if (!started) setShots({ l, r });
+      } catch { /* drawn bottles */ }
+      start();
+    })();
+    return () => { window.clearTimeout(giveUp); timers.current.forEach((t) => window.clearTimeout(t)); window.removeEventListener('pointerdown', unlock); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => () => { document.documentElement.style.overflow = ''; }, []);
 
   const skip = () => {
     if (phase === 'out') return;
@@ -126,17 +193,17 @@ export const IntroBottles: React.FC<{ onOpen: () => void; onDone: () => void }> 
   };
 
   return (
-    <div className={`pp-bt is-${phase}`} onClick={skip} aria-hidden="true">
+    <div className={`pp-bt is-${phase}`} onClick={() => phase !== 'wait' && skip()} aria-hidden="true">
       <div className="pp-bt__stage">
         <img className="pp-bt__logo" src={logoRound} alt="" decoding="async" />
 
-        <div className="pp-bt__bottle pp-bt__bottle--l">
-          <div className="pp-bt__drop"><Bottle tint="#f3dfb4" deep="#d9b46e" /></div>
+        <div className={`pp-bt__bottle pp-bt__bottle--l ${shots.l ? 'is-photo pp-bt__bottle--av' : ''}`} style={shots.l ? { '--ar': shots.l.ar } as React.CSSProperties : undefined}>
+          <div className="pp-bt__drop">{shots.l ? <img className="pp-bt__photo" src={shots.l.src} alt="" /> : <Bottle tint="#f3dfb4" deep="#d9b46e" />}</div>
           <div className="pp-bt__mist">{mistL.map((m, i) => <i key={i} style={{ '--a': `${m.a}deg`, '--l': `${m.l}px`, '--z': `${m.z}px`, '--d': `${m.d}s` } as React.CSSProperties} />)}</div>
         </div>
 
-        <div className="pp-bt__bottle pp-bt__bottle--r">
-          <div className="pp-bt__drop"><Bottle tint="#efe6f0" deep="#c9b3cc" /></div>
+        <div className={`pp-bt__bottle pp-bt__bottle--r ${shots.r ? 'is-photo pp-bt__bottle--gg' : ''}`} style={shots.r ? { '--ar': shots.r.ar } as React.CSSProperties : undefined}>
+          <div className="pp-bt__drop">{shots.r ? <img className="pp-bt__photo" src={shots.r.src} alt="" /> : <Bottle tint="#efe6f0" deep="#c9b3cc" />}</div>
           <div className="pp-bt__mist">{mistR.map((m, i) => <i key={i} style={{ '--a': `${m.a}deg`, '--l': `${m.l}px`, '--z': `${m.z}px`, '--d': `${m.d}s` } as React.CSSProperties} />)}</div>
         </div>
       </div>
