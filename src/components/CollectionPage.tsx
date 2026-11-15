@@ -13,7 +13,8 @@ import {
   RefreshCw,
   Tag,
   ChevronDown,
-  Plus
+  Plus,
+  Minus
 } from 'lucide-react';
 import { FragranceProduct, Collection, FilterState, DecantSize } from '../types';
 import { fetchCollectionBySlug, fetchPublicProducts } from '../services/api';
@@ -196,40 +197,52 @@ const CollectionProductCard: React.FC<{
   );
 };
 
-// 1.5ml tester page: minimal premium card with one-tap add
+// 1.5ml tester page: minimal premium card with one-tap add + in-bag stepper
 const TesterCard: React.FC<{
   product: FragranceProduct;
+  inBag: number;
   onNavigateToProduct: (product: FragranceProduct) => void;
   onAddToCart: (product: FragranceProduct, size: string, price: number, qty: number) => void;
-}> = ({ product, onNavigateToProduct, onAddToCart }) => {
+  onUpdateQty?: (productId: string, size: string, delta: number) => void;
+}> = ({ product, inBag, onNavigateToProduct, onAddToCart, onUpdateQty }) => {
   const tester = product.sizes?.find((s) => parseFloat(String(s.size).replace(/[^\d.]/g, '')) === 1.5);
-  const [added, setAdded] = useState(false);
+  const [bump, setBump] = useState(0);
   if (!tester) return null;
+  const add = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onAddToCart(product, tester.size, tester.price, 1);
+    setBump((b) => b + 1);
+  };
   return (
-    <div className={`pp-tcard ${tester.soldOut ? 'is-out' : ''}`} onClick={() => onNavigateToProduct(product)}>
+    <div className={`pp-tcard ${tester.soldOut ? 'is-out' : ''} ${inBag > 0 ? 'is-in' : ''}`} onClick={() => onNavigateToProduct(product)}>
       <div className="pp-tcard__stage">
         <img src={thumb(product.image, 480)} alt={product.name} loading="lazy" />
+        {inBag > 0 && (
+          <span className="pp-tcard__inbag" key={`b${bump}`}>
+            <Check className="w-3 h-3" /> In bag
+          </span>
+        )}
         {tester.soldOut ? (
           <span className="pp-tcard__out">Sold out</span>
+        ) : inBag > 0 ? (
+          <div className="pp-tcard__step" onClick={(e) => e.stopPropagation()}>
+            <button type="button" aria-label="Remove one" onClick={(e) => { e.stopPropagation(); onUpdateQty?.(String(product.id), tester.size, -1); }}>
+              <Minus className="w-3.5 h-3.5" />
+            </button>
+            <span key={`q${inBag}`} className="pp-tcard__qty">{inBag}</span>
+            <button type="button" aria-label="Add one more" onClick={add}>
+              <Plus className="w-3.5 h-3.5" />
+            </button>
+          </div>
         ) : (
-          <button
-            type="button"
-            className={`pp-tcard__add ${added ? 'is-added' : ''}`}
-            aria-label={`Add 1.5ml ${product.name} to bag`}
-            onClick={(e) => {
-              e.stopPropagation();
-              onAddToCart(product, tester.size, tester.price, 1);
-              setAdded(true);
-              window.setTimeout(() => setAdded(false), 1500);
-            }}
-          >
-            {added ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+          <button type="button" className="pp-tcard__add" aria-label={`Add 1.5ml ${product.name} to bag`} onClick={add}>
+            <Plus className="w-4 h-4" />
           </button>
         )}
       </div>
       <p className="pp-tcard__brand">{product.brand}</p>
       <p className="pp-tcard__name">{product.name}</p>
-      <p className="pp-tcard__price">৳{tester.price}<span>1.5ml</span></p>
+      <p className="pp-tcard__price">৳{tester.price}<span>1.5ml</span>{inBag > 1 && <em>× {inBag} = ৳{tester.price * inBag}</em>}</p>
     </div>
   );
 };
@@ -241,6 +254,8 @@ interface CollectionPageProps {
   onNavigateToCollection: (slug: string) => void;
   onNavigateToProduct: (product: FragranceProduct) => void;
   onAddToCart: (product: FragranceProduct, size: string, price: number, qty: number) => void;
+  cart?: { product: FragranceProduct; selectedSize: string; quantity: number }[];
+  onUpdateQty?: (productId: string, size: string, delta: number) => void;
   showToast: (msg: string) => void;
 }
 
@@ -267,6 +282,8 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
   onNavigateToCollection,
   onNavigateToProduct,
   onAddToCart,
+  cart,
+  onUpdateQty,
   showToast
 }) => {
   const [collection, setCollection] = useState<Collection | null>(null);
@@ -1090,7 +1107,14 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
               <div className={isTesterView ? "pp-tgrid" : "grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6"}>
                 {filteredProducts.map((product) => (
                   isTesterView ? (
-                    <TesterCard key={product.id} product={product} onNavigateToProduct={onNavigateToProduct} onAddToCart={onAddToCart} />
+                    <TesterCard
+                      key={product.id}
+                      product={product}
+                      inBag={(cart || []).filter((c) => String(c.product.id) === String(product.id) && parseFloat(String(c.selectedSize).replace(/[^\d.]/g, '')) === 1.5).reduce((n, c) => n + c.quantity, 0)}
+                      onNavigateToProduct={onNavigateToProduct}
+                      onAddToCart={onAddToCart}
+                      onUpdateQty={onUpdateQty}
+                    />
                   ) : (
                   <CollectionProductCard
                     key={product.id}

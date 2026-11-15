@@ -257,7 +257,7 @@ function StorefrontApp() {
       );
       if (existingIdx > -1) {
         const next = [...prev];
-        next[existingIdx].quantity += qty;
+        next[existingIdx] = { ...next[existingIdx], quantity: next[existingIdx].quantity + qty };
         return next;
       } else {
         return [...prev, { product, selectedSize: size, price, quantity: qty }];
@@ -421,6 +421,8 @@ function StorefrontApp() {
             onNavigateToProduct={navigateToProduct}
             onAddToCart={(p, size, price, qty) => handleAddToCart(p, size, price, qty)}
             showToast={showToast}
+            cart={cart}
+            onUpdateQty={handleUpdateQty}
           />
         ) : route.path === 'product' ? (
           /* Dedicated Product Detail Page */
