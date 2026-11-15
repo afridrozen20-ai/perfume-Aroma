@@ -4,7 +4,7 @@ import { Sun, PackageCheck, AlertTriangle, Truck, Check, Copy, Printer, RefreshC
 type Item = { product_id: string; product_name: string; brand_name: string; selected_size: string; quantity: number };
 type Order = {
   id: number; order_number: string; customer_name: string; customer_phone: string; shipping_address: string;
-  city_zone: string; total_amount: number | string; payment_status: string; payment_method?: string; order_status: string; created_at: string; items: Item[];
+  city_zone: string; total_amount: number | string; payment_status: string; payment_method?: string; age_min?: number | string; order_status: string; created_at: string; items: Item[];
 };
 type PackRow = { product_id: string; brand: string; name: string; total_ml: number; remaining_ml: number | null; short: boolean; lines: { size: string; ml: number; qty: number }[] };
 type Low = { product_id: string; brand: string; name: string; remaining_ml: number; threshold_ml: number; bottle_size_ml: number; status: 'out' | 'low' };
@@ -15,10 +15,15 @@ export type TodayData = {
 
 const ZONE: Record<string, string> = { narsingdi: 'Narsingdi', inside_dhaka: 'Dhaka', outside_dhaka: 'Other districts' };
 const money = (n: number | string) => `৳${Math.round(Number(n) || 0).toLocaleString('en-IN')}`;
-const ago = (iso: string) => {
-  const t = new Date(iso.replace(' ', 'T')).getTime();
-  if (!t) return '';
-  const m = Math.max(0, Math.round((Date.now() - t) / 60000));
+// Minutes come from the database clock (age_min), so phone/server time zones never disagree
+const ago = (o: { created_at: string; age_min?: number | string }) => {
+  let m: number;
+  if (o.age_min !== undefined && o.age_min !== null && o.age_min !== '') m = Math.max(0, Number(o.age_min));
+  else {
+    const t = new Date(o.created_at.replace(' ', 'T')).getTime();
+    if (!t) return '';
+    m = Math.max(0, Math.round((Date.now() - t) / 60000));
+  }
   if (m < 60) return `${m}m ago`;
   const h = Math.round(m / 60);
   return h < 24 ? `${h}h ago` : `${Math.round(h / 24)}d ago`;
@@ -121,7 +126,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
             <div className="pp-today__orow">
               <div className="min-w-0">
                 <p className="pp-today__oname">{o.customer_name} <em>{o.order_number}</em></p>
-                <p className="pp-today__osub">{o.customer_phone} · {ZONE[o.city_zone] || o.city_zone} · {ago(o.created_at)}</p>
+                <p className="pp-today__osub">{o.customer_phone} · {ZONE[o.city_zone] || o.city_zone} · {ago(o)}</p>
               </div>
               <p className="pp-today__total">{money(o.total_amount)}</p>
             </div>

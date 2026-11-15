@@ -7,9 +7,9 @@ const t = (minAgo: number) => new Date(now - minAgo * 60000).toISOString().repla
 export const TODAY_DEMO: TodayData = {
   counts: { new: 2, to_pack: 3, shipped_today: 1, unpaid_advance: 1, low_stock: 3 },
   new_orders: [
-    { id: 901, order_number: 'PP-4821', customer_name: 'Sadia Rahman', customer_phone: '01711-000000', shipping_address: 'Mirpur 10, Dhaka', city_zone: 'inside_dhaka', total_amount: 1190, payment_status: 'unpaid', payment_method: 'cod', order_status: 'pending', created_at: t(25),
+    { id: 901, order_number: 'PP-4821', customer_name: 'Sadia Rahman', customer_phone: '01711-000000', shipping_address: 'Mirpur 10, Dhaka', city_zone: 'inside_dhaka', total_amount: 1190, payment_status: 'unpaid', payment_method: 'cod', order_status: 'pending', created_at: t(25), age_min: 25,
       items: [{ product_id: 'a', product_name: 'Khamrah', brand_name: 'Lattafa', selected_size: '5ml', quantity: 1 }, { product_id: 'b', product_name: 'Yara', brand_name: 'Lattafa', selected_size: '3ml', quantity: 1 }] },
-    { id: 902, order_number: 'PP-4822', customer_name: 'Tanvir Hasan', customer_phone: '01822-000000', shipping_address: 'Sadar, Narsingdi', city_zone: 'narsingdi', total_amount: 670, payment_status: 'paid', payment_method: 'cod', order_status: 'pending', created_at: t(70),
+    { id: 902, order_number: 'PP-4822', customer_name: 'Tanvir Hasan', customer_phone: '01822-000000', shipping_address: 'Sadar, Narsingdi', city_zone: 'narsingdi', total_amount: 670, payment_status: 'paid', payment_method: 'cod', order_status: 'pending', created_at: t(70), age_min: 70,
       items: [{ product_id: 'c', product_name: 'Hawas Fire', brand_name: 'Rasasi', selected_size: '10ml', quantity: 1 }] },
   ],
   to_pack: [
