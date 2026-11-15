@@ -196,6 +196,44 @@ const CollectionProductCard: React.FC<{
   );
 };
 
+// 1.5ml tester page: minimal premium card with one-tap add
+const TesterCard: React.FC<{
+  product: FragranceProduct;
+  onNavigateToProduct: (product: FragranceProduct) => void;
+  onAddToCart: (product: FragranceProduct, size: string, price: number, qty: number) => void;
+}> = ({ product, onNavigateToProduct, onAddToCart }) => {
+  const tester = product.sizes?.find((s) => parseFloat(String(s.size).replace(/[^\d.]/g, '')) === 1.5);
+  const [added, setAdded] = useState(false);
+  if (!tester) return null;
+  return (
+    <div className={`pp-tcard ${tester.soldOut ? 'is-out' : ''}`} onClick={() => onNavigateToProduct(product)}>
+      <div className="pp-tcard__stage">
+        <img src={thumb(product.image, 480)} alt={product.name} loading="lazy" />
+        {tester.soldOut ? (
+          <span className="pp-tcard__out">Sold out</span>
+        ) : (
+          <button
+            type="button"
+            className={`pp-tcard__add ${added ? 'is-added' : ''}`}
+            aria-label={`Add 1.5ml ${product.name} to bag`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart(product, tester.size, tester.price, 1);
+              setAdded(true);
+              window.setTimeout(() => setAdded(false), 1500);
+            }}
+          >
+            {added ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+          </button>
+        )}
+      </div>
+      <p className="pp-tcard__brand">{product.brand}</p>
+      <p className="pp-tcard__name">{product.name}</p>
+      <p className="pp-tcard__price">৳{tester.price}<span>1.5ml</span></p>
+    </div>
+  );
+};
+
 interface CollectionPageProps {
   collectionSlug: string;
   allProducts: FragranceProduct[];
@@ -379,6 +417,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
 
   const SEASON_OPTIONS = ['Spring', 'Summer', 'Autumn', 'Winter', 'All Seasons'];
   // Opened from a season card on the homepage → show e.g. "Summer Perfumes"
+  const isTesterView = filters.size.length === 1 && filters.size[0] === '1.5ml';
   const seasonTitle =
     collectionSlug === 'all' && filters.size.length === 1 && filters.size[0] === '1.5ml' && !filters.season.length
       ? '1.5ml Testers'
@@ -751,6 +790,13 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
       </div>
 
       {/* 2. Collection Header Banner & Story */}
+      {isTesterView ? (
+        <div className="pp-thead">
+          <span className="pp-thead__eyebrow">1.5ml testers · {filteredProducts.length} scents</span>
+          <h1 className="pp-thead__title">Wear it <em>first</em></h1>
+          <p className="pp-thead__sub">Try any scent for a day or two before you buy the bottle.</p>
+        </div>
+      ) : (
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div
           className="pp-noborder relative border p-6 sm:p-10 shadow-xs overflow-hidden rounded-xs"
@@ -796,6 +842,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
           </div>
         </div>
       </div>
+      )}
 
       {/* 3. Main Catalog Two-Column Layout (Filters + Product Grid) */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -851,7 +898,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
         </div>
 
         {/* Active Filter Chips Bar */}
-        {activeFilterCount > 0 && (
+        {activeFilterCount > 0 && !isTesterView && (
           <div
             className="pp-noborder border p-3 mb-6 flex flex-wrap items-center gap-2 text-xs rounded-xs"
             style={{
@@ -1040,15 +1087,18 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+              <div className={isTesterView ? "pp-tgrid" : "grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6"}>
                 {filteredProducts.map((product) => (
+                  isTesterView ? (
+                    <TesterCard key={product.id} product={product} onNavigateToProduct={onNavigateToProduct} onAddToCart={onAddToCart} />
+                  ) : (
                   <CollectionProductCard
                     key={product.id}
                     product={product}
                     onNavigateToProduct={onNavigateToProduct}
                     onAddToCart={onAddToCart}
-                    testerMode={filters.size.length === 1 && filters.size[0] === '1.5ml'}
                   />
+                  )
                 ))}
               </div>
             )}

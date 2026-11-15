@@ -712,3 +712,27 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-tester-add:disabled{opacity:.45;cursor:not-allowed}
 @keyframes ppTesterPop{0%{transform:scale(.92)}60%{transform:scale(1.04)}100%{transform:none}}
 .pp-tester-badge{position:absolute;top:8px;right:8px;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:999px;color:#2b2d31;background:rgba(255,255,255,.85);box-shadow:inset 0 0 0 .5px rgba(120,124,135,.4)}
+
+/* 1.5ml testers — editorial header + minimal cards */
+.pp-thead{max-width:720px;margin:0 auto;padding:28px 22px 18px;text-align:center}
+.pp-thead__eyebrow{font-size:10px;letter-spacing:.3em;text-transform:uppercase;font-weight:600;color:#8a8a86}
+.pp-thead__title{font-family:'Cormorant Garamond',Georgia,serif!important;font-weight:500;font-size:44px;line-height:1;margin:10px 0 8px;color:#141414;letter-spacing:-.015em}
+.pp-thead__title em{font-style:italic;background:linear-gradient(100deg,#141414 0%,#141414 32%,#9a9aa2 46%,#f1f1f4 50%,#9a9aa2 54%,#141414 68%,#141414 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:ppSilverSweep 7s 1s ease-in-out infinite;padding-right:4px}
+.pp-thead__sub{font-size:13px;color:#6b6a66;margin:0}
+.pp-tgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px;row-gap:28px}
+@media (min-width:640px){.pp-tgrid{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:20px;row-gap:36px}}
+@media (min-width:1024px){.pp-tgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.pp-tcard{cursor:pointer;text-align:left}
+.pp-tcard__stage{position:relative;aspect-ratio:4/5;border-radius:22px;background:radial-gradient(120% 90% at 50% 35%,#fbfbfa 0%,#f1f0ed 70%,#ebe9e5 100%);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.05)}
+.pp-tcard__stage img{max-height:72%;max-width:72%;object-fit:contain;filter:drop-shadow(0 14px 16px rgba(0,0,0,.16));transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.pp-tcard:hover .pp-tcard__stage img{transform:translateY(-4px) scale(1.03)}
+.pp-tcard__add{position:absolute;right:10px;bottom:10px;width:38px;height:38px;border-radius:50%;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#141414;background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(14px) saturate(180%);backdrop-filter:blur(14px) saturate(180%);box-shadow:inset 0 1px 0 #fff,0 0 0 .5px rgba(0,0,0,.08),0 8px 18px -10px rgba(0,0,0,.35);transition:transform .3s cubic-bezier(.3,1.6,.5,1),background .3s,color .3s}
+.pp-tcard__add:active{transform:scale(.88)}
+.pp-tcard__add.is-added{background:#141414;color:#fff;animation:ppTesterPop .45s cubic-bezier(.3,1.6,.5,1)}
+.pp-tcard__out{position:absolute;left:10px;bottom:10px;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#6b6a66;background:rgba(255,255,255,.8);padding:5px 10px;border-radius:999px}
+.pp-tcard.is-out .pp-tcard__stage img{opacity:.45;filter:grayscale(1)}
+.pp-tcard__brand{margin:10px 2px 0;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#8a8a86;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-tcard__name{margin:3px 2px 0;font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:600;line-height:1.15;color:#141414;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-tcard__price{margin:4px 2px 0;font-size:13px;font-weight:600;color:#141414;display:flex;align-items:baseline;gap:6px}
+.pp-tcard__price span{font-size:11px;font-weight:500;color:#9a9a96}
+.pp-lite .pp-tcard__add{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,.95)}
