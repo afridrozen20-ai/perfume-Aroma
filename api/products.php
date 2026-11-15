@@ -29,6 +29,7 @@ function ppApplySoldOut(array $sizes, ?float $left): array {
 sendCorsAndHeaders();
 
 $db = Database::getConnection();
+try { repairEncodedText($db); } catch (Throwable $e) {}
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method !== 'GET') {

@@ -13,6 +13,7 @@ $db = Database::getConnection();
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
+    try { repairEncodedText($db); } catch (Throwable $e) {}
     $id = $_GET['id'] ?? null;
     if ($id) {
         $stmt = $db->prepare("SELECT * FROM products WHERE id = ?");

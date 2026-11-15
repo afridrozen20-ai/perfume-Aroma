@@ -136,3 +136,28 @@ function slugify($text) {
     $text = strtolower($text);
     return empty($text) ? 'n-a' : $text;
 }
+
+/**
+ * Cleans text that older code saved over-escaped ("DOLCE &amp;amp;amp; GABBANA", "D&amp;#039;or").
+ * Safe to run any time: only rows that still contain an entity are touched.
+ */
+function repairEncodedText(PDO $db): int {
+    $fixed = 0;
+    $targets = [
+        'products' => ['brand', 'name', 'short_description', 'description'],
+        'order_items' => ['product_name', 'brand_name'],
+    ];
+    foreach ($targets as $table => $cols) {
+        foreach ($cols as $col) {
+            try {
+                $rows = $db->query("SELECT id, $col AS v FROM $table WHERE $col LIKE '%&amp;%' OR $col LIKE '%&#%' OR $col LIKE '%&quot;%'")->fetchAll(PDO::FETCH_ASSOC);
+                $up = $db->prepare("UPDATE $table SET $col = ? WHERE id = ?");
+                foreach ($rows as $r) {
+                    $clean = sanitizeString($r['v']);
+                    if ($clean !== $r['v']) { $up->execute([$clean, $r['id']]); $fixed++; }
+                }
+            } catch (Throwable $e) { /* table or column not present */ }
+        }
+    }
+    return $fixed;
+}
