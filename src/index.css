@@ -1215,10 +1215,10 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-lite .pp-co__thumb::before{display:none}
 
 /* ── Opening veil: "perfume mist" ───────────────────────────── */
-@property --pp-r{syntax:'<percentage>';inherits:false;initial-value:0%}
+@property --pp-r{syntax:'<percentage>';inherits:false;initial-value:-30%}
 .pp-veil{position:fixed;inset:0;z-index:200;cursor:pointer;overflow:hidden}
 .pp-veil.is-open{pointer-events:none}
-.pp-veil__sheet{position:absolute;inset:0;
+.pp-veil__sheet{position:absolute;inset:0;--pp-r:-30%;
   background:
     radial-gradient(120% 80% at 20% 10%,#ffffff 0%,rgba(255,255,255,0) 55%),
     radial-gradient(90% 70% at 85% 90%,rgba(233,216,182,.75) 0%,rgba(233,216,182,0) 60%),
