@@ -13,6 +13,7 @@
 require_once __DIR__ . '/../helpers.php';
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../inventory_helpers.php';
+require_once __DIR__ . '/../order_payment_helpers.php';
 
 sendCorsAndHeaders();
 requireAdminAuth();
@@ -21,11 +22,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') jsonError('Method not allow
 
 $db = Database::getConnection();
 $isSqlite = $db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite';
+ensureAdvanceTypeColumn($db);
+$hasAdv = true;
+try { $db->query("SELECT advance_type FROM orders LIMIT 1"); } catch (Throwable $e) { $hasAdv = false; }
 $todayStart = $isSqlite ? "date('now','localtime')" : 'CURDATE()';
 
 try {
     $open = $db->query("SELECT id, order_number, customer_name, customer_phone, shipping_address, city_zone, total_amount, delivery_fee,
-                               payment_method, payment_status, order_status, created_at,
+                               payment_method, payment_status, " . ($hasAdv ? 'advance_type' : 'NULL AS advance_type') . ", order_status, created_at,
                                " . ($isSqlite ? "CAST((julianday('now','localtime') - julianday(created_at)) * 1440 AS INTEGER)" : "TIMESTAMPDIFF(MINUTE, created_at, NOW())") . " AS age_min
                         FROM orders
                         WHERE order_status IN ('pending','confirmed','processing')
@@ -45,6 +49,8 @@ try {
     $packing = [];
     foreach ($open as $o) {
         $o['items'] = $itemsBy[$o['id']] ?? [];
+        $o['cod_amount'] = orderCodAmount($o);
+        $o['ready'] = orderReadyForCourier($o);
         if ($o['order_status'] === 'pending') {
             $newOrders[] = $o;
         } else {
@@ -109,7 +115,7 @@ try {
     try {
         $shippedToday = (int)$db->query("SELECT COUNT(DISTINCT order_id) FROM order_status_history WHERE new_status = 'shipped' AND DATE(created_at) = $todayStart")->fetchColumn();
     } catch (Throwable $e) { /* history table optional */ }
-    $unpaid = count(array_filter($newOrders, fn($o) => ($o['payment_status'] ?? 'unpaid') !== 'paid'));
+    $unpaid = count(array_filter($newOrders, fn($o) => !$o['ready']));
 
     jsonResponse([
         'counts' => [
