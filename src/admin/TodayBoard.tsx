@@ -5,7 +5,8 @@ type Item = { product_id: string; product_name: string; brand_name: string; sele
 type Order = {
   id: number; order_number: string; customer_name: string; customer_phone: string; shipping_address: string;
   city_zone: string; total_amount: number | string; payment_status: string; payment_method?: string; age_min?: number | string;
-  delivery_fee?: number | string; invoice_key?: string; advance_type?: 'delivery' | 'full' | 'cod' | null; cod_amount?: number; ready?: boolean; order_status: string; created_at: string; items: Item[];
+  delivery_fee?: number | string; invoice_key?: string;
+  history?: { orders: number; delivered: number; cancelled: number; returned: number; open: number }; blocked?: boolean; block_reason?: string | null; advance_type?: 'delivery' | 'full' | 'cod' | null; cod_amount?: number; ready?: boolean; order_status: string; created_at: string; items: Item[];
 };
 type PackRow = { product_id: string; brand: string; name: string; total_ml: number; remaining_ml: number | null; short: boolean; lines: { size: string; ml: number; qty: number }[] };
 type Low = { product_id: string; brand: string; name: string; remaining_ml: number; threshold_ml: number; bottle_size_ml: number; status: 'out' | 'low' };
@@ -154,6 +155,12 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
     if (o.payment_status !== 'paid') return t;
     return o.payment_method === 'offline' ? 0 : Math.max(0, t - 200);
   };
+  const markBlocked = (o: Order, blocked: boolean) =>
+    setData((d) => d && {
+      ...d,
+      new_orders: d.new_orders.map((x) => (x.customer_phone === o.customer_phone ? { ...x, blocked } : x)),
+      to_pack: d.to_pack.map((x) => (x.customer_phone === o.customer_phone ? { ...x, blocked } : x)),
+    });
   const isReady = (o: Order) => o.advance_type === 'cod' || o.payment_status === 'paid';
 
   // WhatsApp: open the customer's chat with their order + a link to the PDF invoice
@@ -267,6 +274,8 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
                 {o.items.map((i, k) => <span key={k}>{i.product_name} <b>{i.selected_size}{i.quantity > 1 ? ` ×${i.quantity}` : ''}</b></span>)}
               </div>
 
+              <CustomerRisk o={o} csrfToken={csrfToken} demo={!!demo} onChanged={(b) => markBlocked(o, b)} />
+
               <ol className="pp-steps" aria-label="Order progress">
                 <li className={ready ? 'is-done' : 'is-now'}><i>{ready ? <Check className="w-3 h-3" /> : '1'}</i>Payment</li>
                 <li className={ready ? 'is-now' : ''}><i>2</i>Confirm</li>
@@ -363,6 +372,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
                 </div>
                 <div className="pp-orow__right"><WaButton o={o} /><p className="pp-today__total">{money(o.total_amount)}<span>COD {money(cod(o))}</span></p></div>
               </div>
+              <CustomerRisk o={o} csrfToken={csrfToken} demo={!!demo} onChanged={(b) => markBlocked(o, b)} />
               <div className="pp-today__actions">
                 {isReady(o) ? (
                   <button className="pp-today__btn" disabled={!sfReady || sending} onClick={() => sendSteadfast([o.id])}>
@@ -432,5 +442,66 @@ function moveDemo(d: TodayData, o: Order, patch: Record<string, string>): TodayD
   }
   return next;
 }
+
+/** Customer track record (our own orders) + Steadfast check + block. */
+const CustomerRisk: React.FC<{ o: Order; csrfToken: string; demo?: boolean; onChanged: (blocked: boolean) => void }> = ({ o, csrfToken, demo, onChanged }) => {
+  const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const h = o.history || { orders: 0, delivered: 0, cancelled: 0, returned: 0, open: 0 };
+  const finished = h.delivered + h.cancelled + h.returned;
+  const pct = finished ? Math.round((h.delivered / finished) * 100) : null;
+  const tone = o.blocked ? 'red' : pct === null ? 'new' : pct >= 80 ? 'good' : pct >= 50 ? 'warn' : 'red';
+
+  const post = async (action: 'block' | 'unblock') => {
+    if (demo) { onChanged(action === 'block'); setOpen(false); return; }
+    setBusy(true);
+    try {
+      const r = await fetch('/api/admin/blocklist.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+        body: JSON.stringify({ action, phone: o.customer_phone, name: o.customer_name, reason }),
+      });
+      const j = await r.json();
+      if (j.success) { onChanged(action === 'block'); setOpen(false); setReason(''); }
+    } finally { setBusy(false); }
+  };
+
+  const checkSteadfast = async () => {
+    try { await navigator.clipboard.writeText(String(o.customer_phone).replace(/\D/g, '').slice(-11)); setCopied(true); window.setTimeout(() => setCopied(false), 2500); } catch { /* ignore */ }
+    window.open('https://steadfast.com.bd/', '_blank', 'noopener');
+  };
+
+  return (
+    <div className="pp-risk">
+      <div className={`pp-risk__badge is-${tone}`}>
+        {o.blocked ? (
+          <><b>Blocked</b><span>{o.block_reason || 'Fake or repeat-return customer'}</span></>
+        ) : h.orders === 0 ? (
+          <><b>First order</b><span>No history with you yet</span></>
+        ) : (
+          <>
+            <b>{pct === null ? `${h.orders} earlier` : `${pct}% delivered`}</b>
+            <span>{h.delivered} delivered{h.returned ? ` · ${h.returned} returned` : ''}{h.cancelled ? ` · ${h.cancelled} cancelled` : ''}{h.open ? ` · ${h.open} open` : ''}</span>
+          </>
+        )}
+      </div>
+      <div className="pp-risk__acts">
+        <button onClick={checkSteadfast}>{copied ? 'Number copied ✓' : 'Check on Steadfast'}</button>
+        {o.blocked
+          ? <button className="is-unblock" disabled={busy} onClick={() => post('unblock')}>Unblock</button>
+          : <button className="is-block" onClick={() => setOpen((v) => !v)}>{open ? 'Cancel' : 'Block'}</button>}
+      </div>
+      {open && !o.blocked && (
+        <div className="pp-risk__form">
+          <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (e.g. returned 2 parcels)" maxLength={200} />
+          <button disabled={busy} onClick={() => post('block')}>{busy ? 'Blocking…' : 'Block this number'}</button>
+          <p>They won’t be able to order on the website. You can unblock anytime.</p>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default TodayBoard;

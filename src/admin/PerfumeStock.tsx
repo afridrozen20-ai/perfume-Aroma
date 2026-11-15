@@ -355,6 +355,16 @@ export const OfflineOrder: React.FC<{
 }> = ({ perfumes, headers, onClose, onDone }) => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [risk, setRisk] = useState<{ blocked: boolean; reason?: string | null; history: { orders: number; delivered: number; cancelled: number; returned: number } } | null>(null);
+  useEffect(() => {
+    const d = phone.replace(/\D/g, '');
+    if (d.length < 11) { setRisk(null); return; }
+    const t = window.setTimeout(() => {
+      fetch(`/api/admin/blocklist.php?phone=${encodeURIComponent(d)}`, { headers })
+        .then((r) => r.json()).then((j) => setRisk(j.success ? j.data : null)).catch(() => setRisk(null));
+    }, 400);
+    return () => window.clearTimeout(t);
+  }, [phone]);
   const [address, setAddress] = useState('');
   const [channel, setChannel] = useState('messenger');
   const [paid, setPaid] = useState(false);
@@ -435,7 +445,18 @@ export const OfflineOrder: React.FC<{
 
         <div className="grid grid-cols-2 gap-4 mt-5">
           <label><span className={lbl}>Customer</span><input className={field} value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" /></label>
-          <label><span className={lbl}>Phone</span><input className={field} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="01XXXXXXXXX" inputMode="tel" /></label>
+          <div>
+            <label><span className={lbl}>Phone</span><input className={field} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="01XXXXXXXXX" inputMode="tel" /></label>
+            {risk && (
+              <p className={`mt-1.5 text-[11.5px] font-semibold px-2.5 py-1.5 rounded-lg ${risk.blocked ? 'bg-red-50 text-red-700' : risk.history.returned + risk.history.cancelled > 0 ? 'bg-amber-50 text-amber-800' : risk.history.orders ? 'bg-emerald-50 text-emerald-800' : 'bg-neutral-100 text-neutral-600'}`}>
+                {risk.blocked
+                  ? `Blocked${risk.reason ? ` · ${risk.reason}` : ''}`
+                  : risk.history.orders
+                    ? `${risk.history.orders} earlier · ${risk.history.delivered} delivered${risk.history.returned ? ` · ${risk.history.returned} returned` : ''}${risk.history.cancelled ? ` · ${risk.history.cancelled} cancelled` : ''}`
+                    : 'New customer'}
+              </p>
+            )}
+          </div>
         </div>
         <label className="block mt-4"><span className={lbl}>Address (optional)</span><input className={field} value={address} onChange={(e) => setAddress(e.target.value)} placeholder="For delivery" /></label>
 

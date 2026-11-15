@@ -14,6 +14,7 @@ require_once __DIR__ . '/../helpers.php';
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../inventory_helpers.php';
 require_once __DIR__ . '/../order_payment_helpers.php';
+require_once __DIR__ . '/../customer_risk.php';
 
 sendCorsAndHeaders();
 requireAdminAuth();
@@ -44,6 +45,8 @@ try {
         foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $it) $itemsBy[$it['order_id']][] = $it;
     }
 
+    $hist = phoneHistory($db);
+    $blocked = blockedMap($db);
     $newOrders = [];
     $toPack = [];
     $packing = [];
@@ -52,6 +55,13 @@ try {
         $o['cod_amount'] = orderCodAmount($o);
         $o['ready'] = orderReadyForCourier($o);
         $o['invoice_key'] = invoiceToken($db, (string)$o['order_number']);
+        $np = normPhone((string)$o['customer_phone']);
+        $h = $hist[$np] ?? ['orders' => 1, 'delivered' => 0, 'cancelled' => 0, 'returned' => 0, 'open' => 1];
+        $h['orders'] = max(0, $h['orders'] - 1); // earlier orders only (not this one)
+        $h['open'] = max(0, $h['open'] - 1);
+        $o['history'] = $h;
+        $o['blocked'] = isset($blocked[$np]);
+        $o['block_reason'] = $blocked[$np]['reason'] ?? null;
         if ($o['order_status'] === 'pending') {
             $newOrders[] = $o;
         } else {

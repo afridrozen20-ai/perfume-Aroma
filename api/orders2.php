@@ -40,6 +40,10 @@ if ($method === 'GET') {
 
     $customerName = sanitizeString($input['customer_name'] ?? '');
     $customerPhone = sanitizeString($input['customer_phone'] ?? '');
+    require_once __DIR__ . '/customer_risk.php';
+    if ($customerPhone !== '' && isPhoneBlocked($db, $customerPhone)) {
+        jsonError('We can’t take this order online. Please message us on Facebook or WhatsApp to order.', 403);
+    }
     $customerEmail = sanitizeString($input['customer_email'] ?? '');
     $shippingAddress = sanitizeString($input['shipping_address'] ?? '');
     $cityZone = sanitizeString($input['city_zone'] ?? 'inside_dhaka'); // narsingdi | inside_dhaka | outside_dhaka

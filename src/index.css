@@ -922,3 +922,20 @@ html,body{max-width:100%;overflow-x:hidden}
   .pp-inv__paper{box-shadow:none;max-width:none;border-radius:0;padding:12mm}
   .pp-inv__totals .is-due{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+/* Customer risk */
+.pp-risk{margin-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.pp-risk__badge{display:flex;flex-direction:column;padding:7px 11px;border-radius:12px;line-height:1.25;min-width:0;flex:1 1 170px}
+.pp-risk__badge b{font-size:12.5px}
+.pp-risk__badge span{font-size:11px;opacity:.85}
+.pp-risk__badge.is-good{background:#e8f4ec;color:#1e6b3a}
+.pp-risk__badge.is-warn{background:#fdf3e2;color:#8a5208}
+.pp-risk__badge.is-red{background:#fdecea;color:#a1231b}
+.pp-risk__badge.is-new{background:#f1f0ed;color:#5f5e5a}
+.pp-risk__acts{display:flex;gap:6px}
+.pp-risk__acts button{height:32px;padding:0 12px;border-radius:999px;border:0;background:#f1f0ed;color:#141414;font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+.pp-risk__acts .is-block{background:#fdecea;color:#a1231b}
+.pp-risk__acts .is-unblock{background:#fff;color:#a1231b;box-shadow:inset 0 0 0 1px #f2c4bf}
+.pp-risk__form{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;padding:10px;border-radius:12px;background:#fdf6f5}
+.pp-risk__form input{flex:1 1 180px;height:36px;padding:0 10px;border:1px solid #f0d3cf;border-radius:10px;font-size:12.5px;background:#fff;outline:none}
+.pp-risk__form button{height:36px;padding:0 14px;border:0;border-radius:10px;background:#a1231b;color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+.pp-risk__form p{flex-basis:100%;margin:0;font-size:11px;color:#8a5a55}
