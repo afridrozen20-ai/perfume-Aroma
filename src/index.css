@@ -800,3 +800,65 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-today__muted{color:#8a8a86;font-size:13px}
 .pp-today__err{color:#b3261e;font-size:13px}
 @media print{body *{visibility:hidden}.pp-today__card:nth-of-type(2),.pp-today__card:nth-of-type(2) *{visibility:visible}.pp-today__card:nth-of-type(2){position:absolute;left:0;top:0;width:100%;box-shadow:none}}
+/* Today board v2 — one step at a time */
+.pp-today__lead{margin:6px 0 0;font-size:13.5px;color:#5f5e5a}
+.pp-today__lead b{color:#141414}
+.pp-flow{display:flex;align-items:center;gap:4px;padding:5px;border-radius:999px;background:rgba(255,255,255,.75);-webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:blur(16px) saturate(180%);box-shadow:inset 0 1px 0 #fff,0 0 0 .5px rgba(0,0,0,.08),0 10px 24px -16px rgba(0,0,0,.35);position:sticky;top:8px;z-index:5}
+.pp-flow__step{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:40px;border-radius:999px;border:0;background:transparent;cursor:pointer;color:#5f5e5a;transition:background .3s,color .3s,transform .2s}
+.pp-flow__step:active{transform:scale(.96)}
+.pp-flow__n{min-width:22px;height:22px;padding:0 6px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:#f1f0ed;color:#141414}
+.pp-flow__step.is-amber .pp-flow__n{background:#fbecd3;color:#8a5208}
+.pp-flow__step.is-red .pp-flow__n{background:#f9dedb;color:#a1231b}
+.pp-flow__l{font-size:12.5px;font-weight:600}
+.pp-flow__step.is-on{background:#141414;color:#fff}
+.pp-flow__step.is-on .pp-flow__n{background:#fff;color:#141414}
+.pp-flow__arrow{color:#c4c3bf;font-size:16px;line-height:1}
+@media (max-width:420px){.pp-flow__arrow{display:none}.pp-flow__l{font-size:12px}}
+.pp-today__panel{display:flex;flex-direction:column;gap:12px;animation:ppPanelIn .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes ppPanelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pp-today__guide{margin:2px 4px 0;font-size:13px;color:#5f5e5a}
+.pp-today__guide b{color:#141414}
+.pp-ocard{background:#fff;border-radius:22px;padding:16px;box-shadow:0 0 0 .5px rgba(0,0,0,.06),0 14px 30px -24px rgba(0,0,0,.35)}
+.pp-ocard__top{display:flex;justify-content:space-between;gap:12px}
+.pp-ocard__name{margin:0;font-size:16px;font-weight:700}
+.pp-ocard__meta{margin:3px 0 0;font-size:12px;color:#6b6a66;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pp-ocard__amt{margin:0;font-size:17px;font-weight:700;white-space:nowrap}
+.pp-ocard__cod{text-align:right;white-space:nowrap}
+.pp-ocard__cod span{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8a8a86;font-weight:600}
+.pp-ocard__cod b{font-size:18px}
+.pp-ocard__chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.pp-ocard__chips span{font-size:12px;padding:5px 10px;border-radius:999px;background:#f6f5f2;color:#3a3a38}
+.pp-ocard__chips b{font-weight:700;color:#141414;margin-left:2px}
+.pp-ocard__next{display:flex;align-items:center;gap:8px;margin-top:12px;padding:9px 12px;border-radius:12px;font-size:12.5px;font-weight:600}
+.pp-ocard__next.is-wait{background:#fdf3e2;color:#8a5208}
+.pp-ocard__next.is-ok{background:#e8f4ec;color:#1e6b3a}
+.pp-ocard__dot{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 0 4px color-mix(in srgb,currentColor 18%,transparent)}
+.pp-ocard__two{display:flex;gap:8px;margin-top:12px}
+.pp-ocard__two>*{flex:1}
+.pp-ocard__go{margin-top:12px;width:100%;height:44px;border-radius:14px;border:0;background:#141414;color:#fff;font-size:13.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:transform .2s}
+.pp-ocard__two .pp-ocard__go{margin-top:0}
+.pp-ocard__go span{transition:transform .25s}
+.pp-ocard__go:hover span{transform:translateX(3px)}
+.pp-ocard__go:active,.pp-ocard__soft:active{transform:scale(.97)}
+.pp-ocard__soft{height:44px;border-radius:14px;border:0;background:#f1f0ed;color:#141414;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:transform .2s}
+.pp-ocard__go:disabled,.pp-ocard__soft:disabled{opacity:.5}
+.pp-pack__progress{position:relative;height:30px;border-radius:999px;background:#fff;overflow:hidden;box-shadow:0 0 0 .5px rgba(0,0,0,.06)}
+.pp-pack__progress i{position:absolute;inset:0 auto 0 0;background:#e8f4ec;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.pp-pack__progress span{position:relative;display:flex;align-items:center;justify-content:center;height:100%;font-size:12px;font-weight:600;color:#1e6b3a}
+.pp-pack{display:flex;flex-direction:column;gap:8px}
+.pp-pack__row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px;border-radius:18px;border:0;background:#fff;cursor:pointer;box-shadow:0 0 0 .5px rgba(0,0,0,.06);transition:background .3s,opacity .3s}
+.pp-pack__tick{flex:0 0 26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1.5px #d6d4cf;color:#fff;transition:background .25s,box-shadow .25s}
+.pp-pack__row.is-done{background:#f7faf8}
+.pp-pack__row.is-done .pp-pack__tick{background:#1e6b3a;box-shadow:none;animation:ppTesterPop .4s cubic-bezier(.3,1.6,.5,1)}
+.pp-pack__row.is-done .pp-pack__name,.pp-pack__row.is-done .pp-pack__lines{opacity:.45;text-decoration:line-through}
+.pp-pack__body{flex:1;min-width:0;display:flex;flex-direction:column}
+.pp-pack__brand{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:#8a8a86}
+.pp-pack__name{font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;font-weight:600;line-height:1.1;color:#141414}
+.pp-pack__lines{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.pp-pack__lines em{font-style:normal;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:#f1f0ed;color:#141414}
+.pp-pack__ml{text-align:right;display:flex;flex-direction:column}
+.pp-pack__ml b{font-size:17px}
+.pp-pack__ml small{font-size:11px;color:#8a8a86}
+.pp-pack__row.is-short .pp-pack__ml small{color:#b3261e;font-weight:700}
+.pp-today__low{background:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 0 0 .5px rgba(0,0,0,.06)}
+@media print{body *{visibility:hidden}.pp-print-area,.pp-print-area *{visibility:visible}.pp-print-area{position:absolute;left:0;top:0;width:100%}}
