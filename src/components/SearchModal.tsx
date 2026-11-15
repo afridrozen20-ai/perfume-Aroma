@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, X, ArrowRight, Sparkles, TrendingUp } from 'lucide-react';
 import { FragranceProduct } from '../types';
 import { thumb } from '../lib/img';
+import { fuzzySearch } from '../lib/fuzzySearch';
 import { trackSearchSubmission, trackSearchWhenIdle } from '../services/searchTracker';
 
 interface SearchModalProps {
@@ -34,13 +35,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     if (!isOpen) return;
     const q = query.trim().toLowerCase();
     if (q.length < 2) return;
-    const count = products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.brand.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q) ||
-        p.notes?.some((n) => n.toLowerCase().includes(q))
-    ).length;
+    const count = fuzzySearch(products, q, 999).length;
     trackSearchWhenIdle(query, count);
   }, [query, isOpen, products]);
 
@@ -49,13 +44,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   const cleanQuery = query.trim();
   const filtered = cleanQuery === ''
     ? []
-    : products.filter(
-        (p) =>
-          p.name.toLowerCase().includes(cleanQuery.toLowerCase()) ||
-          p.brand.toLowerCase().includes(cleanQuery.toLowerCase()) ||
-          p.category.toLowerCase().includes(cleanQuery.toLowerCase()) ||
-          p.notes?.some((n) => n.toLowerCase().includes(cleanQuery.toLowerCase()))
-      );
+    : fuzzySearch(products, cleanQuery);
 
   const featuredShowcase = products.slice(0, 4);
 
