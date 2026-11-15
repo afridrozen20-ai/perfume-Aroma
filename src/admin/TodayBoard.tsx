@@ -40,6 +40,8 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
   const [copied, setCopied] = useState<string | null>(null);
   const [sfReady, setSfReady] = useState<boolean | null>(demo ? true : null);
   const [sending, setSending] = useState(false);
+  const [armed, setArmed] = useState<string | null>(null);
+  const isArmed = (ids: number[], c = false) => armed === `${c ? 'c' : 's'}:${ids.join(',')}`;
   type SfRes = { sent: number; failed: number; note?: string; results: { id: number; order_number: string; ok: boolean; tracking_code?: string; error?: string }[] };
   const [sfResult, setSfResult] = useState<SfRes | null>(null);
 
@@ -51,10 +53,14 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
 
   const sendSteadfast = async (ids: number[], confirmFirst = false) => {
     if (!ids.length) return;
-    const q = confirmFirst
-      ? 'Confirm this order and book the parcel on Steadfast?'
-      : ids.length === 1 ? 'Book this parcel on Steadfast?' : `Book ${ids.length} parcels on Steadfast?`;
-    if (!window.confirm(q)) return;
+    // Two-tap confirm instead of a browser pop-up (pop-ups are blocked in some phone browsers, e.g. inside Facebook)
+    const armKey = `${confirmFirst ? 'c' : 's'}:${ids.join(',')}`;
+    if (armed !== armKey) {
+      setArmed(armKey);
+      window.setTimeout(() => setArmed((a) => (a === armKey ? null : a)), 4000);
+      return;
+    }
+    setArmed(null);
     setSending(true);
     setSfResult(null);
     try {
@@ -219,8 +225,8 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
                   <button className="pp-nord__link" disabled={busy === o.id} onClick={() => setStatus(o, { order_status: 'confirmed' })}>Confirm without advance</button>
                 </>
               ) : sfReady ? (
-                <button className="pp-nord__go" disabled={sending || busy === o.id} onClick={() => sendSteadfast([o.id], true)}>
-                  <Truck className="w-4 h-4" /> {sending ? 'Sending…' : 'Confirm & send to Steadfast'}
+                <button className={`pp-nord__go ${isArmed([o.id], true) ? 'is-armed' : ''}`} disabled={sending || busy === o.id} onClick={() => sendSteadfast([o.id], true)}>
+                  <Truck className="w-4 h-4" /> {sending ? 'Sending…' : isArmed([o.id], true) ? 'Tap again to confirm & send' : 'Confirm & send to Steadfast'}
                 </button>
               ) : (
                 <button className="pp-nord__go" disabled={busy === o.id} onClick={() => setStatus(o, { order_status: 'confirmed' })}>Confirm order</button>
@@ -270,9 +276,9 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
         )}
 
         {data.to_pack.length > 0 && (
-          <button className="pp-sfall" disabled={!sfReady || eligible.length === 0 || sending} onClick={() => sendSteadfast(eligible.map((o) => o.id))}>
+          <button className={`pp-sfall ${armed && armed.startsWith('s:') && eligible.length > 1 && isArmed(eligible.map((o) => o.id)) ? 'is-armed' : ''}`} disabled={!sfReady || eligible.length === 0 || sending} onClick={() => sendSteadfast(eligible.map((o) => o.id))}>
             <Truck className="w-4 h-4" />
-            {sending ? 'Booking on Steadfast…' : eligible.length ? `Send all to Steadfast (${eligible.length})` : 'No orders with advance yet'}
+            {sending ? 'Booking on Steadfast…' : !eligible.length ? 'No orders with advance yet' : isArmed(eligible.map((o) => o.id)) ? `Tap again to send ${eligible.length}` : `Send all to Steadfast (${eligible.length})`}
           </button>
         )}
 
@@ -291,7 +297,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
               <div className="pp-today__actions">
                 {ok ? (
                   <button className="pp-today__btn" disabled={!sfReady || sending} onClick={() => sendSteadfast([o.id])}>
-                    <Truck className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />Send to Steadfast
+                    <Truck className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />{isArmed([o.id]) ? 'Tap again to send' : 'Send to Steadfast'}
                   </button>
                 ) : (
                   <button className="pp-today__pill is-wait" disabled={busy === o.id} onClick={() => setStatus(o, { payment_status: 'paid' })}>

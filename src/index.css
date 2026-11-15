@@ -859,3 +859,4 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-nord__go:disabled{opacity:.5}
 .pp-nord__link{display:block;margin:8px auto 0;border:0;background:none;color:#8a8a86;font-size:12px;text-decoration:underline;cursor:pointer}
 .pp-today .pp-sfres{margin:0}
+.pp-sfall.is-armed,.pp-nord__go.is-armed{background:#1e6b3a}
