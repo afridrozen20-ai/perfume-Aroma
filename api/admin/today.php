@@ -128,7 +128,20 @@ try {
     } catch (Throwable $e) { /* history table optional */ }
     $unpaid = count(array_filter($newOrders, fn($o) => !$o['ready']));
 
+    // Parcels with the courier (sent in the last 45 days)
+    $hasCs = ensureCourierStatusColumn($db);
+    $since = $isSqlite ? "datetime('now','-45 days')" : 'DATE_SUB(NOW(), INTERVAL 45 DAY)';
+    $onWay = $db->query("SELECT id, order_number, customer_name, customer_phone, city_zone, total_amount, delivery_fee, payment_method, payment_status, "
+        . ($hasAdv ? 'advance_type' : 'NULL AS advance_type') . ", tracking_number, " . ($hasCs ? 'courier_status' : 'NULL AS courier_status') . ", created_at
+        FROM orders WHERE order_status = 'shipped' AND created_at >= $since ORDER BY id DESC LIMIT 60")->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($onWay as &$w) { $w['cod_amount'] = orderCodAmount($w); }
+    unset($w);
+    $doneSt = $db->query("SELECT id, order_number, customer_name, order_status, tracking_number FROM orders
+        WHERE order_status IN ('delivered','cancelled') AND tracking_number IS NOT NULL AND tracking_number <> '' AND created_at >= $since ORDER BY id DESC LIMIT 20")->fetchAll(PDO::FETCH_ASSOC);
+
     jsonResponse([
+        'on_the_way' => $onWay,
+        'finished' => $doneSt,
         'counts' => [
             'new' => count($newOrders),
             'to_pack' => count($toPack),

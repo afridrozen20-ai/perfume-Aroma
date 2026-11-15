@@ -50,3 +50,8 @@ function invoiceSecret(PDO $db): string {
 function invoiceToken(PDO $db, string $orderNumber): string {
     return substr(hash_hmac('sha256', $orderNumber, invoiceSecret($db)), 0, 16);
 }
+
+function ensureCourierStatusColumn(PDO $db): bool {
+    try { $db->query("SELECT courier_status FROM orders LIMIT 1"); return true; } catch (Throwable $e) {}
+    try { $db->exec("ALTER TABLE orders ADD COLUMN courier_status VARCHAR(40) NULL"); return true; } catch (Throwable $e) { return false; }
+}
