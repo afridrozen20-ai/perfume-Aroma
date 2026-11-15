@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { MessageCircle, Sun, PackageCheck, AlertTriangle, Truck, Check, Copy, Printer, RefreshCw, Wallet } from 'lucide-react';
+import { Ban, Search, MessageCircle, Sun, PackageCheck, AlertTriangle, Truck, Check, Copy, Printer, RefreshCw, Wallet } from 'lucide-react';
 
 type Item = { product_id: string; product_name: string; brand_name: string; selected_size: string; quantity: number };
 type Order = {
@@ -473,31 +473,29 @@ const CustomerRisk: React.FC<{ o: Order; csrfToken: string; demo?: boolean; onCh
     window.open('https://steadfast.com.bd/', '_blank', 'noopener');
   };
 
+  const summary = o.blocked
+    ? `Blocked${o.block_reason ? ` · ${o.block_reason}` : ''}`
+    : h.orders === 0
+      ? 'New customer'
+      : pct === null
+        ? `${h.orders} earlier`
+        : `${pct}% · ${h.delivered} delivered${h.returned ? ` · ${h.returned} returned` : ''}${h.cancelled ? ` · ${h.cancelled} cancelled` : ''}`;
+
   return (
     <div className="pp-risk">
-      <div className={`pp-risk__badge is-${tone}`}>
-        {o.blocked ? (
-          <><b>Blocked</b><span>{o.block_reason || 'Fake or repeat-return customer'}</span></>
-        ) : h.orders === 0 ? (
-          <><b>First order</b><span>No history with you yet</span></>
-        ) : (
-          <>
-            <b>{pct === null ? `${h.orders} earlier` : `${pct}% delivered`}</b>
-            <span>{h.delivered} delivered{h.returned ? ` · ${h.returned} returned` : ''}{h.cancelled ? ` · ${h.cancelled} cancelled` : ''}{h.open ? ` · ${h.open} open` : ''}</span>
-          </>
-        )}
-      </div>
-      <div className="pp-risk__acts">
-        <button onClick={checkSteadfast}>{copied ? 'Number copied ✓' : 'Check on Steadfast'}</button>
-        {o.blocked
-          ? <button className="is-unblock" disabled={busy} onClick={() => post('unblock')}>Unblock</button>
-          : <button className="is-block" onClick={() => setOpen((v) => !v)}>{open ? 'Cancel' : 'Block'}</button>}
-      </div>
+      <span className={`pp-risk__chip is-${tone}`} title={summary}><i />{summary}</span>
+      <button className="pp-risk__icon" onClick={checkSteadfast} aria-label="Check on Steadfast" title={copied ? 'Number copied' : 'Check on Steadfast'}>
+        {copied ? <Check className="w-3.5 h-3.5" /> : <Search className="w-3.5 h-3.5" />}
+      </button>
+      {o.blocked ? (
+        <button className="pp-risk__icon is-on" disabled={busy} onClick={() => post('unblock')} aria-label="Unblock" title="Unblock"><Ban className="w-3.5 h-3.5" /></button>
+      ) : (
+        <button className={`pp-risk__icon ${open ? 'is-open' : ''}`} onClick={() => setOpen((v) => !v)} aria-label="Block" title="Block"><Ban className="w-3.5 h-3.5" /></button>
+      )}
       {open && !o.blocked && (
         <div className="pp-risk__form">
-          <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (e.g. returned 2 parcels)" maxLength={200} />
-          <button disabled={busy} onClick={() => post('block')}>{busy ? 'Blocking…' : 'Block this number'}</button>
-          <p>They won’t be able to order on the website. You can unblock anytime.</p>
+          <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (optional)" maxLength={200} />
+          <button disabled={busy} onClick={() => post('block')}>{busy ? '…' : 'Block'}</button>
         </div>
       )}
     </div>
