@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Lock, Check, Minus, Plus } from 'lucide-react';
+import { ArrowLeft, Lock, Check, Minus, Plus, Gem, Droplet, PhoneCall } from 'lucide-react';
 import { CartItem } from '../types';
 import { submitOrder, getErrorMessage } from '../services/api';
 import { thumb } from '../lib/img';
@@ -74,6 +74,10 @@ export const CheckoutPage: React.FC<Props> = ({ isOpen, items, storeSettings, on
     address: address.trim().length < 6 ? 'Add house, road, area & district' : '',
   };
   const valid = !errs.name && !errs.phone && !errs.zone && !errs.address;
+  const doneContact = !errs.name && !errs.phone;
+  const doneDelivery = !errs.zone && !errs.address;
+  const step = !doneContact ? 0 : !doneDelivery ? 1 : 2;
+  const progress = ((doneContact ? 1 : 0) + (doneDelivery ? 1 : 0) + (valid ? 1 : 0)) / 3;
 
   const ZONES: { id: Zone; label: string; sub: string }[] = [
     { id: 'narsingdi', label: 'Narsingdi', sub: free ? 'Free' : money(fees.narsingdi) },
@@ -141,7 +145,7 @@ export const CheckoutPage: React.FC<Props> = ({ isOpen, items, storeSettings, on
     <div className="pp-co__items">
       {items.map((it) => (
         <div key={`${it.product.id}-${it.selectedSize}`} className="pp-co__item">
-          <div className="pp-co__thumb">
+          <div className="pp-co__thumb" style={{ '--img': `url("${thumb(it.product.image, 160)}")` } as React.CSSProperties}>
             <img src={thumb(it.product.image, 160)} alt="" loading="lazy" />
             <span>{it.quantity}</span>
           </div>
@@ -187,6 +191,15 @@ export const CheckoutPage: React.FC<Props> = ({ isOpen, items, storeSettings, on
           <form className="pp-co__form" onSubmit={place} noValidate>
             <p className="pp-co__eyebrow">{count} decant{count === 1 ? '' : 's'} · {money(subtotal)}</p>
             <h1 className="pp-co__title">Check<em>out</em></h1>
+            <p className="pp-co__tag"><i />Hand-decanted, just for you<i /></p>
+
+            <ol className="pp-co__steps" style={{ '--p': progress } as React.CSSProperties} aria-label="Checkout steps">
+              {['Contact', 'Delivery', 'Payment'].map((l, i) => (
+                <li key={l} className={i < step || (i === 2 && valid) ? 'is-done' : i === step ? 'is-now' : ''}>
+                  <span>{i < step || (i === 2 && valid) ? <Check className="w-3 h-3" /> : i + 1}</span>{l}
+                </li>
+              ))}
+            </ol>
 
             {/* Phones: order summary always open */}
             <div className="pp-co__sumcard pp-co__mobile">
@@ -197,7 +210,7 @@ export const CheckoutPage: React.FC<Props> = ({ isOpen, items, storeSettings, on
             {error && <p className="pp-co__error">{error}</p>}
 
             <section className="pp-co__sec">
-              <h2><i>01</i> Contact</h2>
+              <h2><i className={doneContact ? 'is-done' : ''}>{doneContact ? <Check className="w-3.5 h-3.5" /> : '01'}</i> Contact</h2>
               <Field label="Full name" value={name} onChange={setName} err={touched ? errs.name : ''} autoComplete="name" />
               <Field label="Phone number" value={phone} onChange={setPhone} err={touched ? errs.phone : ''} type="tel" inputMode="tel" autoComplete="tel" hint="We’ll call to confirm your order" />
               {showEmail
@@ -206,7 +219,7 @@ export const CheckoutPage: React.FC<Props> = ({ isOpen, items, storeSettings, on
             </section>
 
             <section className="pp-co__sec">
-              <h2><i>02</i> Delivery</h2>
+              <h2><i className={doneDelivery ? 'is-done' : ''}>{doneDelivery ? <Check className="w-3.5 h-3.5" /> : '02'}</i> Delivery</h2>
               <div className="pp-co__zones" data-err={touched && errs.zone ? '1' : undefined}>
                 {ZONES.map((z) => (
                   <button type="button" key={z.id} className={`pp-co__zone ${zone === z.id ? 'is-on' : ''}`} onClick={() => setZone(z.id)} aria-pressed={zone === z.id}>
@@ -222,15 +235,21 @@ export const CheckoutPage: React.FC<Props> = ({ isOpen, items, storeSettings, on
             </section>
 
             <section className="pp-co__sec">
-              <h2><i>03</i> Payment</h2>
+              <h2><i className="is-done"><Check className="w-3.5 h-3.5" /></i> Payment</h2>
               <div className="pp-co__pay">
                 <span className="pp-co__radio is-on"><Check className="w-3 h-3" /></span>
                 <div><b>Cash on delivery</b><small>Pay the rider when your parcel arrives</small></div>
               </div>
             </section>
 
+            <ul className="pp-co__trust">
+              <li><Gem className="w-4 h-4" /><b>Authentic</b><small>From original bottles</small></li>
+              <li><Droplet className="w-4 h-4" /><b>Hand-decanted</b><small>Filled fresh for you</small></li>
+              <li><PhoneCall className="w-4 h-4" /><b>We call first</b><small>Before we ship</small></li>
+            </ul>
+
             <div className="pp-co__place">
-              <button type="submit" className="pp-co__cta" disabled={submitting}>
+              <button type="submit" className={`pp-co__cta ${valid ? 'is-ready' : ''}`} disabled={submitting}>
                 {submitting ? <span className="pp-co__spin" /> : <>Place order · {money(total)}</>}
               </button>
               <p className="pp-co__fine"><Lock className="w-3 h-3" /> Hand-decanted from authentic bottles · We confirm every order by phone</p>
