@@ -41,3 +41,12 @@ export const TODAY_DEMO: TodayData = {
     { product_id: 'd', brand: 'Creed', name: 'Aventus', remaining_ml: 6, threshold_ml: 15, bottle_size_ml: 100, status: 'low' },
   ],
 };
+
+export const COURIER_DEMO = [
+  { id: 860, order_number: 'PP-4790', customer_name: 'Farzana Islam', customer_phone: '01700-000000', city_zone: 'outside_dhaka', total_amount: 1250, cod_amount: 1120, tracking_number: 'SF7DB724A65D4', courier_status: 'in_review', order_status: 'shipped', created_at: t(1500), age_min: 1500 },
+  { id: 861, order_number: 'PP-4794', customer_name: 'Arif Chowdhury', customer_phone: '01800-000000', city_zone: 'inside_dhaka', total_amount: 760, cod_amount: 660, tracking_number: 'SF91C2B07E1A0', courier_status: 'pending', order_status: 'shipped', created_at: t(2900), age_min: 2900 },
+  { id: 862, order_number: 'PP-4797', customer_name: 'Lamia Haque', customer_phone: '01900-000000', city_zone: 'narsingdi', total_amount: 450, cod_amount: 0, tracking_number: 'SF2A6F31D9C44', courier_status: 'delivered_approval_pending', order_status: 'shipped', created_at: t(4300), age_min: 4300 },
+  { id: 850, order_number: 'PP-4771', customer_name: 'Nadia Karim', customer_phone: '01600-000000', city_zone: 'inside_dhaka', total_amount: 980, cod_amount: 880, tracking_number: 'SF5C1E08B2F11', courier_status: 'delivered', order_status: 'delivered', created_at: t(7200), age_min: 7200 },
+  { id: 851, order_number: 'PP-4775', customer_name: 'Sabbir Hossain', customer_phone: '01500-000000', city_zone: 'outside_dhaka', total_amount: 640, cod_amount: 510, tracking_number: 'SF0A93D4E7C28', courier_status: 'cancelled', order_status: 'cancelled', created_at: t(8600), age_min: 8600, ml_back: false },
+  { id: 852, order_number: 'PP-4779', customer_name: 'Tasnim Ara', customer_phone: '01300-000000', city_zone: 'narsingdi', total_amount: 520, cod_amount: 440, tracking_number: 'SF8E27B61A0D3', courier_status: 'delivered', order_status: 'delivered', created_at: t(10100), age_min: 10100 },
+];

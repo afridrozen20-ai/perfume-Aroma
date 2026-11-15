@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import TodayBoard from './TodayBoard';
+import CourierPage from './CourierPage';
 import {
   BarChart3,
   Package,
@@ -18,7 +19,8 @@ import {
   Sun,
   Moon,
   FlaskConical,
-  Search
+  Search,
+  Truck
 } from 'lucide-react';
 import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { SearchInsights } from './SearchInsights';
@@ -49,7 +51,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   onLogout,
   onSwitchToStorefront
 }) => {
-  const [activeTab, setActiveTab] = useState<'today' | 'analytics' | 'search_analytics' | 'perfumes' | 'products' | 'inventory' | 'collections' | 'orders' | 'customers' | 'homepage' | 'settings' | 'media'>('today');
+  const [activeTab, setActiveTab] = useState<'today' | 'courier' | 'analytics' | 'search_analytics' | 'perfumes' | 'products' | 'inventory' | 'collections' | 'orders' | 'customers' | 'homepage' | 'settings' | 'media'>('today');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -64,6 +66,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
   const navItems = [
     { id: 'today', label: 'Today', icon: Sun, desc: 'New orders, packing & low stock' },
+    { id: 'courier', label: 'Courier', icon: Truck, desc: 'Parcel status, tracking links & cancel' },
     { id: 'analytics', label: 'Analytics & Insights', icon: BarChart3, desc: 'Sales performance & metrics' },
     { id: 'search_analytics', label: 'Search Analytics', icon: Search, desc: 'What customers look for' },
     { id: 'perfumes', label: 'Perfumes & Stock', icon: FlaskConical, desc: 'Prices, ml left & offline orders' },
@@ -364,7 +367,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             ? 'bg-[#121212] border-[#27272a] text-zinc-100'
             : 'bg-white border-[#EAEAEA] text-[#111111]'
         }`}>
-          {activeTab === 'today' && <TodayBoard csrfToken={csrfToken} />}
+          {activeTab === 'today' && <TodayBoard csrfToken={csrfToken} onOpenCourier={() => setActiveTab('courier')} />}
+          {activeTab === 'courier' && <CourierPage csrfToken={csrfToken} />}
           {activeTab === 'analytics' && <AnalyticsDashboard csrfToken={csrfToken} />}
           {activeTab === 'search_analytics' && <SearchInsights csrfToken={csrfToken} />}
           {activeTab === 'perfumes' && (

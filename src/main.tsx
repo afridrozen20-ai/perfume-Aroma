@@ -21,7 +21,18 @@ if (invMatch || invParam) {
     createRoot(document.getElementById('root')!).render(
       <div style={{ background: '#f6f5f2', minHeight: '100vh', padding: '16px' }}>
         <p style={{ textAlign: 'center', fontSize: 11, letterSpacing: '.2em', color: '#8a8a86', margin: '0 0 12px' }}>DEMO · SAMPLE ORDERS</p>
-        <TodayBoard csrfToken="" demo={d.TODAY_DEMO} />
+        <TodayBoard csrfToken="" demo={d.TODAY_DEMO} onOpenCourier={() => { window.location.hash = 'courier-demo'; window.location.reload(); }} />
+      </div>,
+    );
+  });
+} else if (window.location.hash === '#courier-demo') {
+  // Preview of the admin Courier page with sample parcels (no login, not real orders)
+  Promise.all([import('./admin/CourierPage'), import('./admin/todayDemoData')]).then(([m, d]) => {
+    const CourierPage = m.default;
+    createRoot(document.getElementById('root')!).render(
+      <div style={{ background: '#f6f5f2', minHeight: '100vh', padding: '16px' }}>
+        <p style={{ textAlign: 'center', fontSize: 11, letterSpacing: '.2em', color: '#8a8a86', margin: '0 0 12px' }}>DEMO · SAMPLE PARCELS · <a href="#today-demo" onClick={() => setTimeout(() => window.location.reload(), 0)} style={{ color: '#141414' }}>BACK TO TODAY</a></p>
+        <CourierPage csrfToken="" demo={d.COURIER_DEMO as any} />
       </div>,
     );
   });

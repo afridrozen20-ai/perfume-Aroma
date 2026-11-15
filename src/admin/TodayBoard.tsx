@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Ban, Search, MessageCircle, Sun, PackageCheck, AlertTriangle, Truck, Check, Copy, Printer, RefreshCw, Wallet } from 'lucide-react';
+import CancelBox from './CancelBox';
+import { Ban, Search, MessageCircle, Sun, PackageCheck, AlertTriangle, Truck, Check, Copy, Printer, Wallet, ChevronRight, RefreshCw } from 'lucide-react';
 
 type Item = { product_id: string; product_name: string; brand_name: string; selected_size: string; quantity: number };
 type Order = {
@@ -9,12 +10,6 @@ type Order = {
   history?: { orders: number; delivered: number; cancelled: number; returned: number; open: number }; blocked?: boolean; block_reason?: string | null; advance_type?: 'delivery' | 'full' | 'cod' | null; cod_amount?: number; ready?: boolean; order_status: string; created_at: string; items: Item[];
 };
 type Ship = { id: number; order_number: string; customer_name: string; customer_phone: string; city_zone: string; total_amount: number | string; cod_amount?: number; tracking_number: string; courier_status: string | null; created_at: string; age_min?: number | string };
-const SF_LABEL: Record<string, [string, string]> = {
-  in_review: ['In review', 'wait'], pending: ['On the way', 'go'], hold: ['On hold', 'warn'],
-  delivered_approval_pending: ['Delivered · confirming', 'ok'], partial_delivered_approval_pending: ['Part delivered · confirming', 'warn'],
-  cancelled_approval_pending: ['Returning', 'bad'], unknown_approval_pending: ['Check with Steadfast', 'warn'], unknown: ['Check with Steadfast', 'warn'],
-  delivered: ['Delivered', 'ok'], partial_delivered: ['Part delivered', 'warn'], cancelled: ['Returned', 'bad'],
-};
 type PackRow = { product_id: string; brand: string; name: string; total_ml: number; remaining_ml: number | null; short: boolean; lines: { size: string; ml: number; qty: number }[] };
 type Low = { product_id: string; brand: string; name: string; remaining_ml: number; threshold_ml: number; bottle_size_ml: number; status: 'out' | 'low' };
 export type TodayData = {
@@ -40,9 +35,9 @@ const ago = (o: { created_at: string; age_min?: number | string }) => {
 };
 const ml = (n: number) => `${Number.isInteger(n) ? n : n.toFixed(1)}ml`;
 
-interface Props { csrfToken: string; demo?: TodayData }
+interface Props { csrfToken: string; demo?: TodayData; onOpenCourier?: () => void }
 
-const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
+const TodayBoard: React.FC<Props> = ({ csrfToken, demo, onOpenCourier }) => {
   const [data, setData] = useState<TodayData | null>(demo || null);
   const [loading, setLoading] = useState(!demo);
   const [error, setError] = useState('');
@@ -112,35 +107,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
       });
     } else await load();
   };
-  const [tracking, setTracking] = useState(false);
-  const [trackMsg, setTrackMsg] = useState('');
-  const refreshCourier = async () => {
-    setTracking(true);
-    setTrackMsg('');
-    try {
-      if (demo) {
-        await new Promise((r) => setTimeout(r, 900));
-        setData((d) => d && { ...d, on_the_way: (d.on_the_way || []).map((w, i) => (i === 0 ? { ...w, courier_status: 'pending' } : w)) });
-        setTrackMsg('Updated just now');
-        return;
-      }
-      const r = await fetch('/api/admin/steadfast.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
-        body: JSON.stringify({ action: 'track' }),
-      });
-      const j = await r.json();
-      if (j.success) {
-        const fin = (j.data.results || []).filter((x: { final?: string }) => x.final).length;
-        setTrackMsg(`Checked ${j.data.checked} parcel${j.data.checked === 1 ? '' : 's'}${fin ? ` · ${fin} finished` : ''} · just now`);
-      } else setTrackMsg(typeof j.error === 'string' ? j.error : 'Couldn’t reach Steadfast.');
-      await load();
-    } catch {
-      setTrackMsg('Couldn’t reach the server.');
-    } finally {
-      setTracking(false);
-    }
-  };
+
   const isArmed = (ids: number[], c = false) => armed === `${c ? 'c' : 's'}:${ids.join(',')}`;
   type SfRes = { sent: number; failed: number; note?: string; results: { id: number; order_number: string; ok: boolean; tracking_code?: string; error?: string }[] };
   const [sfResult, setSfResult] = useState<SfRes | null>(null);
@@ -547,54 +514,21 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
         })}
       </section>
 
-      {/* 4. With the courier — live Steadfast status */}
-      <section className="pp-today__card">
-        <div className="pp-today__hrow">
-          <h3 className="pp-today__h"><Truck className="w-4 h-4" /> With the courier <span>{(data.on_the_way || []).length}</span></h3>
-          <button className="pp-trk__refresh" disabled={tracking || !(data.on_the_way || []).length} onClick={refreshCourier}>
-            <RefreshCw className={`w-3.5 h-3.5 ${tracking ? 'animate-spin' : ''}`} /> {tracking ? 'Checking…' : 'Refresh status'}
+      {/* 4. With the courier — lives on its own Courier page */}
+      {(() => {
+        const way = data.on_the_way || [];
+        const rets = (data.finished || []).filter((f) => f.order_status === 'cancelled' && !f.ml_back).length;
+        return (
+          <button className="pp-today__card pp-cour-sum" onClick={onOpenCourier}>
+            <span className="pp-cour-sum__ic"><Truck className="w-4 h-4" /></span>
+            <span className="pp-cour-sum__tx">
+              <b>With the courier · {way.length}</b>
+              <small>{rets ? <em>{rets} return{rets === 1 ? '' : 's'} to handle · </em> : null}Status, tracking links & cancel</small>
+            </span>
+            <span className="pp-cour-sum__go">Open <ChevronRight className="w-3.5 h-3.5" /></span>
           </button>
-        </div>
-        <p className="pp-today__hint">{trackMsg || 'Tap Refresh to get the latest status from Steadfast. Delivered and returned parcels update by themselves.'}</p>
-        {(data.on_the_way || []).length === 0 ? <Empty text="No parcels with the courier right now." /> : (
-          <div className="pp-trk">
-            {(data.on_the_way || []).map((w) => {
-              const [label, tone] = w.courier_status ? (SF_LABEL[w.courier_status] || [w.courier_status, 'wait']) : w.tracking_number ? ['Sent', 'wait'] : ['Sent', 'wait'];
-              return (
-                <div key={w.id} className="pp-trk__row">
-                  <div className="min-w-0">
-                    <p className="pp-trk__name">{w.customer_name} <em>{w.order_number}</em></p>
-                    <p className="pp-trk__meta">
-                      {w.tracking_number
-                        ? <button onClick={() => copy(`t${w.id}`, w.tracking_number)}>{copied === `t${w.id}` ? 'Copied ✓' : w.tracking_number}</button>
-                        : <span>Not via Steadfast</span>}
-                      {' · '}COD {money(w.cod_amount ?? w.total_amount)} · {ago(w)}
-                    </p>
-                  </div>
-                  <span className={`pp-trk__st is-${tone}`}>{label}</span>
-                  <div className="pp-cx__row pp-cx__row--full"><CancelBox id={w.id} tracking={w.tracking_number} label="Cancel / returned" csrfToken={csrfToken} demo={!!demo} onDone={(m) => afterCancel(w.id, m)} /></div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-        {(data.finished || []).length > 0 && (
-          <div className="pp-trk__done">
-            <p>Recently finished</p>
-            {(data.finished || []).slice(0, 6).map((f) => (
-              <span key={f.id} className={f.order_status === 'delivered' ? 'is-ok' : 'is-bad'}>
-                {f.order_status === 'delivered' ? '✓' : '↩'} {f.customer_name.split(' ')[0]} · {f.order_number}
-              </span>
-            ))}
-            {(data.finished || []).filter((f) => f.order_status === 'cancelled' && !f.ml_back).map((f) => (
-              <div key={`r${f.id}`} className="pp-ret">
-                <p><b>{f.customer_name.split(' ')[0]}’s parcel came back</b> · {f.order_number}</p>
-                <CancelBox id={f.id} label="Handle return" csrfToken={csrfToken} demo={!!demo} onDone={(m) => afterCancel(f.id, m)} />
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+        );
+      })()}
 
       {/* 4. Low stock */}
       <section className="pp-today__card">
@@ -702,58 +636,6 @@ const CustomerRisk: React.FC<{ o: Order; csrfToken: string; demo?: boolean; onCh
           <button disabled={busy} onClick={() => post('block')}>{busy ? '…' : 'Block'}</button>
         </div>
       )}
-    </div>
-  );
-};
-
-/** Inline cancel: put the ml back in stock (default) and remind to cancel on Steadfast. */
-const CancelBox: React.FC<{
-  id: number; tracking?: string | null; csrfToken: string; demo?: boolean; label?: string;
-  onDone: (msg: string) => void;
-}> = ({ id, tracking, csrfToken, demo, label = 'Cancel order', onDone }) => {
-  const [open, setOpen] = useState(false);
-  const [restore, setRestore] = useState(true);
-  const [reason, setReason] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
-  const [copied, setCopied] = useState(false);
-
-  const go = async () => {
-    setBusy(true); setErr('');
-    try {
-      if (demo) { await new Promise((r) => setTimeout(r, 600)); onDone(restore ? 'Cancelled · ml put back in stock' : 'Cancelled · ml kept out'); return; }
-      const r = await fetch('/api/admin/order_cancel.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
-        body: JSON.stringify({ id, restore, reason }),
-      });
-      const j = await r.json();
-      if (!j.success) { setErr(typeof j.error === 'string' ? j.error : 'Couldn’t cancel this order.'); return; }
-      const d = j.data;
-      onDone(d.restored ? `Cancelled · ${d.restored_ml}ml put back in stock` : d.already_restored ? 'Cancelled · ml was already back' : 'Cancelled · ml kept out');
-    } catch { setErr('Couldn’t reach the server.'); }
-    finally { setBusy(false); }
-  };
-
-  if (!open) return <button className="pp-cx__link" onClick={() => setOpen(true)}>{label}</button>;
-  return (
-    <div className="pp-cx">
-      {tracking && (
-        <p className="pp-cx__warn">
-          Already booked on Steadfast — cancel it there too.
-          <button onClick={async () => { try { await navigator.clipboard.writeText(tracking); setCopied(true); } catch { /* ignore */ } }}>{copied ? 'Copied ✓' : `Copy ${tracking}`}</button>
-        </p>
-      )}
-      <label className="pp-cx__check">
-        <input type="checkbox" checked={restore} onChange={(e) => setRestore(e.target.checked)} />
-        <span><b>Put the ml back in stock</b><small>Untick if the decant was already filled and can’t be reused.</small></span>
-      </label>
-      <input className="pp-cx__reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (optional)" maxLength={200} />
-      {err && <p className="pp-cx__err">{err}</p>}
-      <div className="pp-cx__btns">
-        <button className="pp-cx__back" onClick={() => setOpen(false)} disabled={busy}>Keep order</button>
-        <button className="pp-cx__go" onClick={go} disabled={busy}>{busy ? 'Cancelling…' : label}</button>
-      </div>
     </div>
   );
 };
