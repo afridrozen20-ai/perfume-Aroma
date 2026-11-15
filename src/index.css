@@ -1377,3 +1377,19 @@ html,body{max-width:100%;overflow-x:hidden}
 @media (min-width:768px){.pp-sp__logo{width:180px;height:180px}.pp-sp__tag{font-size:28px}}
 .pp-ed__name,.pp-ed__name b,.pp-ed__name em{font-family:'Cormorant Garamond',Georgia,serif!important;font-weight:400!important}
 .pp-sp__tag,.pp-sp__tag em{font-family:'Cormorant Garamond',Georgia,serif!important}
+
+/* ── Intro D: plop (preview only) ───────────────────────────── */
+.pp-plop{position:fixed;inset:0;z-index:200;background:#faf8f4;display:grid;place-items:center;transition:opacity .7s ease}
+.pp-plop.is-out{opacity:0;pointer-events:none}
+.pp-plop__stage{position:relative;padding-top:60px}
+.pp-plop__name{margin:0;font-family:'Cormorant Garamond',Georgia,serif!important;font-weight:400!important;font-size:52px;color:#1c1b19;letter-spacing:.01em;opacity:0;animation:ppPlopName .7s .1s ease forwards}
+@keyframes ppPlopName{to{opacity:1}}
+.pp-plop__poo{position:absolute;width:96px;height:88px;bottom:calc(100% - 78px);transform-origin:50% 100%;transform:translateY(-120vh)}
+.pp-plop__poo--1{left:4%;animation:ppPlopDrop .62s .2s cubic-bezier(.55,0,1,.45) forwards,ppPlopLand .5s .82s ease-out forwards}
+.pp-plop__poo--2{right:2%;width:84px;height:77px;animation:ppPlopDrop .62s .7s cubic-bezier(.55,0,1,.45) forwards,ppPlopLand .5s 1.32s ease-out forwards}
+@keyframes ppPlopDrop{to{transform:translateY(0)}}
+@keyframes ppPlopLand{0%{transform:translateY(0) scale(1.25,.7)}45%{transform:translateY(-14px) scale(.92,1.1)}75%{transform:translateY(0) scale(1.06,.95)}100%{transform:translateY(0) scale(1)}}
+.pp-plop.is-squish .pp-plop__poo,.pp-plop.is-out .pp-plop__poo{animation:none;transform:translateY(0) scale(1.7,.08);opacity:0;transition:transform .32s cubic-bezier(.6,0,.9,.4),opacity .35s .15s}
+.pp-plop.is-squish .pp-plop__name{animation:ppPlopShake .35s ease}
+@keyframes ppPlopShake{25%{transform:translateY(3px)}60%{transform:translateY(-1px)}}
+@media (min-width:768px){.pp-plop__name{font-size:84px}.pp-plop__poo{width:130px;height:119px;bottom:calc(100% - 100px)}.pp-plop__poo--2{width:112px;height:103px}}
