@@ -1214,153 +1214,25 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-lite .pp-co__sumcard{backdrop-filter:none;-webkit-backdrop-filter:none;background:#fff}
 .pp-lite .pp-co__thumb::before{display:none}
 
-/* ── Opening: logo intro ───────────────────────────── */
-@property --pp-r{syntax:'<percentage>';inherits:false;initial-value:-30%}
-.pp-intro{position:fixed;inset:0;z-index:200;cursor:pointer;overflow:hidden;--tx:0px;--ty:0px;--ts:1}
-.pp-intro.is-open{pointer-events:none}
-/* marble veil, tinted from the logo itself */
-.pp-intro__veil{position:absolute;inset:0;--pp-r:-30%;background:linear-gradient(160deg,#f8f7f4,#efede8 50%,#f5f1ea);
-  -webkit-mask:radial-gradient(circle at 50% 46%,transparent var(--pp-r),#000 calc(var(--pp-r) + 24%));
-          mask:radial-gradient(circle at 50% 46%,transparent var(--pp-r),#000 calc(var(--pp-r) + 24%));
-  transition:--pp-r 1.25s .1s cubic-bezier(.6,0,.2,1),opacity .7s .6s ease}
-.pp-intro.is-open .pp-intro__veil{--pp-r:125%;opacity:0}
-.pp-intro__marble{position:absolute;inset:-25%;background-position:center;background-size:cover;filter:blur(38px) saturate(1.25);opacity:.55;transform:scale(1.1);animation:ppIntroDrift 6s ease-in-out infinite alternate}
-@keyframes ppIntroDrift{to{transform:scale(1.22) rotate(8deg)}}
-.pp-intro__glow{position:absolute;inset:0;background:
-  radial-gradient(38% 30% at 50% 46%,rgba(255,255,255,.95),rgba(255,255,255,0) 70%),
-  radial-gradient(60% 45% at 85% 10%,rgba(196,201,210,.55),transparent 70%),
-  radial-gradient(60% 45% at 15% 95%,rgba(226,206,168,.5),transparent 70%)}
-.pp-intro__glitter i{position:absolute;border-radius:50%;opacity:0;box-shadow:0 0 8px 2px rgba(255,255,255,.95),0 0 2px rgba(170,160,140,.9);animation:ppIntroTwinkle 2.3s ease-in-out infinite}
-@keyframes ppIntroTwinkle{0%,100%{opacity:0;transform:scale(.4)}45%{opacity:1;transform:scale(1)}}
-.pp-intro__glitter i:nth-child(1){left:62%;top:76%;width:3px;height:3px;background:#dfe9f1;animation-delay:2.06s}
-.pp-intro__glitter i:nth-child(2){left:70%;top:80%;width:4px;height:4px;background:#dfe9f1;animation-delay:0.46s}
-.pp-intro__glitter i:nth-child(3){left:85%;top:83%;width:2px;height:2px;background:#dfe9f1;animation-delay:1.9s}
-.pp-intro__glitter i:nth-child(4){left:43%;top:23%;width:2px;height:2px;background:#f3e9f5;animation-delay:0.22s}
-.pp-intro__glitter i:nth-child(5){left:55%;top:62%;width:4px;height:4px;background:#e3e6ec;animation-delay:1.57s}
-.pp-intro__glitter i:nth-child(6){left:84%;top:6%;width:2px;height:2px;background:#ffffff;animation-delay:2.0s}
-.pp-intro__glitter i:nth-child(7){left:9%;top:29%;width:4px;height:4px;background:#ffffff;animation-delay:2.11s}
-.pp-intro__glitter i:nth-child(8){left:64%;top:46%;width:2px;height:2px;background:#f3e9f5;animation-delay:1.06s}
-.pp-intro__glitter i:nth-child(9){left:34%;top:86%;width:2px;height:2px;background:#ffffff;animation-delay:0.71s}
-.pp-intro__glitter i:nth-child(10){left:63%;top:88%;width:4px;height:4px;background:#ffffff;animation-delay:0.67s}
-.pp-intro__glitter i:nth-child(11){left:95%;top:37%;width:2px;height:2px;background:#f3e9f5;animation-delay:0.76s}
-.pp-intro__glitter i:nth-child(12){left:41%;top:8%;width:2px;height:2px;background:#dfe9f1;animation-delay:0.17s}
-.pp-intro__glitter i:nth-child(13){left:18%;top:42%;width:2px;height:2px;background:#ffffff;animation-delay:0.93s}
-.pp-intro__glitter i:nth-child(14){left:32%;top:31%;width:2px;height:2px;background:#dfe9f1;animation-delay:2.22s}
-.pp-intro__glitter i:nth-child(15){left:53%;top:95%;width:2px;height:2px;background:#f3e9f5;animation-delay:0.95s}
-.pp-intro__glitter i:nth-child(16){left:85%;top:30%;width:3px;height:3px;background:#f0dfbd;animation-delay:1.87s}
-.pp-intro__glitter i:nth-child(17){left:16%;top:44%;width:3px;height:3px;background:#ffffff;animation-delay:0.8s}
-.pp-intro__glitter i:nth-child(18){left:22%;top:36%;width:2px;height:2px;background:#ffffff;animation-delay:1.7s}
-.pp-intro__glitter i:nth-child(19){left:64%;top:67%;width:4px;height:4px;background:#e3e6ec;animation-delay:0.43s}
-.pp-intro__glitter i:nth-child(20){left:62%;top:70%;width:2px;height:2px;background:#dfe9f1;animation-delay:0.46s}
-.pp-intro__glitter i:nth-child(21){left:87%;top:54%;width:3px;height:3px;background:#e3e6ec;animation-delay:0.28s}
-.pp-intro__glitter i:nth-child(22){left:5%;top:39%;width:4px;height:4px;background:#f0dfbd;animation-delay:2.07s}
-.pp-intro__glitter i:nth-child(23){left:7%;top:31%;width:4px;height:4px;background:#f3e9f5;animation-delay:0.45s}
-.pp-intro__glitter i:nth-child(24){left:17%;top:10%;width:2px;height:2px;background:#dfe9f1;animation-delay:2.37s}
-
-/* stage */
-.pp-intro__stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding-bottom:8vh}
-.pp-intro__logo{position:relative;width:200px;height:200px;transition:transform 1.15s cubic-bezier(.7,0,.2,1)}
-.pp-intro.is-open .pp-intro__logo{transform:translate(var(--tx),var(--ty)) scale(var(--ts))}
-.pp-intro__disc{position:absolute;inset:8px;border-radius:50%;overflow:hidden;box-shadow:0 18px 40px -14px rgba(70,70,80,.35),0 0 0 1px rgba(255,255,255,.8);
-  opacity:0;transform:scale(.86);filter:blur(10px);animation:ppIntroDisc 1s .25s cubic-bezier(.2,.8,.2,1) forwards}
-.pp-intro__disc img{display:block;width:100%;height:100%;object-fit:cover}
-@keyframes ppIntroDisc{to{opacity:1;transform:none;filter:none}}
-.pp-intro.is-open .pp-intro__disc{box-shadow:0 0 0 0 transparent;transition:box-shadow .8s}
-.pp-intro__sweep{position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.85) 50%,transparent 65%);transform:translateX(-120%);animation:ppIntroSweep 1.1s .95s ease-in-out forwards;mix-blend-mode:soft-light}
-@keyframes ppIntroSweep{to{transform:translateX(120%)}}
-/* silver ring that draws itself around the logo */
-.pp-intro__ring{position:absolute;inset:-14px;width:calc(100% + 28px);height:calc(100% + 28px);overflow:visible;transform:rotate(-90deg);transition:opacity .4s}
-.pp-intro__ring circle{fill:none;stroke:url(#ppRing);stroke-width:1.2;stroke-linecap:round;stroke-dasharray:620;stroke-dashoffset:620;animation:ppIntroRing 1.3s cubic-bezier(.5,0,.2,1) forwards}
-.pp-intro__ring circle+circle{stroke-width:.6;opacity:.7;animation-delay:.18s}
-@keyframes ppIntroRing{to{stroke-dashoffset:0}}
-.pp-intro.is-open .pp-intro__ring{opacity:0}
-/* mist from the atomizer on the logo */
-.pp-intro__spray{position:absolute;left:70%;top:54%;width:0;height:0}
-.pp-intro__spray i{position:absolute;left:-7px;top:-7px;width:14px;height:14px;border-radius:50%;opacity:0;
-  background:radial-gradient(circle,rgba(255,255,255,.95),rgba(214,218,226,.7) 45%,rgba(232,214,178,0) 72%);filter:blur(2px)}
-.pp-intro.is-spray .pp-intro__spray i,.pp-intro.is-open .pp-intro__spray i{animation:ppIntroMist 1.3s var(--d) cubic-bezier(.15,.7,.3,1) forwards}
-.pp-intro__spray i:nth-child(3n){width:22px;height:22px;left:-11px;top:-11px}
-@keyframes ppIntroMist{0%{opacity:0;transform:rotate(var(--a)) translateX(0) scale(.3)}25%{opacity:.95}100%{opacity:0;transform:rotate(var(--a)) translateX(150px) scale(3)}}
-/* tagline */
-.pp-intro__tag{margin:0;font-size:10.5px;letter-spacing:.38em;text-transform:uppercase;font-weight:600;
-  background:linear-gradient(90deg,#8f949c,#c2a978 50%,#8f949c);-webkit-background-clip:text;background-clip:text;color:transparent;
-  opacity:0;animation:ppIntroTag .9s .8s ease forwards;transition:opacity .4s}
-@keyframes ppIntroTag{from{opacity:0;letter-spacing:.6em}to{opacity:1;letter-spacing:.38em}}
-.pp-intro.is-open .pp-intro__tag{opacity:0;animation:none}
-@media (min-width:768px){.pp-intro__logo{width:250px;height:250px}.pp-intro__tag{font-size:12px}}
-.pp-lite .pp-intro__marble{filter:blur(24px);animation:none}
-.pp-lite .pp-intro__glitter{display:none}
-/* intro v2: marble stone + stronger spray / lift / open */
-.pp-intro__stone{position:absolute;inset:-4%;background-size:cover;background-position:center;animation:ppIntroStone 7s ease-out forwards}
-@keyframes ppIntroStone{from{transform:scale(1.08)}to{transform:scale(1)}}
-.pp-intro__marble{opacity:.22;mix-blend-mode:multiply}
-.pp-intro__glow{background:
-  radial-gradient(30% 22% at 50% 44%,rgba(255,255,255,.92),rgba(255,255,255,0) 72%),
-  radial-gradient(70% 50% at 50% 46%,rgba(255,255,255,.35),transparent 70%),
-  radial-gradient(60% 40% at 90% 6%,rgba(196,201,210,.35),transparent 70%),
-  radial-gradient(60% 40% at 10% 96%,rgba(226,206,168,.35),transparent 70%)}
-.pp-intro__halo{position:absolute;inset:-40px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.95) 30%,rgba(240,232,214,.55) 52%,rgba(255,255,255,0) 70%);opacity:.7;transition:opacity .5s,transform .6s cubic-bezier(.2,.8,.2,1)}
-.pp-intro__disc{box-shadow:0 22px 46px -16px rgba(60,62,70,.45),0 0 0 1.5px rgba(255,255,255,.9),0 0 0 3px rgba(190,194,202,.5)}
-/* lift: the logo rises before it glides away */
-.pp-intro.is-lift .pp-intro__logo{transform:translateY(-14px) scale(1.08);transition:transform .45s cubic-bezier(.2,.8,.2,1.2)}
-.pp-intro.is-lift .pp-intro__halo{opacity:1;transform:scale(1.25)}
-.pp-intro.is-lift .pp-intro__disc{box-shadow:0 34px 60px -18px rgba(60,62,70,.5),0 0 0 1.5px #fff,0 0 0 4px rgba(200,175,128,.55)}
-.pp-intro.is-open .pp-intro__logo{transition:transform 1.4s cubic-bezier(.65,0,.2,1)}
-.pp-intro.is-open .pp-intro__halo{opacity:0;transform:scale(.6)}
-/* stronger, more visible mist */
-.pp-intro__spray i{left:-10px;top:-10px;width:20px;height:20px;background:radial-gradient(circle,rgba(255,255,255,1),rgba(186,192,203,.8) 42%,rgba(214,192,150,.25) 62%,rgba(255,255,255,0) 74%);filter:blur(1.5px)}
-.pp-intro__spray i:nth-child(3n){width:30px;height:30px;left:-15px;top:-15px}
-.pp-intro.is-spray .pp-intro__spray i,.pp-intro.is-lift .pp-intro__spray i,.pp-intro.is-open .pp-intro__spray i{animation:ppIntroMist2 1.7s var(--d) cubic-bezier(.12,.7,.3,1) forwards}
-@keyframes ppIntroMist2{0%{opacity:0;transform:rotate(var(--a)) translateX(0) scale(.3)}18%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateX(var(--l)) scale(3.6)}}
-.pp-intro__spray em{position:absolute;left:-1.5px;top:-1.5px;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 6px 2px rgba(255,255,255,.95),0 0 2px rgba(200,170,110,.9);opacity:0}
-.pp-intro.is-spray .pp-intro__spray em,.pp-intro.is-lift .pp-intro__spray em{animation:ppIntroSpark 1.4s var(--d) ease-out forwards}
-@keyframes ppIntroSpark{0%{opacity:0;transform:rotate(var(--a)) translateX(0)}30%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateX(var(--l))}}
-.pp-intro__puff{position:absolute;left:-45px;top:-45px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.95),rgba(205,210,220,.55) 45%,rgba(255,255,255,0) 70%);filter:blur(6px);opacity:0}
-.pp-intro.is-spray .pp-intro__puff,.pp-intro.is-lift .pp-intro__puff{animation:ppIntroPuff 1.5s ease-out forwards}
-@keyframes ppIntroPuff{0%{opacity:0;transform:translate(0,0) scale(.3)}25%{opacity:.95}100%{opacity:0;transform:translate(60px,-30px) scale(2.8)}}
-/* silver light ring that sweeps out as the page opens */
-.pp-intro__burst{position:absolute;left:50%;top:46%;width:240px;height:240px;margin:-120px 0 0 -120px;border-radius:50%;opacity:0;pointer-events:none;
-  box-shadow:0 0 0 1.5px rgba(255,255,255,.95),0 0 30px 8px rgba(255,255,255,.75),inset 0 0 40px rgba(232,214,178,.55)}
-.pp-intro.is-open .pp-intro__burst{animation:ppIntroBurst 1.3s cubic-bezier(.3,.6,.2,1) forwards}
-@keyframes ppIntroBurst{0%{opacity:0;transform:scale(.5)}15%{opacity:1}100%{opacity:0;transform:scale(5.5)}}
-.pp-intro.is-open .pp-intro__veil{transition:--pp-r 1.4s .05s cubic-bezier(.6,0,.2,1),opacity .7s .75s ease}
-.pp-lite .pp-intro__spray em,.pp-lite .pp-intro__stone{animation:none}
-/* ── intro v3: spray to camera ─────────────────── */
-.pp-intro--spray .pp-intro__veil{-webkit-mask:none;mask:none;transition:opacity .5s ease}
-.pp-intro--spray.is-open .pp-intro__veil{opacity:0}
-.pp-intro--spray .pp-intro__logo{transition:transform 1s cubic-bezier(.5,0,.8,.4),filter .9s ease}
-.pp-intro--spray.is-spray .pp-intro__logo,.pp-intro--spray.is-hit .pp-intro__logo{transform:scale(1.12);filter:blur(1.5px)}
-.pp-intro--spray.is-spray .pp-intro__tag,.pp-intro--spray.is-hit .pp-intro__tag{opacity:0;transition:opacity .4s}
-/* jet origin = the atomizer on the logo */
-.pp-intro__jet{position:absolute;left:var(--sx,62%);top:var(--sy,48%);width:0;height:0;z-index:3;pointer-events:none}
-.pp-intro__fog{position:absolute;left:-30vmax;top:-30vmax;width:60vmax;height:60vmax;border-radius:50%;opacity:0;
-  background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(244,245,248,.95) 28%,rgba(214,218,226,.75) 46%,rgba(232,220,196,.35) 60%,rgba(255,255,255,0) 72%);
-  transform:scale(.02);filter:blur(4px)}
-.pp-intro--spray.is-spray .pp-intro__fog,.pp-intro--spray.is-hit .pp-intro__fog{animation:ppJetFog 1s cubic-bezier(.55,0,.9,.45) forwards}
-@keyframes ppJetFog{0%{opacity:.2;transform:scale(.02)}30%{opacity:.85}100%{opacity:1;transform:scale(4.2)}}
-.pp-intro__jet i{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;opacity:0;
-  background:radial-gradient(circle,rgba(255,255,255,1),rgba(200,205,215,.85) 40%,rgba(226,206,168,.35) 60%,rgba(255,255,255,0) 72%);filter:blur(1px)}
-.pp-intro--spray.is-spray .pp-intro__jet i,.pp-intro--spray.is-hit .pp-intro__jet i{animation:ppJetPuff .95s var(--d) cubic-bezier(.6,0,.9,.5) forwards}
-@keyframes ppJetPuff{0%{opacity:0;transform:rotate(var(--a)) translateX(0) scale(.2)}20%{opacity:.95}100%{opacity:.9;transform:rotate(var(--a)) translateX(var(--l)) scale(var(--s));filter:blur(6px)}}
-/* milky haze when the mist reaches the glass */
-.pp-intro__haze{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;
-  background:radial-gradient(120% 90% at var(--sx,60%) var(--sy,50%),rgba(255,255,255,.97),rgba(246,246,248,.94) 45%,rgba(236,232,224,.9));
-  transition:opacity .25s ease}
-.pp-intro--spray.is-hit .pp-intro__haze{opacity:1}
-.pp-intro--spray.is-open .pp-intro__haze{opacity:0;transition:opacity 1.2s .15s cubic-bezier(.4,0,.2,1)}
-.pp-intro--spray.is-open .pp-intro__jet{opacity:0;transition:opacity .5s}
-/* droplets on the glass */
-.pp-intro__drops{position:absolute;inset:0;z-index:5;pointer-events:none}
-.pp-intro__drops i{position:absolute;margin:-12px 0 0 -12px;border-radius:50% 50% 47% 53%/56% 54% 46% 44%;opacity:0;transform:scale(0);
-  background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.98) 0 9%,rgba(255,255,255,.35) 18%,rgba(255,255,255,.06) 45%,rgba(150,156,168,.22) 70%,rgba(255,255,255,.75) 80%,rgba(255,255,255,0) 84%);
-  box-shadow:0 3px 6px -2px rgba(40,44,52,.28),inset 0 -3px 5px rgba(255,255,255,.55),inset 0 2px 3px rgba(120,126,138,.25);
-  -webkit-backdrop-filter:blur(1.2px) saturate(1.4) brightness(1.06);backdrop-filter:blur(1.2px) saturate(1.4) brightness(1.06)}
-.pp-intro--spray.is-hit .pp-intro__drops i{animation:ppDropHit .32s var(--d) cubic-bezier(.2,1.6,.4,1) forwards}
-.pp-intro--spray.is-open .pp-intro__drops i{opacity:1;transform:scale(1);animation:ppDropSlide 1.7s calc(.55s + var(--d) * 2) cubic-bezier(.5,0,.75,1) forwards}
-@keyframes ppDropHit{0%{opacity:0;transform:scale(0)}60%{opacity:1;transform:scale(1.18,.86)}100%{opacity:1;transform:scale(1)}}
-@keyframes ppDropSlide{0%{opacity:1;transform:translateY(0) scale(1)}70%{opacity:.85}100%{opacity:0;transform:translateY(var(--fall)) scale(.92,1.12)}}
-.pp-lite .pp-intro__drops i{-webkit-backdrop-filter:none;backdrop-filter:none}
-.pp-intro--spray.is-open .pp-intro__veil{opacity:0;transition:opacity .35s ease}
-.pp-intro--spray.is-hit .pp-intro__veil{transition:opacity .35s .2s ease}
-.pp-intro__jet i{background:radial-gradient(circle,rgba(255,255,255,.95),rgba(214,218,226,.6) 38%,rgba(232,220,196,.22) 58%,rgba(255,255,255,0) 72%);filter:blur(3px)}
-@keyframes ppJetPuff{0%{opacity:0;transform:rotate(var(--a)) translateX(0) scale(.25);filter:blur(2px)}20%{opacity:.9}100%{opacity:.85;transform:rotate(var(--a)) translateX(var(--l)) scale(var(--s));filter:blur(10px)}}
+/* ── Opening: minimal logo ───────────────────────────── */
+.pp-min{position:fixed;inset:0;z-index:200;display:grid;place-items:center;cursor:pointer;background:#f8f7f4;
+  transition:opacity .75s cubic-bezier(.4,0,.2,1),filter .75s ease}
+.pp-min.is-out{opacity:0;filter:blur(6px);pointer-events:none}
+.pp-min__bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.32}
+.pp-min__mark{position:relative;width:168px;height:168px;transition:transform .8s cubic-bezier(.4,0,.2,1)}
+.pp-min.is-out .pp-min__mark{transform:scale(1.06)}
+.pp-min__logo{position:absolute;inset:7px;width:calc(100% - 14px);height:calc(100% - 14px);border-radius:50%;
+  box-shadow:0 14px 34px -18px rgba(40,42,50,.35);opacity:0;transform:scale(.96);animation:ppMinIn .9s .1s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes ppMinIn{to{opacity:1;transform:none}}
+.pp-min__ring{position:absolute;inset:-6px;width:calc(100% + 12px);height:calc(100% + 12px);transform:rotate(-90deg);overflow:visible}
+.pp-min__ring circle{fill:none;stroke:#b9bdc4;stroke-width:.35;stroke-dasharray:310;stroke-dashoffset:310;animation:ppMinRing 1.2s .25s cubic-bezier(.6,0,.2,1) forwards}
+@keyframes ppMinRing{to{stroke-dashoffset:0}}
+/* one soft breath of mist from the atomizer */
+.pp-min__mist{position:absolute;left:69%;top:54%;width:0;height:0}
+.pp-min__mist i{position:absolute;left:-10px;top:-10px;width:20px;height:20px;border-radius:50%;opacity:0;
+  background:radial-gradient(circle,rgba(255,255,255,.95),rgba(214,218,226,.45) 45%,rgba(255,255,255,0) 70%);filter:blur(3px);
+  animation:ppMinMist 1.3s .95s cubic-bezier(.2,.7,.3,1) forwards}
+.pp-min__mist i:nth-child(2){animation-delay:1.05s;--dx:62px;--dy:-30px}
+.pp-min__mist i:nth-child(3){animation-delay:1.15s;--dx:48px;--dy:-4px}
+@keyframes ppMinMist{0%{opacity:0;transform:translate(0,0) scale(.4)}25%{opacity:.8}100%{opacity:0;transform:translate(var(--dx,70px),var(--dy,-18px)) scale(3.2)}}
+@media (min-width:768px){.pp-min__mark{width:200px;height:200px}}
