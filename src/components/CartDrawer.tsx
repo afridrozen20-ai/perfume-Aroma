@@ -11,6 +11,7 @@ interface CartDrawerProps {
   onRemoveItem: (productId: string, size: string) => void;
   onClearCart?: () => void;
   storeSettings?: any;
+  onCheckout?: () => void;
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
@@ -20,7 +21,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   onUpdateQty,
   onRemoveItem,
   onClearCart,
-  storeSettings
+  storeSettings,
+  onCheckout
 }) => {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [customerName, setCustomerName] = useState('');
@@ -524,7 +526,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 </button>
               ) : (
                 <button
-                  onClick={() => setIsCheckoutOpen(true)}
+                  onClick={() => (onCheckout ? onCheckout() : setIsCheckoutOpen(true))}
                   className="w-full py-3.5 px-6 text-xs font-sans tracking-widest uppercase flex items-center justify-center gap-2 transition-opacity cursor-pointer shadow-md"
                   style={{
                     backgroundColor: 'var(--theme-btn-bg)',

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import ExclusiveNiche from './components/ExclusiveNiche';
@@ -20,6 +20,7 @@ import { Footer } from './components/Footer';
 import { ProductDetailPage } from './components/ProductDetailPage';
 import { CollectionPage } from './components/CollectionPage';
 import { CartDrawer } from './components/CartDrawer';
+import { CheckoutPage } from './components/CheckoutPage';
 import { SearchModal } from './components/SearchModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { IntroSequence } from './components/IntroSequence';
@@ -56,6 +57,24 @@ function StorefrontApp() {
   const [products, setProducts] = useState<FragranceProduct[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const checkoutOpenRef = useRef(false);
+  useEffect(() => { checkoutOpenRef.current = isCheckoutOpen; }, [isCheckoutOpen]);
+  useEffect(() => {
+    // Phone back button closes the checkout page instead of leaving the site
+    const onPop = () => { if (checkoutOpenRef.current) setIsCheckoutOpen(false); };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+  const openCheckout = () => {
+    setIsCartOpen(false);
+    setIsCheckoutOpen(true);
+    try { window.history.pushState({ ppCheckout: 1 }, '', window.location.href); } catch { /* ignore */ }
+  };
+  const closeCheckout = () => {
+    if (window.history.state?.ppCheckout) window.history.back();
+    setIsCheckoutOpen(false);
+  };
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isFinderOpen, setIsFinderOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -554,6 +573,18 @@ function StorefrontApp() {
         onRemoveItem={handleRemoveFromCart}
         onClearCart={() => setCart([])}
         storeSettings={storeSettings}
+        onCheckout={openCheckout}
+      />
+
+      <CheckoutPage
+        isOpen={isCheckoutOpen}
+        items={cart}
+        storeSettings={storeSettings}
+        onUpdateQty={handleUpdateQty}
+        onClearCart={() => setCart([])}
+        onClose={() => { closeCheckout(); setIsCartOpen(true); }}
+        onDone={() => closeCheckout()}
+        demo={window.location.pathname.includes('preview.html')}
       />
 
       <SearchModal
