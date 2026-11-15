@@ -23,7 +23,7 @@ export const TODAY_DEMO: TodayData = {
   packing: [
     { product_id: 'd', brand: 'Creed', name: 'Aventus', total_ml: 3, remaining_ml: 6, short: false, lines: [{ size: '1.5ml', ml: 1.5, qty: 2 }] },
     { product_id: 'a', brand: 'Lattafa', name: 'Khamrah', total_ml: 16, remaining_ml: 42, short: false, lines: [{ size: '3ml', ml: 3, qty: 2 }, { size: '10ml', ml: 10, qty: 1 }] },
-    { product_id: 'c', brand: 'Rasasi', name: 'Hawas Fire', total_ml: 5, remaining_ml: 4, short: true, lines: [{ size: '5ml', ml: 5, qty: 1 }] },
+    { product_id: 'c', brand: 'Rasasi', name: 'Hawas Fire', total_ml: 5, remaining_ml: -1, short: true, lines: [{ size: '5ml', ml: 5, qty: 1 }] },
   ],
   low_stock: [
     { product_id: 'e', brand: 'Kayali', name: 'Vanilla 28', remaining_ml: 0, threshold_ml: 15, bottle_size_ml: 100, status: 'out' },

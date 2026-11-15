@@ -789,7 +789,6 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-today__pml{margin:0;font-size:16px;font-weight:700}
 .pp-today__pleft{margin:2px 0 0;font-size:11px;color:#8a8a86}
 .pp-today__prow.is-short .pp-today__pleft{color:#b3261e;font-weight:700}
-.pp-today__prow.is-short .pp-today__pleft::before{content:"Not enough · "}
 .pp-today__lows{display:flex;flex-direction:column;gap:12px;margin:2px 0 14px}
 .pp-today__lname{margin:0;font-size:13.5px;font-weight:600}
 .pp-today__lname span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8a8a86;margin-right:4px;font-weight:600}

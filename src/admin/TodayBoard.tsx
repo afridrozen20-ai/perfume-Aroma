@@ -151,7 +151,7 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
         {data.packing.length === 0 ? <Empty text="Nothing to pack yet. Confirm an order to see it here." /> : (
           <div className="pp-today__pack">
             {data.packing.map((p) => (
-              <div key={p.product_id} className={`pp-today__prow ${p.remaining_ml !== null && p.remaining_ml < p.total_ml ? 'is-short' : ''}`}>
+              <div key={p.product_id} className={`pp-today__prow ${p.short ? 'is-short' : ''}`}>
                 <div className="min-w-0">
                   <p className="pp-today__pbrand">{p.brand}</p>
                   <p className="pp-today__pname">{p.name}</p>
@@ -159,7 +159,9 @@ const TodayBoard: React.FC<Props> = ({ csrfToken, demo }) => {
                 </div>
                 <div className="text-right shrink-0">
                   <p className="pp-today__pml">{ml(p.total_ml)}</p>
-                  {p.remaining_ml !== null && <p className="pp-today__pleft">{ml(Math.max(0, p.remaining_ml))} left</p>}
+                  {p.remaining_ml !== null && (
+                    <p className="pp-today__pleft">{p.short ? `Short by ${ml(Math.abs(p.remaining_ml))}` : `${ml(p.remaining_ml)} left after`}</p>
+                  )}
                 </div>
               </div>
             ))}
