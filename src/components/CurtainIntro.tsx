@@ -54,7 +54,6 @@ export const CurtainIntro: React.FC<{ onOpen: () => void; onDone: () => void }> 
     <div ref={rootRef} className={`pp-intro is-${phase}`} onClick={skip} aria-hidden="true">
       <div className="pp-intro__veil">
         <div className="pp-intro__stone" style={{ backgroundImage: `url(${marble})` }} />
-        <div className="pp-intro__marble" style={{ backgroundImage: `url(${logoRound})` }} />
         <div className="pp-intro__glow" />
         <div className="pp-intro__glitter">{Array.from({ length: 24 }, (_, i) => <i key={i} />)}</div>
       </div>
