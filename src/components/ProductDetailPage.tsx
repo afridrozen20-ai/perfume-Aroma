@@ -1,5 +1,6 @@
 import { scrollToTop } from '../lib/motion';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { similarScents } from '../lib/similarScents';
 import {
   ChevronRight,
   ShoppingBag,
@@ -204,10 +205,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     ? sp.accords
     : (Array.isArray(product.accords) && product.accords.length > 0 ? product.accords : []);
 
-  // Related products (exclude current product)
-  const relatedProducts = allProducts
-    .filter((p) => p.id !== product.id)
-    .slice(0, 4);
+  // You may also like: closest scents by accords, notes, family, mood and who it's for
+  const relatedMatches = useMemo(() => similarScents(product, allProducts, 4), [product, allProducts]);
+  const relatedProducts = relatedMatches.map((m) => m.product);
+  const sharedFor = (id: string | number) => relatedMatches.find((m) => String(m.product.id) === String(id))?.shared || [];
 
   return (
     <div
@@ -496,7 +497,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               YOU MAY ALSO LIKE
             </h2>
             <p className="text-[10px] sm:text-xs font-sans tracking-widest text-zinc-400 uppercase mt-1">
-              CURATED COMPLEMENTARY DECANTS
+              Picked for you · similar notes &amp; feel
             </p>
           </div>
 
@@ -524,6 +525,9 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 <p className="text-[11px] text-zinc-600 font-sans mt-1 tabular-nums">
                   From <span className="font-semibold text-zinc-900">৳ {relProd.startingPrice}</span>
                 </p>
+                {sharedFor(relProd.id).length > 0 && (
+                  <p className="pp-like__shared">Also {sharedFor(relProd.id).join(' · ')}</p>
+                )}
               </div>
             ))}
           </div>
