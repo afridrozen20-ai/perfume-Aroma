@@ -82,7 +82,7 @@ const GlassRail: React.FC<Props> = ({ products, badge, highlightFirst = true, au
             <article
               key={id}
               aria-hidden={copy === 1 ? true : undefined}
-              className={`pp-sotw__card ${i === 0 && highlightFirst ? 'is-first' : ''} ${isOpen ? 'is-open' : ''}`}
+              className={`pp-sotw__card ${layout === 'grid' ? 'group' : ''} ${i === 0 && highlightFirst ? 'is-first' : ''} ${isOpen ? 'is-open' : ''}`}
               style={{ '--img': `url("${thumb(p.image, 160)}")`, animationDelay: layout === 'grid' ? `${Math.min(i, 8) * 0.05}s` : `${(i % products.length) * 0.08}s` } as React.CSSProperties}
               onClick={() => (isOpen ? setOpenId(null) : onSelectProduct(p))}
             >

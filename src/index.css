@@ -1688,3 +1688,10 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-sotw__grid .pp-sotw__img{top:12px;height:66%;max-width:90%;border-radius:12px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.16))}
 .pp-sotw__grid .pp-sotw__card:hover .pp-sotw__img,.pp-sotw__grid .pp-sotw__card:active .pp-sotw__img{filter:drop-shadow(0 16px 18px rgba(0,0,0,.2))}
 .pp-sotw__grid .pp-sotw__glass{background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;left:0;right:0;bottom:0;border-radius:0;padding:8px 12px 12px}
+/* Collection grid v4: no backdrop behind the bottle, cards rise in on scroll (motion.ts) */
+.pp-sotw__grid .pp-sotw__card{animation:none}
+.pp-sotw__grid .pp-sotw__img{border-radius:0;filter:none;top:6px;height:70%;max-width:100%;
+  -webkit-mask-image:radial-gradient(ellipse 52% 60% at 50% 48%,#000 45%,rgba(0,0,0,.6) 70%,transparent 100%);
+  mask-image:radial-gradient(ellipse 52% 60% at 50% 48%,#000 45%,rgba(0,0,0,.6) 70%,transparent 100%)}
+.pp-sotw__grid .pp-sotw__card:hover .pp-sotw__img,.pp-sotw__grid .pp-sotw__card:active .pp-sotw__img{filter:none;transform:translateX(-50%) translateY(-6px) scale(1.06)}
+.pp-sotw__grid .pp-sotw__glass{border-top:1px solid rgba(0,0,0,.05)}
