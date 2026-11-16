@@ -2,7 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!-- Owner request: disable pinch / double-tap / ctrl+wheel / keyboard page zoom on phone and desktop.
+         iOS Safari ignores user-scalable=no, so gestures are blocked in script as well. -->
+    <style>html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;text-size-adjust:100%}</style>
+    <script>
+      (function () {
+        var stop = function (e) { e.preventDefault(); };
+        document.addEventListener('gesturestart', stop, { passive: false });
+        document.addEventListener('gesturechange', stop, { passive: false });
+        document.addEventListener('gestureend', stop, { passive: false });
+        document.addEventListener('touchmove', function (e) {
+          if (e.touches && e.touches.length > 1) e.preventDefault();
+        }, { passive: false });
+        document.addEventListener('wheel', function (e) {
+          if (e.ctrlKey) e.preventDefault();
+        }, { passive: false });
+        document.addEventListener('keydown', function (e) {
+          if ((e.ctrlKey || e.metaKey) && ['+', '=', '-', '_', '0'].indexOf(e.key) !== -1) e.preventDefault();
+        });
+      })();
+    </script>
     <title>Pure Portions by Arrina</title>
     <meta name="description" content="Discover luxury perfume by the ml. Curated authentic decants from timeless classics to niche standouts." />
     <meta property="og:title" content="Pure Portions by Arrina" />
