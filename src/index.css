@@ -1847,3 +1847,6 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-menu__social a{color:#111}
 .pp-menu__themes button{width:16px;height:16px}
 .pp-menu__themes button.is-on{box-shadow:0 0 0 2px #fff,0 0 0 3px #111}
+.pp-menu__list--shop .pp-menu__row,.pp-menu__list--shop .pp-menu__row>span{font-family:'Cormorant Garamond',Georgia,serif !important;font-size:29px;font-weight:500}
+.pp-menu__list--shop .pp-menu__row>span::before{font-family:ui-sans-serif,system-ui,sans-serif !important;font-size:10px !important}
+.pp-menu__tile b{font-family:'Cormorant Garamond',Georgia,serif !important}
