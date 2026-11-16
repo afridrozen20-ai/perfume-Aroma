@@ -267,10 +267,16 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 borderColor: 'var(--theme-border-subtle)',
               }}
             >
+              {/* Bottle-tinted liquid-glass aura, same look as the New Arrivals / collection cards */}
+              <div
+                aria-hidden="true"
+                className="pp-pdp__aura"
+                style={{ ['--img' as string]: `url("${activeImage}")` } as React.CSSProperties}
+              />
               <img
                 src={activeImage}
                 alt={product.name}
-                className="max-h-[82%] max-w-[82%] object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-105"
+                className="relative z-[1] max-h-[82%] max-w-[82%] object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-105"
                 referrerPolicy="no-referrer"
               />
 
