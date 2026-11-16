@@ -440,14 +440,16 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
   // Quick search inside the 1.5ml testers (spelling-tolerant, short forms like "cdn")
   const [testerQ, setTesterQ] = useState('');
   const shownTesters = useMemo(
-    () => (isTesterView && testerQ.trim() ? fuzzySearch(filteredProducts, testerQ, 400) : filteredProducts),
-    [isTesterView, testerQ, filteredProducts],
+    () => (testerQ.trim() ? fuzzySearch(filteredProducts, testerQ, 400) : filteredProducts),
+    [testerQ, filteredProducts],
   );
   useEffect(() => {
     const q = testerQ.trim();
-    if (isTesterView && q.length >= 2) trackSearchWhenIdle(q, shownTesters.length);
+    if (q.length >= 2) trackSearchWhenIdle(q, shownTesters.length);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [testerQ]);
+  // a new collection or season starts with an empty search
+  useEffect(() => { setTesterQ(''); }, [collectionSlug, filters.season.join(','), filters.size.join(',')]);
   const seasonTitle =
     collectionSlug === 'all' && filters.size.length === 1 && filters.size[0] === '1.5ml' && !filters.season.length
       ? '1.5ml Testers'
@@ -887,6 +889,24 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
         </div>
       </div>
       )}
+      {!isTesterView && (
+        <div className="pp-csearch">
+          <div className="pp-tsearch">
+            <Search className="w-4 h-4" />
+            <input
+              type="search"
+              value={testerQ}
+              onChange={(e) => setTesterQ(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+              placeholder={`Search in ${seasonTitle || collection?.title || 'this collection'}`}
+              aria-label="Search this collection"
+              enterKeyHint="search"
+            />
+            {testerQ && <button type="button" onClick={() => setTesterQ('')} aria-label="Clear search"><X className="w-3.5 h-3.5" /></button>}
+          </div>
+          {testerQ.trim() && <p className="pp-tsearch__count">{shownTesters.length ? `${shownTesters.length} found` : ''}</p>}
+        </div>
+      )}
 
       {/* 3. Main Catalog Two-Column Layout (Filters + Product Grid) */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -912,7 +932,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
             </button>
 
             <span className="text-xs font-sans opacity-80" style={{ color: 'var(--theme-text-secondary)' }}>
-              Showing <strong className="font-mono font-bold" style={{ color: 'var(--theme-primary)' }}>{(isTesterView ? shownTesters : filteredProducts).length}</strong> fragrances
+              Showing <strong className="font-mono font-bold" style={{ color: 'var(--theme-primary)' }}>{shownTesters.length}</strong> fragrances
             </span>
           </div>
 
@@ -1131,14 +1151,14 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                 </div>
               </div>
             ) : (
-              isTesterView && testerQ.trim() && shownTesters.length === 0 ? (
+              testerQ.trim() && shownTesters.length === 0 ? (
                 <div className="pp-tsearch__none">
-                  <p>No tester matches “{testerQ.trim()}”.</p>
-                  <button type="button" onClick={() => setTesterQ('')}>Show all testers</button>
+                  <p>No {isTesterView ? 'tester' : 'perfume'} matches “{testerQ.trim()}”.</p>
+                  <button type="button" onClick={() => setTesterQ('')}>{isTesterView ? 'Show all testers' : 'Show all'}</button>
                 </div>
               ) : (
               <div className={isTesterView ? "pp-tgrid" : "grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6"}>
-                {(isTesterView ? shownTesters : filteredProducts).map((product) => (
+                {shownTesters.map((product) => (
                   isTesterView ? (
                     <TesterCard
                       key={product.id}
