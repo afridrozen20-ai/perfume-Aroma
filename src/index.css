@@ -1888,3 +1888,4 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-revall__grid{columns:1;column-gap:12px}
 @media (min-width:640px){.pp-revall__grid{columns:2}}
 @media (min-width:1024px){.pp-revall__grid{columns:3}}
+.pp-rev__stars{display:flex;gap:2px}
