@@ -106,10 +106,28 @@ export const scentMatch = (a: FragranceProduct, b: FragranceProduct): Match => {
   return { product: b, score, shared: labels };
 };
 
+/** Him / Her / Unisex from the product, falling back to the scent profile. */
+const sexOf = (p: FragranceProduct): 'm' | 'f' | 'u' => {
+  const g = clean(p.gender);
+  if (g === 'him') return 'm';
+  if (g === 'her') return 'f';
+  if (g === 'unisex') return 'u';
+  const sp: any = (p as any).scentProfile || (p as any).scent_profile || {};
+  const pos = clean(sp.genderPositioning);
+  if (/femin|women|female/.test(pos)) return 'f';
+  if (/mascul|men|male/.test(pos)) return 'm';
+  return 'u';
+};
+/** Men's scent → men's + unisex; women's scent → women's + unisex; unisex → everything. */
+const allowed = (current: FragranceProduct, other: FragranceProduct) => {
+  const a = sexOf(current), b = sexOf(other);
+  return a === 'u' || b === 'u' || a === b;
+};
+
 /** The best matches for a perfume, varied across brands. */
 export const similarScents = (current: FragranceProduct, all: FragranceProduct[], count = 4): Match[] => {
   const scored = all
-    .filter((p) => String(p.id) !== String(current.id))
+    .filter((p) => String(p.id) !== String(current.id) && allowed(current, p))
     .map((p) => scentMatch(current, p))
     .sort((x, y) => y.score - x.score);
   const out: Match[] = [];
