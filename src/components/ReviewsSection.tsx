@@ -2,13 +2,45 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Star, ChevronLeft, ChevronRight, Pause, Play, Quote } from 'lucide-react';
 import { REVIEWS_LIST } from '../data/fragranceData';
 import { ReviewItem } from '../types';
+import { CUSTOMER_REVIEWS } from '../data/customerReviews';
+import { createPortal } from 'react-dom';
+import { X } from 'lucide-react';
+
+type Card = { id: string; content: string; author: string; rating?: number; product?: string; source?: string };
+
+const ReviewCard: React.FC<{ rev: Card; wide?: boolean }> = ({ rev, wide }) => (
+  <div className={`pp-rev ${wide ? 'pp-rev--wide' : ''}`}>
+    <div className="pp-rev__body">
+      <Quote className="w-4 h-4 pp-rev__q" />
+      <p className="pp-rev__text">"{rev.content}"</p>
+    </div>
+    <div className="pp-rev__foot">
+      {rev.product && <span className="pp-rev__prod">{rev.product}</span>}
+      {!rev.source && rev.rating ? (
+        <span className="pp-rev__stars">{[...Array(rev.rating)].map((_, i) => <Star key={i} className="w-3 h-3 fill-amber-500 text-amber-500" />)}</span>
+      ) : null}
+      <p className="pp-rev__who"><b>{rev.author}</b>{rev.source && <i>via {rev.source}</i>}</p>
+    </div>
+  </div>
+);
 
 interface ReviewsSectionProps {
   reviews?: ReviewItem[];
 }
 
 export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
-  const reviewsData = reviews && reviews.length > 0 ? reviews : REVIEWS_LIST;
+  const base: Card[] = (reviews && reviews.length > 0 ? reviews : REVIEWS_LIST).map((r) => ({ id: String(r.id), content: r.content, author: r.author, rating: r.rating }));
+  const allReviews: Card[] = [...base, ...CUSTOMER_REVIEWS];
+  const reviewsData = allReviews.slice(0, 18);
+  const [showAll, setShowAll] = useState(false);
+  useEffect(() => {
+    if (!showAll) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setShowAll(false);
+    window.addEventListener('keydown', onKey);
+    return () => { document.body.style.overflow = prev; window.removeEventListener('keydown', onKey); };
+  }, [showAll]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
 
@@ -74,10 +106,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
 
             <div className="pt-2">
               <button
-                onClick={() => {
-                  const firstRev = scrollRef.current;
-                  firstRev?.scrollTo({ left: 0, behavior: 'smooth' });
-                }}
+                onClick={() => setShowAll(true)}
                 className="inline-flex items-center justify-center text-[11px] sm:text-xs tracking-[0.14em] uppercase px-6 py-3 transition-colors cursor-pointer border rounded-xs hover:opacity-90"
                 style={{
                   backgroundColor: 'var(--theme-btn-bg)',
@@ -85,7 +114,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
                   borderColor: 'var(--theme-border)',
                 }}
               >
-                View all reviews
+                View all {allReviews.length} reviews
               </button>
             </div>
           </div>
@@ -96,43 +125,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
               ref={scrollRef}
               className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-4 -mx-4 px-4 sm:mx-0 sm:px-0"
             >
-              {reviewsData.map((rev) => (
-                <div
-                  key={rev.id}
-                  className="flex-shrink-0 w-[270px] sm:w-[320px] p-6 rounded-xs flex flex-col justify-between min-h-[220px] border shadow-xs transition-colors"
-                  style={{
-                    backgroundColor: 'var(--theme-surface-card)',
-                    borderColor: 'var(--theme-border-subtle)',
-                  }}
-                >
-                  <div className="space-y-3">
-                    <Quote className="w-4 h-4 opacity-40" style={{ color: 'var(--theme-primary)' }} />
-                    <p
-                      className="font-serif text-xs sm:text-[13px] leading-relaxed font-light italic"
-                      style={{ color: 'var(--theme-text-primary)' }}
-                    >
-                      "{rev.content}"
-                    </p>
-                  </div>
-
-                  <div
-                    className="pt-4 border-t mt-4"
-                    style={{ borderColor: 'var(--theme-border-subtle)' }}
-                  >
-                    <div className="flex items-center gap-1 mb-1.5">
-                      {[...Array(rev.rating)].map((_, i) => (
-                        <Star key={i} className="w-3 h-3 fill-amber-500 text-amber-500" />
-                      ))}
-                    </div>
-                    <p
-                      className="font-sans text-xs font-semibold"
-                      style={{ color: 'var(--theme-primary)' }}
-                    >
-                      {rev.author}
-                    </p>
-                  </div>
-                </div>
-              ))}
+              {reviewsData.map((rev) => <ReviewCard key={rev.id} rev={rev} />)}
             </div>
 
             {/* Bottom Controls Row: Swipe Hint & Arrows */}
@@ -187,6 +180,24 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
           </div>
         </div>
       </div>
+      {showAll && createPortal(
+        <div className="pp-revall" role="dialog" aria-modal="true" aria-label="All reviews">
+          <div className="pp-revall__veil" onClick={() => setShowAll(false)} />
+          <div className="pp-revall__sheet" data-lenis-prevent>
+            <header className="pp-revall__head">
+              <div>
+                <p>Reviews · {allReviews.length}</p>
+                <h3>Worn. Loved. <em>Repeated.</em></h3>
+              </div>
+              <button type="button" onClick={() => setShowAll(false)} aria-label="Close reviews"><X className="w-5 h-5" /></button>
+            </header>
+            <div className="pp-revall__grid">
+              {allReviews.map((rev) => <ReviewCard key={rev.id} rev={rev} wide />)}
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
     </section>
   );
 };
