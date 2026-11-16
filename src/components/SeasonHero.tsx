@@ -33,10 +33,10 @@ const Land: React.FC<{ season: SeasonName }> = ({ season }) => {
       </defs>
       {/* far dunes: sunlit face + shadow face split along the crest */}
       <g className="pp-sh__l1">
-        <path d="M0 122 C40 108 70 98 110 92 C150 98 170 112 210 120 L210 200 L0 200 Z" fill={`url(#${id}lit)`} />
-        <path d="M110 92 C140 104 170 116 210 120 C240 112 270 100 300 94 L300 200 L110 200 Z" fill={`url(#${id}sh)`} opacity=".55" />
-        <path d="M210 120 C250 108 270 98 300 94 C340 100 370 110 400 114 L400 200 L210 200 Z" fill={`url(#${id}lit)`} />
-        <path d="M0 122 C40 108 70 98 110 92 C140 104 170 116 210 120 C250 108 270 98 300 94 C340 100 370 110 400 114" stroke="#fff1d2" strokeWidth="1.2" fill="none" opacity=".9" />
+        <path d="M0 118 C40 100 70 86 110 78 C150 88 170 106 210 116 L210 200 L0 200 Z" fill={`url(#${id}lit)`} />
+        <path d="M110 78 C140 94 170 110 210 116 C240 106 270 92 300 86 L300 200 L110 200 Z" fill={`url(#${id}sh)`} opacity=".9" />
+        <path d="M210 116 C250 102 270 90 300 86 C340 94 370 106 400 112 L400 200 L210 200 Z" fill={`url(#${id}lit)`} />
+        <path d="M0 118 C40 100 70 86 110 78 C140 94 170 110 210 116 C250 102 270 90 300 86 C340 94 370 106 400 112" stroke="#fff4dc" strokeWidth="1.6" fill="none" opacity=".9" />
       </g>
       {/* middle dune */}
       <g className="pp-sh__l2">
@@ -86,7 +86,7 @@ const Land: React.FC<{ season: SeasonName }> = ({ season }) => {
         <path d="M340 70 L420 140 L360 140 Z" fill={`url(#${id}sh)`} />
         <path d="M180 50 L166 64 L174 63 L180 70 L188 62 L196 66 Z M60 78 L52 86 L58 86 L62 92 L68 86 Z M340 70 L330 80 L338 79 L343 85 L350 78 Z" fill="#ffffff" />
         <path d="M0 150 C90 136 170 140 250 150 C320 158 360 146 400 144 L400 200 L0 200 Z" fill="#eef4fa" />
-        {pine(34, 178, 54, '#2f5566')}{pine(66, 182, 40, '#3c6476')}{pine(318, 180, 58, '#2f5566')}{pine(352, 184, 42, '#3c6476')}{pine(288, 186, 30, '#4a7286')}{pine(98, 188, 28, '#4a7286')}
+        {pine(118, 184, 40, '#3c6476')}{pine(232, 182, 58, '#2f5566')}{pine(262, 186, 44, '#3c6476')}{pine(292, 184, 52, '#2f5566')}{pine(318, 188, 34, '#4a7286')}{pine(60, 182, 46, '#2f5566')}{pine(352, 184, 50, '#2f5566')}
         <path d="M0 182 C90 170 180 174 260 182 C320 188 360 180 400 178 L400 200 L0 200 Z" fill={`url(#${id}g)`} />
       </svg>
     );

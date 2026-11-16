@@ -1631,3 +1631,5 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-sh--spring{background:linear-gradient(180deg,#fff7f5 0%,#fde7ea 45%,#e6f2dc 100%);color:#203325}
 .pp-sh__land--autumn{filter:saturate(1.15)}
 .pp-sh__land--spring{filter:saturate(1.2)}
+.pp-scard .pp-sh__land{height:70%}
+.pp-scard .pp-scard__go{position:relative;z-index:3}
