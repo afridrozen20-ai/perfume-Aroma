@@ -94,8 +94,9 @@ const GlassRail: React.FC<Props> = ({ products, badge, highlightFirst = true, au
                 <p className="pp-sotw__name">{p.name}</p>
                 <div className="pp-sotw__row">
                   <span className={`pp-sotw__g pp-sotw__g--${(p.gender || 'Unisex').toLowerCase()}`}>{g}</span>
-                  <span className="pp-sotw__price">{isOpen && chosen ? `৳${chosen.price}` : `From ৳${p.startingPrice || sizes[firstOpen]?.price || ''}`}</span>
-                  {sizes.length > 0 && (
+                  <span className="pp-sotw__price">{isOpen && chosen ? `৳${chosen.price}` : <>From <b>৳{Math.min(...(sizes.length ? sizes.map((x) => Number(x.price) || 0) : [p.startingPrice]))}</b></>}</span>
+                  {layout === 'grid' && <span className="pp-sotw__go" aria-hidden="true">→</span>}
+                  {layout !== 'grid' && sizes.length > 0 && (
                     <button
                       type="button"
                       className={`pp-sotw__add ${isOpen ? 'is-close' : ''}`}
@@ -106,7 +107,7 @@ const GlassRail: React.FC<Props> = ({ products, badge, highlightFirst = true, au
                     </button>
                   )}
                 </div>
-                <div className="pp-sotw__sizes" aria-hidden={!isOpen}>
+                {layout !== 'grid' && <div className="pp-sotw__sizes" aria-hidden={!isOpen}>
                   <div className="pp-sotw__chips no-scrollbar">
                     {sizes.map((s, si) => (
                       <button
@@ -138,7 +139,7 @@ const GlassRail: React.FC<Props> = ({ products, badge, highlightFirst = true, au
                   >
                     {added === id ? <><Check className="w-4 h-4" /> Added</> : <>Add to bag · ৳{chosen?.price}</>}
                   </button>
-                </div>
+                </div>}
               </div>
             </article>
           );

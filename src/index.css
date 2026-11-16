@@ -1670,3 +1670,15 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-sotw__grid .pp-sotw__card.is-open .pp-sotw__sizes{max-height:170px}
 .pp-sotw__grid .pp-sotw__card.is-open .pp-sotw__img{transform:translateX(-50%) translateY(-30px) scale(.46)}
 @media (min-width:640px){.pp-sotw__grid .pp-sotw__chip{flex-basis:calc(33% - 5px)}}
+/* Collection grid v2: no pop-ups — "From" price, the bottle in the spotlight */
+.pp-sotw__grid .pp-sotw__card{height:300px}
+.pp-sotw__grid .pp-sotw__card::before{content:"";position:absolute;left:50%;top:44%;width:120%;aspect-ratio:1;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,255,255,.75),rgba(255,255,255,.18) 60%,transparent 72%);z-index:0;pointer-events:none}
+.pp-sotw__grid .pp-sotw__img{z-index:1;top:16px;height:64%;max-width:88%;border-radius:14px;filter:drop-shadow(0 16px 18px rgba(0,0,0,.28)) drop-shadow(0 2px 4px rgba(0,0,0,.12));transition:transform .6s cubic-bezier(.2,.8,.2,1),filter .6s}
+.pp-sotw__grid .pp-sotw__card:hover .pp-sotw__img,.pp-sotw__grid .pp-sotw__card:active .pp-sotw__img{transform:translateX(-50%) translateY(-5px) scale(1.04);filter:drop-shadow(0 24px 22px rgba(0,0,0,.3)) drop-shadow(0 2px 4px rgba(0,0,0,.12))}
+.pp-sotw__grid .pp-sotw__glass{z-index:2;padding:8px 10px 9px;background:rgba(255,255,255,.62)}
+.pp-sotw__grid .pp-sotw__name{margin:1px 0 4px}
+.pp-sotw__grid .pp-sotw__price{font-size:10px;font-weight:500;letter-spacing:.06em;color:#7a746a;text-transform:uppercase}
+.pp-sotw__grid .pp-sotw__price b{font-size:13.5px;font-weight:700;letter-spacing:0;color:#1d1d1b;margin-left:3px;text-transform:none}
+.pp-sotw__grid .pp-sotw__go{font-size:14px;color:#1d1d1b;opacity:.55;transition:transform .3s,opacity .3s}
+.pp-sotw__grid .pp-sotw__card:hover .pp-sotw__go{transform:translateX(3px);opacity:1}
+@media (min-width:640px){.pp-sotw__grid .pp-sotw__card{height:350px}}
