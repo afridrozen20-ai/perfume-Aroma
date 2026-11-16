@@ -21,6 +21,7 @@ import { FragranceProduct, Collection, FilterState, DecantSize } from '../types'
 import { fetchCollectionBySlug, fetchPublicProducts } from '../services/api';
 import { thumb } from '../lib/img';
 import { fuzzySearch } from '../lib/fuzzySearch';
+import { SeasonHero, isSeason } from './SeasonHero';
 import { trackSearchSubmission, trackSearchWhenIdle } from '../services/searchTracker';
 
 const getSprayEstimate = (sizeStr: string): string => {
@@ -841,6 +842,10 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
             {testerQ && <button type="button" onClick={() => setTesterQ('')} aria-label="Clear search"><X className="w-3.5 h-3.5" /></button>}
           </div>
           {testerQ.trim() && <p className="pp-tsearch__count">{shownTesters.length ? `${shownTesters.length} tester${shownTesters.length === 1 ? '' : 's'} found` : ''}</p>}
+        </div>
+      ) : collectionSlug === 'all' && filters.season.length === 1 && isSeason(filters.season[0]) ? (
+        <div className="pp-sh-wrap">
+          <SeasonHero season={filters.season[0]} count={filteredProducts.length} />
         </div>
       ) : (
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">

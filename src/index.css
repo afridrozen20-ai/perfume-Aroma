@@ -1483,3 +1483,54 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-tsearch__none button{height:38px;padding:0 18px;border:0;border-radius:999px;background:#141414;color:#fff;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
 .pp-csearch{max-width:1440px;margin:0 auto;padding:4px 16px 0;text-align:center}
 .pp-csearch .pp-tsearch{margin-top:6px}
+
+/* ── Season hero (collection header) ───────────────────────────── */
+.pp-sh-wrap{max-width:1440px;margin:0 auto;padding:14px 16px 0}
+.pp-sh{position:relative;overflow:hidden;isolation:isolate;border-radius:26px;min-height:250px;display:flex;align-items:flex-end;padding:26px 22px 22px;box-shadow:0 22px 46px -30px rgba(0,0,0,.45)}
+@media (min-width:768px){.pp-sh-wrap{padding:22px 32px 0}.pp-sh{min-height:320px;padding:40px 44px}}
+.pp-sh__art{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.pp-sh__copy{position:relative;max-width:520px}
+.pp-sh__eyebrow{margin:0;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;font-weight:700;opacity:.85}
+.pp-sh__title{margin:8px 0 6px;font-family:'Cormorant Garamond',Georgia,serif!important;font-weight:500!important;font-size:44px;line-height:1;letter-spacing:-.01em}
+.pp-sh__title em{font-style:italic}
+.pp-sh__line{margin:0;font-size:13.5px;line-height:1.5;opacity:.88;max-width:420px}
+.pp-sh__count{margin:12px 0 0;display:inline-block;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.04em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+@media (min-width:768px){.pp-sh__title{font-size:64px}.pp-sh__line{font-size:15px}}
+
+/* Summer: blazing sun + heat haze */
+.pp-sh--summer{background:linear-gradient(165deg,#ffe3a3 0%,#ffb35c 38%,#f47b4f 72%,#e2533f 100%);color:#3a1405}
+.pp-sh--summer .pp-sh__count{background:rgba(255,255,255,.35);color:#5a200a}
+.pp-sh__sun{position:absolute;right:-30px;top:-40px;width:190px;height:190px;border-radius:50%;
+  background:radial-gradient(circle,#fffbe8 0%,#fff1b8 35%,#ffd36b 60%,rgba(255,200,90,0) 72%);animation:ppShSun 4s ease-in-out infinite}
+.pp-sh__sun i{position:absolute;inset:-40%;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,244,200,.55) 0 6deg,rgba(255,244,200,0) 6deg 18deg);
+  -webkit-mask:radial-gradient(circle,transparent 30%,#000 32%,transparent 70%);mask:radial-gradient(circle,transparent 30%,#000 32%,transparent 70%);animation:ppShRays 26s linear infinite}
+@keyframes ppShSun{50%{transform:scale(1.06);filter:brightness(1.08)}}
+@keyframes ppShRays{to{transform:rotate(360deg)}}
+.pp-sh__haze{position:absolute;left:0;right:0;bottom:-10px;width:100%;height:60%;opacity:.55}
+.pp-sh__haze path{fill:none;stroke:rgba(255,246,220,.75);stroke-width:2;filter:blur(1.5px);animation:ppShHaze 6.4s linear infinite}
+@keyframes ppShHaze{0%{transform:translate(0,40px);opacity:0}25%{opacity:1}100%{transform:translate(-100px,-60px);opacity:0}}
+.pp-sh__glint{position:absolute;bottom:-6px;width:3px;height:3px;border-radius:50%;background:#fff7d6;box-shadow:0 0 8px 2px rgba(255,240,190,.9);animation:ppShGlint 4s linear infinite}
+@keyframes ppShGlint{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(-240px);opacity:0}}
+
+/* Winter: icy sky, snowfall, peaks */
+.pp-sh--winter{background:linear-gradient(170deg,#f3f7fc 0%,#cfdeef 40%,#8eabcf 78%,#62809f 100%);color:#16263b}
+.pp-sh--winter .pp-sh__count{background:rgba(255,255,255,.55);color:#22344d}
+.pp-sh__peaks{position:absolute;left:0;right:0;bottom:0;width:100%;height:42%;fill:rgba(255,255,255,.75)}
+.pp-sh__peaks2{fill:rgba(255,255,255,.95)}
+.pp-sh__snow{position:absolute;top:-10px;border-radius:50%;background:#fff;box-shadow:0 0 4px rgba(255,255,255,.9);animation:ppShSnow linear infinite}
+@keyframes ppShSnow{0%{transform:translate(0,-10px)}50%{transform:translate(var(--sway),140px)}100%{transform:translate(0,340px)}}
+
+/* Autumn: amber light, falling leaves */
+.pp-sh--autumn{background:linear-gradient(165deg,#f7e2bf 0%,#e8a965 42%,#c5693a 78%,#8f3f24 100%);color:#2e1408}
+.pp-sh--autumn .pp-sh__count{background:rgba(255,248,235,.4);color:#4a1f0b}
+.pp-sh__leaf{position:absolute;top:-30px;filter:drop-shadow(0 2px 2px rgba(80,30,10,.25));animation:ppShLeaf linear infinite}
+@keyframes ppShLeaf{0%{transform:translate(0,-20px) rotate(0)}25%{transform:translate(var(--sway),80px) rotate(90deg)}50%{transform:translate(0,170px) rotate(180deg)}75%{transform:translate(calc(var(--sway) * -1),260px) rotate(270deg)}100%{transform:translate(0,360px) rotate(360deg)}}
+
+/* Spring: soft greens and pinks, drifting petals */
+.pp-sh--spring{background:linear-gradient(160deg,#fdf7ee 0%,#e4f1d9 40%,#bfe0b4 70%,#f4c9d6 100%);color:#1f3320}
+.pp-sh--spring .pp-sh__count{background:rgba(255,255,255,.6);color:#2c4a2e}
+.pp-sh__petal{position:absolute;top:-24px;opacity:.9;animation:ppShPetal linear infinite}
+@keyframes ppShPetal{0%{transform:translate(0,-20px) rotate(0)}50%{transform:translate(var(--sway),160px) rotate(160deg)}100%{transform:translate(calc(var(--sway) * .3),360px) rotate(320deg)}}
+
+@media (prefers-reduced-motion:reduce){.pp-sh *{animation:none!important}}
+.pp-lite .pp-sh__haze path,.pp-lite .pp-sh__leaf{filter:none}
