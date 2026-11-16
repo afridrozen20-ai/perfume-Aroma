@@ -1695,3 +1695,7 @@ html,body{max-width:100%;overflow-x:hidden}
   mask-image:radial-gradient(ellipse 52% 60% at 50% 48%,#000 45%,rgba(0,0,0,.6) 70%,transparent 100%)}
 .pp-sotw__grid .pp-sotw__card:hover .pp-sotw__img,.pp-sotw__grid .pp-sotw__card:active .pp-sotw__img{filter:none;transform:translateX(-50%) translateY(-6px) scale(1.06)}
 .pp-sotw__grid .pp-sotw__glass{border-top:1px solid rgba(0,0,0,.05)}
+.pp-sotw__grid .pp-sotw__card{height:262px;box-shadow:none}
+.pp-sotw__grid .pp-sotw__img{top:2px;-webkit-mask-image:radial-gradient(ellipse 58% 70% at 50% 44%,#000 50%,rgba(0,0,0,.55) 74%,transparent 100%);mask-image:radial-gradient(ellipse 58% 70% at 50% 44%,#000 50%,rgba(0,0,0,.55) 74%,transparent 100%)}
+.pp-sotw__grid .pp-sotw__glass{border-top:0;padding:4px 6px 8px}
+@media (min-width:640px){.pp-sotw__grid .pp-sotw__card{height:330px}}
