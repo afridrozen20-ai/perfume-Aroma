@@ -19,13 +19,15 @@ const clean = (s: unknown) => String(s ?? '').toLowerCase().replace(/&amp;/g, '&
 
 // Words that say nothing about the smell itself
 const NOISE = new Set(['notes', 'note', 'accord', 'absolute', 'oil', 'essence', 'extract', 'natural', 'wood', 'woods']);
+// Origin / colour words: "Calabrian bergamot" should match on bergamot, not on "calabrian"
+const ADJ = new Set(['calabrian', 'madagascar', 'bourbon', 'indonesian', 'italian', 'french', 'sicilian', 'egyptian', 'turkish', 'bulgarian', 'haitian', 'tahitian', 'mexican', 'virginia', 'atlas', 'damask', 'white', 'black', 'pink', 'green', 'red', 'sweet', 'fresh', 'dark', 'bean', 'leaf', 'leaves', 'flower', 'blossom', 'tree']);
 /** "Madagascar Vanilla" and "vanilla absolute" should both count as vanilla. */
 const noteKeys = (n: unknown): string[] => {
   const c = clean(n);
   if (!c) return [];
   const words = c.split(' ').filter((w) => w.length > 2 && !NOISE.has(w));
   const keys = new Set<string>([c]);
-  words.forEach((w) => keys.add(w.replace(/s$/, '')));
+  words.forEach((w) => { if (!ADJ.has(w)) keys.add(w.replace(/([^s])s$/, '$1')); });
   return [...keys];
 };
 
@@ -86,7 +88,7 @@ export const scentMatch = (a: FragranceProduct, b: FragranceProduct): Match => {
     seen.add(k);
     const w = A.base.has(k) && B.base.has(k) ? 1.5 : 1.1; // shared dry-down matters most
     score += w;
-    if (!k.includes(' ')) shared.push({ w, label: k });
+    shared.push({ w: k.includes(' ') ? w + 0.3 : w, label: k });
   });
   A.families.forEach((f) => { if (B.families.has(f)) score += 1.4; });
   A.moods.forEach((m) => { if (B.moods.has(m)) score += 0.5; });
@@ -95,7 +97,12 @@ export const scentMatch = (a: FragranceProduct, b: FragranceProduct): Match => {
   if (clean(a.category) && clean(a.category) === clean(b.category)) score += 0.4;
 
   const labels: string[] = [];
-  shared.sort((x, y) => y.w - x.w).forEach((s) => { if (labels.length < 3 && !labels.some((l) => l.includes(s.label) || s.label.includes(l))) labels.push(s.label); });
+  // show whole note names ("tonka bean") before single words, never both
+  shared.sort((x, y) => y.w - x.w).forEach((s) => {
+    if (labels.length >= 3) return;
+    const clash = labels.some((l) => l.split(' ').includes(s.label) || s.label.split(' ').includes(l) || l === s.label);
+    if (!clash) labels.push(s.label);
+  });
   return { product: b, score, shared: labels };
 };
 
