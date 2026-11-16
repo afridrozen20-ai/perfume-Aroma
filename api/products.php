@@ -240,14 +240,21 @@ if ($brand) {
 }
 
 if ($gender) {
-    $genders = explode(',', $gender);
+    // Exact match on the product's Him / Her / Unisex; only when that is blank, use the scent
+    // profile's positioning. (A plain text search for "her" also hit "leather", "other" ...)
+    $map = [
+        'him' => ['him', 'masculine'],
+        'her' => ['her', 'feminine'],
+        'unisex' => ['unisex', 'unisex'],
+    ];
     $genderClauses = [];
-    foreach ($genders as $g) {
-        if (!empty(trim($g))) {
-            $genderClauses[] = "LOWER(gender) = ? OR LOWER(scent_profile_json) LIKE ?";
-            $params[] = strtolower(trim($g));
-            $params[] = '%' . strtolower(trim($g)) . '%';
-        }
+    foreach (explode(',', $gender) as $g) {
+        $g = strtolower(trim($g));
+        if (!isset($map[$g])) continue;
+        [$col, $pos] = $map[$g];
+        $genderClauses[] = "(LOWER(gender) = ? OR ((gender IS NULL OR gender = '') AND LOWER(scent_profile_json) LIKE ?))";
+        $params[] = $col;
+        $params[] = '%"genderpositioning":"' . $pos . '%';
     }
     if (!empty($genderClauses)) {
         $where[] = '(' . implode(' OR ', $genderClauses) . ')';
@@ -283,9 +290,27 @@ if ($occasion) {
 }
 
 if ($concentration) {
-    $where[] = "(LOWER(concentration) LIKE ? OR LOWER(scent_profile_json) LIKE ?)";
-    $params[] = '%' . strtolower($concentration) . '%';
-    $params[] = '%' . strtolower($concentration) . '%';
+    // EDT / EDP / Parfum / Extrait as separate kinds ("Parfum" must not pick up "Eau de Parfum")
+    $concClauses = [];
+    foreach (explode(',', $concentration) as $c) {
+        $c = strtolower(trim($c));
+        if ($c === '') continue;
+        if ($c === 'edt') {
+            $concClauses[] = "(LOWER(concentration) IN ('edt','eau de toilette') OR LOWER(concentration) LIKE '%toilette%')";
+        } elseif ($c === 'edp') {
+            $concClauses[] = "(LOWER(concentration) IN ('edp','eau de parfum') OR LOWER(concentration) LIKE 'eau de parfum%')";
+        } elseif ($c === 'parfum') {
+            $concClauses[] = "(LOWER(concentration) IN ('parfum','pure parfum','le parfum','elixir') OR (LOWER(concentration) LIKE '%parfum%' AND LOWER(concentration) NOT LIKE '%eau de%' AND LOWER(concentration) NOT LIKE '%extrait%'))";
+        } elseif ($c === 'extrait') {
+            $concClauses[] = "(LOWER(concentration) LIKE '%extrait%')";
+        } else {
+            $concClauses[] = "(LOWER(concentration) = ?)";
+            $params[] = $c;
+        }
+    }
+    if (!empty($concClauses)) {
+        $where[] = '(' . implode(' OR ', $concClauses) . ')';
+    }
 }
 
 if ($minPrice !== null) {
