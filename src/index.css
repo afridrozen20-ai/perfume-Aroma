@@ -1862,3 +1862,7 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-menu__wa{margin-top:24px;padding:12px 14px}
 .pp-menu__wa b{font-size:13.5px}
 .pp-menu__label{margin-top:24px}
+/* Studio: Facebook reel card, same footprint as the Instagram embeds */
+.pp-fbreel{position:relative;width:100%;border-radius:12px;overflow:hidden;background:#000;box-shadow:0 0 0 .5px rgba(0,0,0,.08),0 10px 30px -14px rgba(0,0,0,.25)}
+.pp-fbreel iframe{display:block;width:100%;aspect-ratio:9/16;border:0}
+.pp-fbreel__link{display:block;padding:11px 14px;background:#fff;font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-align:center;color:#111}

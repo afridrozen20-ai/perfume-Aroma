@@ -8,7 +8,8 @@ interface StudioSectionProps {
 // Posts from @pure_portions_by_arrina shown on the homepage (swap these links to change them)
 const INSTAGRAM_POSTS = [
   'https://www.instagram.com/reel/Dfrukl3mSjf/',
-  'https://www.instagram.com/p/DfrffvAgvpo/',
+  // Facebook reel: Jean Paul Gaultier Scandal (female perfume video)
+  'https://www.facebook.com/reel/1122575623895700/',
   'https://www.instagram.com/p/DfrSYH0jFQs/',
 ];
 
@@ -52,7 +53,20 @@ export const StudioSection: React.FC<StudioSectionProps> = () => {
         </div>
 
         <div className="pp-ig-row flex sm:grid sm:grid-cols-3 gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
-          {INSTAGRAM_POSTS.map((url) => (
+          {INSTAGRAM_POSTS.map((url) => url.includes('facebook.com') ? (
+            <div key={url} className="snap-center shrink-0 w-[86%] sm:w-auto">
+              <div className="pp-fbreel">
+                <iframe
+                  src={`https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false&width=320&height=568`}
+                  title="Pure Portions by Arrina on Facebook"
+                  loading="lazy"
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+                <a href={url} target="_blank" rel="noreferrer" className="pp-fbreel__link">Watch on Facebook ↗</a>
+              </div>
+            </div>
+          ) : (
             <div key={url} className="snap-center shrink-0 w-[86%] sm:w-auto">
               <blockquote
                 className="instagram-media"
