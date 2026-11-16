@@ -21,9 +21,9 @@ export const isSeason = (s: string | undefined | null): s is SeasonName =>
 export const SeasonHero: React.FC<{ season: SeasonName; count: number }> = ({ season, count }) => {
   const parts = useMemo(() => {
     const r = rnd(season.length * 97 + 13);
-    const n = season === 'Winter' ? 34 : season === 'Summer' ? 10 : 14;
+    const n = season === 'Winter' ? 22 : season === 'Summer' ? 7 : 9;
     return Array.from({ length: n }, () => ({
-      x: r() * 100, s: r(), d: -r() * 8, t: 5 + r() * 6, sway: 10 + r() * 30,
+      x: r() * 100, s: r(), d: -r() * 12, t: 9 + r() * 7, sway: 8 + r() * 22,
     }));
   }, [season]);
 
@@ -79,11 +79,13 @@ export const SeasonHero: React.FC<{ season: SeasonName; count: number }> = ({ se
         ))}
       </div>
 
+      <span className="pp-sh__grain" aria-hidden="true" />
+      <span className="pp-sh__sheen" aria-hidden="true" />
       <div className="pp-sh__copy">
-        <p className="pp-sh__eyebrow">{c.eyebrow}</p>
+        <p className="pp-sh__eyebrow"><i />The {season} Edit<i /></p>
         <h1 className="pp-sh__title">{season} <em>Perfumes</em></h1>
         <p className="pp-sh__line">{c.line}</p>
-        <p className="pp-sh__count">{count} scents · 100% authentic decants</p>
+        <p className="pp-sh__meta"><span>{count} scents</span><span>{c.eyebrow}</span></p>
       </div>
     </section>
   );
