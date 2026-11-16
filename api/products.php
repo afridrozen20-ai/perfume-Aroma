@@ -210,21 +210,7 @@ if ($category) {
     $params[] = '%' . strtolower($category) . '%';
 }
 
-if ($family) {
-    $families = explode(',', $family);
-    $familyClauses = [];
-    foreach ($families as $f) {
-        if (!empty(trim($f))) {
-            $familyClauses[] = "(LOWER(category) LIKE ? OR LOWER(scent_profile_json) LIKE ?)";
-            $params[] = '%' . strtolower(trim($f)) . '%';
-            $params[] = '%' . strtolower(trim($f)) . '%';
-        }
-    }
-    if (!empty($familyClauses)) {
-        $where[] = '(' . implode(' OR ', $familyClauses) . ')';
-    }
-}
-
+// Family is checked after fetching, against each perfume's own family list (see ppListHas)
 if ($brand) {
     $brands = explode(',', $brand);
     $brandClauses = [];
@@ -275,20 +261,7 @@ if ($season) {
     }
 }
 
-if ($occasion) {
-    $occasions = explode(',', $occasion);
-    $occClauses = [];
-    foreach ($occasions as $o) {
-        if (!empty(trim($o))) {
-            $occClauses[] = "LOWER(scent_profile_json) LIKE ?";
-            $params[] = '%' . strtolower(trim($o)) . '%';
-        }
-    }
-    if (!empty($occClauses)) {
-        $where[] = '(' . implode(' OR ', $occClauses) . ')';
-    }
-}
-
+// Occasion is checked after fetching, against each perfume's own occasion list (see ppListHas)
 if ($concentration) {
     // EDT / EDP / Parfum / Extrait as separate kinds ("Parfum" must not pick up "Eau de Parfum")
     $concClauses = [];
@@ -381,6 +354,25 @@ $sql = "SELECT * FROM products WHERE $whereClause ORDER BY $orderBy";
 $stmt = $db->prepare($sql);
 $stmt->execute($params);
 $products = $stmt->fetchAll();
+
+/** True when one of the wanted values is in the perfume's list (case and spacing around "/" ignored). */
+function ppListHas($list, array $wanted): bool {
+    if (!is_array($list)) return false;
+    $norm = fn($v) => preg_replace('/\s*\/\s*/', ' / ', strtolower(trim((string)$v)));
+    $have = array_map($norm, $list);
+    foreach ($wanted as $w) { if (in_array($norm($w), $have, true)) return true; }
+    return false;
+}
+$wantFamilies = $family ? array_values(array_filter(array_map('trim', explode(',', $family)))) : [];
+$wantOccasions = $occasion ? array_values(array_filter(array_map('trim', explode(',', $occasion)))) : [];
+if ($wantFamilies || $wantOccasions) {
+    $products = array_values(array_filter($products, function ($row) use ($wantFamilies, $wantOccasions) {
+        $sp = json_decode($row['scent_profile_json'] ?? '', true) ?: [];
+        if ($wantFamilies && !ppListHas($sp['fragranceFamilies'] ?? [], $wantFamilies)) return false;
+        if ($wantOccasions && !ppListHas($sp['occasions'] ?? [], $wantOccasions)) return false;
+        return true;
+    }));
+}
 
 // Fetch variants and images for all returned products
 $productIds = array_column($products, 'id');
