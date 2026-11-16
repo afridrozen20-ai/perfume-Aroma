@@ -1850,3 +1850,15 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-menu__list--shop .pp-menu__row,.pp-menu__list--shop .pp-menu__row>span{font-family:'Cormorant Garamond',Georgia,serif !important;font-size:29px;font-weight:500}
 .pp-menu__list--shop .pp-menu__row>span::before{font-family:ui-sans-serif,system-ui,sans-serif !important;font-size:10px !important}
 .pp-menu__tile b{font-family:'Cormorant Garamond',Georgia,serif !important}
+/* Menu v3: calmer type sizes */
+.pp-menu__list--shop .pp-menu__row,.pp-menu__list--shop .pp-menu__row>span{font-size:21px !important;line-height:1.15}
+.pp-menu__list--shop .pp-menu__row{padding:7px 0}
+.pp-menu__list--shop .pp-menu__row:not(.pp-menu__row--chips)>span::before{margin-top:3px}
+.pp-menu__row--chips{padding:0 0 8px 33px !important}
+.pp-menu__row--chips button{font-size:11.5px;padding:5px 12px}
+.pp-menu__tile b{font-size:18px}
+.pp-menu__tile{padding:12px 13px 11px}
+.pp-menu__list--help .pp-menu__row{font-size:13.5px;padding:11px 0}
+.pp-menu__wa{margin-top:24px;padding:12px 14px}
+.pp-menu__wa b{font-size:13.5px}
+.pp-menu__label{margin-top:24px}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Search, ChevronRight, ChevronDown, Sparkles, Truck, Ruler, Wallet, ShieldCheck } from 'lucide-react';
+import { X, Search, ChevronRight, ChevronDown, Sparkles, Truck, Ruler, Wallet } from 'lucide-react';
 import logoRound from '../assets/brand/logo-round.webp';
 import { useTheme } from '../context/ThemeContext';
 
@@ -132,12 +132,6 @@ const MenuDrawer: React.FC<Props> = ({ open, onClose, onOpenSearch, onOpenFinder
           <button type="button" className="pp-menu__row pp-menu__in" style={st()} onClick={go(() => onOpenCollection('/collections/all?size=1.5ml'))}>
             <span>1.5ml testers</span><ChevronRight className="w-4 h-4" />
           </button>
-          <button type="button" className="pp-menu__row pp-menu__in" style={st()} onClick={go(() => onOpenCollection('/collections/all?sort=best-selling'))}>
-            <span>Bestsellers</span><ChevronRight className="w-4 h-4" />
-          </button>
-          <button type="button" className="pp-menu__row pp-menu__in" style={st()} onClick={go(() => onOpenCollection('/collections/all?maxPrice=500&sort=price-asc'))}>
-            <span>Under ৳500</span><ChevronRight className="w-4 h-4" />
-          </button>
           <button type="button" className="pp-menu__row pp-menu__in" style={st()} onClick={go(() => onOpenCollection('#seasons'))}>
             <span>Shop by season</span><ChevronRight className="w-4 h-4" />
           </button>
@@ -168,14 +162,6 @@ const MenuDrawer: React.FC<Props> = ({ open, onClose, onOpenSearch, onOpenFinder
             <div className="pp-menu__drop pp-menu__table">
               {fees.map(([z, f]) => (<div key={z}><b>{z}</b><span>৳{f}</span><i /></div>))}
               <p className="pp-menu__note">Cash on delivery. Free delivery over ৳{freeAt}.</p>
-            </div>
-          )}
-          <button type="button" className="pp-menu__row pp-menu__in" style={st()} onClick={() => toggle('auth')} aria-expanded={panel === 'auth'}>
-            <span><ShieldCheck className="w-4 h-4" />100% authentic promise</span><ChevronDown className={`w-4 h-4 pp-menu__chev ${panel === 'auth' ? 'is-on' : ''}`} />
-          </button>
-          {panel === 'auth' && (
-            <div className="pp-menu__drop">
-              <p className="pp-menu__note">Every decant is filled by hand from the original bottle into a clean glass atomiser. No copies, no mixing.</p>
             </div>
           )}
         </div>
