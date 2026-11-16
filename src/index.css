@@ -1682,3 +1682,9 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-sotw__grid .pp-sotw__go{font-size:14px;color:#1d1d1b;opacity:.55;transition:transform .3s,opacity .3s}
 .pp-sotw__grid .pp-sotw__card:hover .pp-sotw__go{transform:translateX(3px);opacity:1}
 @media (min-width:640px){.pp-sotw__grid .pp-sotw__card{height:350px}}
+/* Collection grid v3: clean white cards, the bottle on show */
+.pp-sotw__grid .pp-sotw__card{background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.05),0 14px 30px -20px rgba(0,0,0,.28)}
+.pp-sotw__grid .pp-sotw__aura,.pp-sotw__grid .pp-sotw__card::before{display:none}
+.pp-sotw__grid .pp-sotw__img{top:12px;height:66%;max-width:90%;border-radius:12px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.16))}
+.pp-sotw__grid .pp-sotw__card:hover .pp-sotw__img,.pp-sotw__grid .pp-sotw__card:active .pp-sotw__img{filter:drop-shadow(0 16px 18px rgba(0,0,0,.2))}
+.pp-sotw__grid .pp-sotw__glass{background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;left:0;right:0;bottom:0;border-radius:0;padding:8px 12px 12px}
