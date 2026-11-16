@@ -1866,3 +1866,7 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-fbreel{position:relative;width:100%;border-radius:12px;overflow:hidden;background:#000;box-shadow:0 0 0 .5px rgba(0,0,0,.08),0 10px 30px -14px rgba(0,0,0,.25)}
 .pp-fbreel iframe{display:block;width:100%;aspect-ratio:9/16;border:0}
 .pp-fbreel__link{display:block;padding:11px 14px;background:#fff;font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-align:center;color:#111}
+/* Studio: Facebook reel sized like its Instagram neighbours */
+.pp-fbreel{min-width:326px}
+.pp-fbreel iframe{aspect-ratio:3/4}
+@media (min-width:640px){.pp-fbreel{min-width:0}}
