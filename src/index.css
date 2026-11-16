@@ -1665,3 +1665,8 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-sotw__grid .pp-sotw__card.is-open .pp-sotw__name{font-size:13.5px;margin-bottom:5px}
 .pp-sotw__grid .pp-sotw__card.is-open .pp-sotw__add{width:26px;height:26px}
 @media (min-width:640px){.pp-sotw__grid .pp-sotw__card{height:340px}.pp-sotw__grid .pp-sotw__name{font-size:17px}}
+.pp-sotw__grid .pp-sotw__chips{flex-wrap:wrap;overflow:visible}
+.pp-sotw__grid .pp-sotw__chip{flex:1 1 calc(50% - 5px);min-width:0;padding:3px 4px}
+.pp-sotw__grid .pp-sotw__card.is-open .pp-sotw__sizes{max-height:170px}
+.pp-sotw__grid .pp-sotw__card.is-open .pp-sotw__img{transform:translateX(-50%) translateY(-30px) scale(.46)}
+@media (min-width:640px){.pp-sotw__grid .pp-sotw__chip{flex-basis:calc(33% - 5px)}}
