@@ -1604,3 +1604,13 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-scard__copy{background:linear-gradient(180deg,rgba(255,255,255,0) 35%,rgba(255,255,255,.35) 70%,rgba(255,255,255,.5))}
 .pp-scard .pp-sh__land{height:55%}
 .pp-scard .pp-sh__branch{width:80%}
+/* cards: text on top, scenery visible below */
+.pp-scard__copy{background:none;justify-content:space-between;padding:20px 18px 18px}
+.pp-scard__copy .pp-scard__go{margin-top:auto;background:rgba(255,255,255,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-color:rgba(255,255,255,.8)}
+.pp-scard__name{order:0}
+.pp-scard__desc{order:1;max-width:92%}
+.pp-scard .pp-sh__land{height:64%}
+.pp-sh__copy::before{background:radial-gradient(closest-side,rgba(255,255,255,.35),rgba(255,255,255,0))}
+.pp-sh--summer .pp-sh__sun{left:auto;right:-50px;top:-50px}
+.pp-scard.pp-sh--spring .pp-scard__copy{padding-top:96px}
+.pp-scard .pp-sh__branch{width:70%}

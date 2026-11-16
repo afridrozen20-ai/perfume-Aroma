@@ -85,8 +85,10 @@ export const SeasonsGallery: React.FC<SeasonsGalleryProps> = ({
               <span className="pp-sh__grain" aria-hidden="true" />
               <span className="pp-sh__sheen" aria-hidden="true" />
               <div className="pp-scard__copy">
-                <p className="pp-scard__name">{seasonName}</p>
-                <p className="pp-scard__desc">{card.description}</p>
+                <div>
+                  <p className="pp-scard__name">{seasonName}</p>
+                  <p className="pp-scard__desc">{card.description}</p>
+                </div>
                 <span className="pp-scard__go">Explore <span aria-hidden="true">→</span></span>
               </div>
             </div>
