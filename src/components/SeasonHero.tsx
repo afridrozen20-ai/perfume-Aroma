@@ -18,20 +18,16 @@ const rnd = (seed: number) => { let s = seed; return () => { s = (s * 9301 + 492
 export const isSeason = (s: string | undefined | null): s is SeasonName =>
   s === 'Summer' || s === 'Winter' || s === 'Autumn' || s === 'Spring';
 
-export const SeasonHero: React.FC<{ season: SeasonName; count: number }> = ({ season, count }) => {
+export const SeasonArt: React.FC<{ season: SeasonName; scale?: number }> = ({ season, scale = 1 }) => {
   const parts = useMemo(() => {
     const r = rnd(season.length * 97 + 13);
-    const n = season === 'Winter' ? 22 : season === 'Summer' ? 7 : 9;
+    const n = Math.round((season === 'Winter' ? 22 : season === 'Summer' ? 7 : 9) * scale);
     return Array.from({ length: n }, () => ({
       x: r() * 100, s: r(), d: -r() * 12, t: 9 + r() * 7, sway: 8 + r() * 22,
     }));
   }, [season]);
 
-  const k = season.toLowerCase();
-  const c = COPY[season];
-
   return (
-    <section className={`pp-sh pp-sh--${k}`} aria-label={`${season} perfumes`}>
       <div className="pp-sh__art" aria-hidden="true">
         {season === 'Summer' && (
           <>
@@ -78,6 +74,16 @@ export const SeasonHero: React.FC<{ season: SeasonName; count: number }> = ({ se
           </svg>
         ))}
       </div>
+  );
+};
+
+export const SeasonHero: React.FC<{ season: SeasonName; count: number }> = ({ season, count }) => {
+  const k = season.toLowerCase();
+  const c = COPY[season];
+
+  return (
+    <section className={`pp-sh pp-sh--${k}`} aria-label={`${season} perfumes`}>
+      <SeasonArt season={season} />
 
       <span className="pp-sh__grain" aria-hidden="true" />
       <span className="pp-sh__sheen" aria-hidden="true" />

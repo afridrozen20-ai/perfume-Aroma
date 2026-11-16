@@ -1,3 +1,4 @@
+import { SeasonArt, isSeason } from './SeasonHero';
 import React from 'react';
 import { IMAGES } from '../data/fragranceData';
 import { SeasonsGalleryData, SeasonCardData } from '../types';
@@ -71,6 +72,26 @@ export const SeasonsGallery: React.FC<SeasonsGalleryProps> = ({
           }
           onNavigateToCollection('all');
         };
+        const hasPhoto = !!card.image && !/\/season_[a-z_]+_\d+/.test(card.image);
+        if (!hasPhoto && isSeason(seasonName)) {
+          // No photo: show the same animated season art as the season page
+          return (
+            <div
+              key={card.id}
+              onClick={openSeason}
+              className={`pp-sh pp-sh--${seasonName.toLowerCase()} pp-scard flex-shrink-0 w-[240px] sm:w-auto cursor-pointer aspect-[3/4] sm:aspect-[9/13]`}
+            >
+              <SeasonArt season={seasonName} scale={0.7} />
+              <span className="pp-sh__grain" aria-hidden="true" />
+              <span className="pp-sh__sheen" aria-hidden="true" />
+              <div className="pp-scard__copy">
+                <p className="pp-scard__name">{seasonName}</p>
+                <p className="pp-scard__desc">{card.description}</p>
+                <span className="pp-scard__go">Explore <span aria-hidden="true">→</span></span>
+              </div>
+            </div>
+          );
+        }
         return (
           <div
             key={card.id}
