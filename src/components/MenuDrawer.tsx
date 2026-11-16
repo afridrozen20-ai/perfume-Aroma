@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Search, ChevronRight, ChevronDown, Sparkles, Gift, Package, Truck, Ruler, Wallet, ShieldCheck } from 'lucide-react';
+import { X, Search, ChevronRight, ChevronDown, Sparkles, Truck, Ruler, Wallet, ShieldCheck } from 'lucide-react';
 import logoRound from '../assets/brand/logo-round.webp';
 import { useTheme } from '../context/ThemeContext';
 
@@ -91,14 +91,14 @@ const MenuDrawer: React.FC<Props> = ({ open, onClose, onOpenSearch, onOpenFinder
 
         <div className="pp-menu__tiles pp-menu__in" style={st()}>
           <button type="button" className={`pp-menu__tile pp-menu__tile--combo ${panel === 'combo' ? 'is-on' : ''}`} onClick={() => toggle('combo')}>
-            <Gift className="w-5 h-5" />
-            <b>Combo offers</b>
-            <span>Bundle & save</span>
+            <span className="pp-menu__k">Offer</span>
+            <b>Combos</b>
+            <span>Bundle & save →</span>
           </button>
           <button type="button" className={`pp-menu__tile pp-menu__tile--gift ${panel === 'gift' ? 'is-on' : ''}`} onClick={() => toggle('gift')}>
-            <Package className="w-5 h-5" />
+            <span className="pp-menu__k">Gifting</span>
             <b>Gift box</b>
-            <span>With a handwritten note</span>
+            <span>With your note →</span>
           </button>
         </div>
 
@@ -120,7 +120,7 @@ const MenuDrawer: React.FC<Props> = ({ open, onClose, onOpenSearch, onOpenFinder
         )}
 
         <p className="pp-menu__label pp-menu__in" style={st()}>Shop</p>
-        <nav className="pp-menu__list">
+        <nav className="pp-menu__list pp-menu__list--shop">
           <button type="button" className="pp-menu__row pp-menu__in" style={st()} onClick={go(() => onOpenCollection('/collections/all?sort=newest'))}>
             <span>New arrivals</span><ChevronRight className="w-4 h-4" />
           </button>
@@ -149,7 +149,7 @@ const MenuDrawer: React.FC<Props> = ({ open, onClose, onOpenSearch, onOpenFinder
         </nav>
 
         <p className="pp-menu__label pp-menu__in" style={st()}>Help</p>
-        <div className="pp-menu__list">
+        <div className="pp-menu__list pp-menu__list--help">
           <a className="pp-menu__row pp-menu__in" style={st()} href={wa(phone, 'Hi! Where is my parcel? My order phone number is: ')} target="_blank" rel="noreferrer">
             <span><Truck className="w-4 h-4" />Track my order</span><ChevronRight className="w-4 h-4" />
           </a>
