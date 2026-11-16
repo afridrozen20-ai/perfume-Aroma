@@ -1642,3 +1642,26 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-new__more button{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;padding:12px 22px;border:1px solid var(--theme-primary);color:var(--theme-primary);background:transparent;cursor:pointer;transition:background .2s,color .2s}
 .pp-new__more button:hover{background:var(--theme-primary);color:var(--theme-bg)}
 .pp-sotw__card{overflow:clip}
+/* Collection pages: the glass cards in a grid, with the size & price pop-up */
+.pp-cgrid{display:block}
+.pp-sotw__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (min-width:640px){.pp-sotw__grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}}
+@media (min-width:1280px){.pp-sotw__grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.pp-sotw__grid .pp-sotw__card{flex:none;max-width:none;width:100%;height:292px;border-radius:22px}
+.pp-sotw__grid .pp-sotw__img{top:22px;height:54%;max-width:86%}
+.pp-sotw__grid .pp-sotw__glass{left:7px;right:7px;bottom:7px;padding:9px 9px 8px;border-radius:16px}
+.pp-sotw__grid .pp-sotw__brand{font-size:8px;letter-spacing:.12em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-sotw__grid .pp-sotw__name{font-size:15px;line-height:1.15;margin:2px 0 6px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.pp-sotw__grid .pp-sotw__g{display:none}
+.pp-sotw__grid .pp-sotw__row{justify-content:space-between}
+.pp-sotw__grid .pp-sotw__price{margin-left:0;font-size:12px}
+.pp-sotw__grid .pp-sotw__add{width:28px;height:28px}
+.pp-sotw__grid .pp-sotw__chips{gap:5px}
+.pp-sotw__grid .pp-sotw__chip{padding:4px 7px;flex:0 0 auto}
+.pp-sotw__grid .pp-sotw__chip b{font-size:10px}
+.pp-sotw__grid .pp-sotw__chip span{font-size:9.5px}
+.pp-sotw__grid .pp-sotw__buy{height:30px;flex-basis:30px;font-size:9.5px;letter-spacing:.08em}
+.pp-sotw__grid .pp-sotw__card.is-open .pp-sotw__img{transform:translateX(-50%) translateY(-26px) scale(.58)}
+.pp-sotw__grid .pp-sotw__card.is-open .pp-sotw__name{font-size:13.5px;margin-bottom:5px}
+.pp-sotw__grid .pp-sotw__card.is-open .pp-sotw__add{width:26px;height:26px}
+@media (min-width:640px){.pp-sotw__grid .pp-sotw__card{height:340px}.pp-sotw__grid .pp-sotw__name{font-size:17px}}

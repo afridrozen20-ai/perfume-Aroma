@@ -1,3 +1,4 @@
+import GlassRail from './GlassRail';
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   ChevronRight,
@@ -1162,7 +1163,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                   <button type="button" onClick={() => setTesterQ('')}>{isTesterView ? 'Show all testers' : 'Show all'}</button>
                 </div>
               ) : (
-              <div className={isTesterView ? "pp-tgrid" : "grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6"}>
+              <div className={isTesterView ? "pp-tgrid" : "pp-cgrid"}>
                 {shownTesters.map((product) => (
                   isTesterView ? (
                     <TesterCard
@@ -1174,14 +1175,18 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                       onUpdateQty={onUpdateQty}
                     />
                   ) : (
-                  <CollectionProductCard
-                    key={product.id}
-                    product={product}
-                    onNavigateToProduct={onNavigateToProduct}
-                    onAddToCart={onAddToCart}
-                  />
+                  null
                   )
                 ))}
+                {!isTesterView && (
+                  <GlassRail
+                    layout="grid"
+                    products={shownTesters}
+                    highlightFirst={false}
+                    onSelectProduct={onNavigateToProduct}
+                    onAddToCart={(p, size, price) => onAddToCart(p, size, price, 1)}
+                  />
+                )}
               </div>
               )
             )}

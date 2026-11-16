@@ -12,12 +12,14 @@ interface Props {
   highlightFirst?: boolean;
   /** Slowly glide the rail on its own (loops seamlessly, pauses on touch). */
   autoScroll?: boolean;
+  /** 'grid' lays the same cards out in columns (collection pages). */
+  layout?: 'rail' | 'grid';
   onSelectProduct: (p: FragranceProduct) => void;
   onAddToCart: (p: FragranceProduct, size: string, price: number) => void;
 }
 
 /** Liquid-glass product cards: bottle-coloured aura, size picker, add to bag. */
-const GlassRail: React.FC<Props> = ({ products, badge, highlightFirst = true, autoScroll = false, onSelectProduct, onAddToCart }) => {
+const GlassRail: React.FC<Props> = ({ products, badge, highlightFirst = true, autoScroll = false, layout = 'rail', onSelectProduct, onAddToCart }) => {
   const [added, setAdded] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [sizeSel, setSizeSel] = useState<Record<string, number>>({});
@@ -26,7 +28,7 @@ const GlassRail: React.FC<Props> = ({ products, badge, highlightFirst = true, au
   const openRef = useRef<string | null>(null);
   openRef.current = openId;
 
-  const loop = autoScroll && products.length > 2;
+  const loop = layout === 'rail' && autoScroll && products.length > 2;
   const items = loop ? [...products, ...products] : products;
 
   useEffect(() => {
@@ -66,7 +68,7 @@ const GlassRail: React.FC<Props> = ({ products, badge, highlightFirst = true, au
   }, [loop]);
 
   return (
-      <div ref={railRef} className={`pp-sotw__rail no-scrollbar ${loop ? 'is-auto' : ''}`}>
+      <div ref={railRef} className={layout === 'grid' ? 'pp-sotw__grid' : `pp-sotw__rail no-scrollbar ${loop ? 'is-auto' : ''}`}>
         {items.map((p, i) => {
           const sizes = p.sizes || [];
           const firstOpen = Math.max(0, sizes.findIndex((s) => !s.soldOut));
@@ -81,7 +83,7 @@ const GlassRail: React.FC<Props> = ({ products, badge, highlightFirst = true, au
               key={id}
               aria-hidden={copy === 1 ? true : undefined}
               className={`pp-sotw__card ${i === 0 && highlightFirst ? 'is-first' : ''} ${isOpen ? 'is-open' : ''}`}
-              style={{ '--img': `url("${thumb(p.image, 160)}")`, animationDelay: `${(i % products.length) * 0.08}s` } as React.CSSProperties}
+              style={{ '--img': `url("${thumb(p.image, 160)}")`, animationDelay: layout === 'grid' ? `${Math.min(i, 8) * 0.05}s` : `${(i % products.length) * 0.08}s` } as React.CSSProperties}
               onClick={() => (isOpen ? setOpenId(null) : onSelectProduct(p))}
             >
               <span className="pp-sotw__aura" aria-hidden="true" />
