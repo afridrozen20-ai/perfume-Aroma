@@ -444,7 +444,9 @@ $formattedList = array_map(function($p) use ($variantsByProduct, $imagesByProduc
         'scent_profile' => $scentProfile,
         'sizes' => $sizes,
         'shortDescription' => $p['short_description'],
-        'description' => $p['description'] ?? ''
+        'description' => $p['description'] ?? '',
+        'createdAt' => $p['created_at'] ?? null,
+        'isNewArrival' => !empty($p['is_new_arrival'])
     ];
 }, $products);
 
