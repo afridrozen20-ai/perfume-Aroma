@@ -1583,3 +1583,24 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-scard__go{margin-top:12px;align-self:flex-start;display:inline-flex;gap:6px;align-items:center;padding:7px 14px;border-radius:999px;border:.5px solid currentColor;font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:600;opacity:.85;transition:opacity .3s,gap .3s}
 .pp-scard:hover .pp-scard__go{opacity:1;gap:10px}
 @media (min-width:640px){.pp-scard__name{font-size:34px}}
+
+/* Season landscapes */
+.pp-sh__land{position:absolute;left:0;right:0;bottom:0;width:100%;height:62%;z-index:1}
+.pp-sh__sun{z-index:0}
+.pp-sh__haze,.pp-sh__glint,.pp-sh__snow,.pp-sh__leaf,.pp-sh__petal{z-index:2}
+.pp-sh__haze{bottom:18%;height:40%}
+.pp-sh__l1{animation:ppShDune 14s ease-in-out infinite alternate}
+.pp-sh__l2{animation:ppShDune 18s ease-in-out infinite alternate-reverse}
+@keyframes ppShDune{from{transform:translateX(-6px)}to{transform:translateX(6px)}}
+.pp-sh--summer{background:linear-gradient(180deg,#fbeedb 0%,#f8dcb3 45%,#f1c592 100%)}
+.pp-sh--summer .pp-sh__sun{right:auto;left:58%;top:-30px}
+.pp-sh--winter{background:linear-gradient(180deg,#eef3f8 0%,#d9e3ee 50%,#c3d2e2 100%)}
+.pp-sh--autumn{background:linear-gradient(180deg,#f8ecdc 0%,#f0d3ad 50%,#e5b886 100%)}
+.pp-sh--spring{background:linear-gradient(180deg,#fbf8f3 0%,#f1f3e6 50%,#e3eedb 100%)}
+.pp-sh__branch{position:absolute;left:-6px;top:-4px;width:58%;max-width:260px;z-index:2;filter:drop-shadow(0 4px 6px rgba(80,50,40,.15));transform-origin:0 0;animation:ppShBranch 7s ease-in-out infinite}
+@keyframes ppShBranch{50%{transform:rotate(1.5deg)}}
+/* copy sits on a soft light veil so it stays readable over the scenery */
+.pp-sh__copy::before{content:"";position:absolute;inset:-40px -60px -30px -40px;z-index:-1;background:radial-gradient(closest-side,rgba(255,255,255,.55),rgba(255,255,255,0));pointer-events:none}
+.pp-scard__copy{background:linear-gradient(180deg,rgba(255,255,255,0) 35%,rgba(255,255,255,.35) 70%,rgba(255,255,255,.5))}
+.pp-scard .pp-sh__land{height:55%}
+.pp-scard .pp-sh__branch{width:80%}
