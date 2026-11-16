@@ -110,11 +110,6 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
           </button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-zinc-800 text-center">
-          <p className="text-[11px] text-zinc-500">
-            Default credentials: <span className="text-zinc-300 font-mono">admin</span> / <span className="text-zinc-300 font-mono">admin123</span>
-          </p>
-        </div>
       </div>
     </div>
   );

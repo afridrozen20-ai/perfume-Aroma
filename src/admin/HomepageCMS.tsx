@@ -11,7 +11,7 @@ interface HomepageCMSProps {
 }
 
 export const HomepageCMS: React.FC<HomepageCMSProps> = ({ csrfToken }) => {
-  const [activeTab, setActiveTab] = useState<'hero' | 'scentweek' | 'campaigns' | 'seasons' | 'video' | 'sections' | 'marquee' | 'reviews' | 'faqs' | 'articles'>('hero');
+  const [activeTab, setActiveTab] = useState<'hero' | 'scentweek' | 'campaigns' | 'seasons' | 'video' | 'sections' | 'marquee' | 'reviews' | 'faqs' | 'articles'>('scentweek');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [availableProducts, setAvailableProducts] = useState<Array<{ id: string; name: string; brand: string; image?: string }>>([]);
@@ -758,15 +758,12 @@ export const HomepageCMS: React.FC<HomepageCMSProps> = ({ csrfToken }) => {
       {/* Tabs */}
       <div className="flex border-b border-[#EAEAEA] space-x-2 overflow-x-auto">
         {[
-          { id: 'hero', label: 'Hero Banner' },
           { id: 'scentweek', label: 'Scent of the Week' },
           { id: 'campaigns', label: 'For Him / Her Banners' },
           { id: 'seasons', label: 'Seasons Gallery' },
           { id: 'video', label: 'Video Showcase Cards' },
           { id: 'sections', label: 'Custom Product Sections' },
-          { id: 'marquee', label: 'Marquee Ticker' },
-          { id: 'reviews', label: 'Customer Reviews' },
-          { id: 'articles', label: 'Journal Articles' }
+          { id: 'reviews', label: 'Customer Reviews' }
         ].map((tab) => (
           <button
             key={tab.id}

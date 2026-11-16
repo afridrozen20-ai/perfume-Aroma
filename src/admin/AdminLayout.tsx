@@ -26,12 +26,10 @@ import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { SearchInsights } from './SearchInsights';
 import { PerfumeStock } from './PerfumeStock';
 import { ProductManager } from './ProductManager';
-import { CollectionManager } from './CollectionManager';
 import { OrderManager } from './OrderManager';
 import { CustomerManager } from './CustomerManager';
 import { HomepageCMS } from './HomepageCMS';
 import { SettingsCMS } from './SettingsCMS';
-import { MediaManager } from './MediaManager';
 import { InventoryManager } from './InventoryManager';
 
 interface AdminLayoutProps {
@@ -67,15 +65,12 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const navItems = [
     { id: 'today', label: 'Today', icon: Sun, desc: 'New orders, packing & low stock' },
     { id: 'courier', label: 'Courier', icon: Truck, desc: 'Parcel status, tracking links & cancel' },
-    { id: 'analytics', label: 'Analytics & Insights', icon: BarChart3, desc: 'Sales performance & metrics' },
-    { id: 'search_analytics', label: 'Search Analytics', icon: Search, desc: 'What customers look for' },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3, desc: 'Sales and what customers search for' },
     { id: 'perfumes', label: 'Perfumes & Stock', icon: FlaskConical, desc: 'Prices, ml left & offline orders' },
-    { id: 'collections', label: 'Collections & Categories', icon: Layers, desc: 'Organize store taxonomy' },
     { id: 'orders', label: 'Orders & Invoices', icon: ShoppingBag, desc: 'Track customer orders' },
     { id: 'customers', label: 'Customer Directory', icon: Users, desc: 'Customer accounts & contact' },
     { id: 'homepage', label: 'Website Content', icon: LayoutDashboard, desc: 'Homepage sections & banners' },
-    { id: 'settings', label: 'Store Settings', icon: Settings, desc: 'Preferences & configurations' },
-    { id: 'media', label: 'Media Library', icon: ImageIcon, desc: 'Uploaded images & media' }
+    { id: 'settings', label: 'Store Settings', icon: Settings, desc: 'Delivery fees, phone & links' }
   ] as const;
 
   const activeNavItem = navItems.find(item => item.id === activeTab);
@@ -369,8 +364,12 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         }`}>
           {activeTab === 'today' && <TodayBoard csrfToken={csrfToken} onOpenCourier={() => setActiveTab('courier')} />}
           {activeTab === 'courier' && <CourierPage csrfToken={csrfToken} />}
-          {activeTab === 'analytics' && <AnalyticsDashboard csrfToken={csrfToken} />}
-          {activeTab === 'search_analytics' && <SearchInsights csrfToken={csrfToken} />}
+          {activeTab === 'analytics' && (
+            <div className="space-y-8">
+              <AnalyticsDashboard csrfToken={csrfToken} />
+              <SearchInsights csrfToken={csrfToken} />
+            </div>
+          )}
           {activeTab === 'perfumes' && (
             <PerfumeStock
               csrfToken={csrfToken}
@@ -385,12 +384,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           )}
           {activeTab === 'products' && <ProductManager csrfToken={csrfToken} />}
           {activeTab === 'inventory' && <InventoryManager csrfToken={csrfToken} />}
-          {activeTab === 'collections' && <CollectionManager csrfToken={csrfToken} />}
           {activeTab === 'orders' && <OrderManager csrfToken={csrfToken} />}
           {activeTab === 'customers' && <CustomerManager csrfToken={csrfToken} />}
           {activeTab === 'homepage' && <HomepageCMS csrfToken={csrfToken} />}
           {activeTab === 'settings' && <SettingsCMS csrfToken={csrfToken} />}
-          {activeTab === 'media' && <MediaManager csrfToken={csrfToken} />}
         </main>
       </div>
     </div>
