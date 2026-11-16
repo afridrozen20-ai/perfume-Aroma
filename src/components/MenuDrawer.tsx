@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Search, ChevronRight, ChevronDown, Sparkles, Gift, Package, Truck, Ruler, Wallet, ShieldCheck } from 'lucide-react';
 import logoRound from '../assets/brand/logo-round.webp';
 import { useTheme } from '../context/ThemeContext';
@@ -69,7 +70,7 @@ const MenuDrawer: React.FC<Props> = ({ open, onClose, onOpenSearch, onOpenFinder
   let n = 0;
   const st = () => ({ '--i': n++ } as React.CSSProperties);
 
-  return (
+  return createPortal(
     <div className={`pp-menu ${closing ? 'is-closing' : ''}`} role="dialog" aria-modal="true" aria-label="Menu">
       <div className="pp-menu__veil" onClick={close} />
       <aside className="pp-menu__sheet" data-lenis-prevent>
@@ -204,7 +205,8 @@ const MenuDrawer: React.FC<Props> = ({ open, onClose, onOpenSearch, onOpenFinder
           </div>
         </div>
       </aside>
-    </div>
+    </div>,
+    document.body,
   );
 };
 
