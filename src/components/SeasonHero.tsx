@@ -25,33 +25,69 @@ const Land: React.FC<{ season: SeasonName }> = ({ season }) => {
   if (season === 'Summer') return (
     <svg className="pp-sh__land pp-sh__land--summer" viewBox="0 0 400 200" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
       <defs>
-        <linearGradient id={`${id}a`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#f6dcb4" /><stop offset="1" stopColor="#eec493" /></linearGradient>
-        <linearGradient id={`${id}b`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ecbb84" /><stop offset=".55" stopColor="#dd9f68" /><stop offset="1" stopColor="#c98455" /></linearGradient>
-        <linearGradient id={`${id}c`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#d99560" /><stop offset=".6" stopColor="#c27a4b" /><stop offset="1" stopColor="#a8633c" /></linearGradient>
+        <linearGradient id={`${id}lit`} x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#ffd99a" /><stop offset="1" stopColor="#f6b866" /></linearGradient>
+        <linearGradient id={`${id}sh`} x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#d98a48" /><stop offset="1" stopColor="#c06f37" /></linearGradient>
+        <linearGradient id={`${id}lit2`} x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#f7b766" /><stop offset="1" stopColor="#ea9a4e" /></linearGradient>
+        <linearGradient id={`${id}sh2`} x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#c8723a" /><stop offset="1" stopColor="#a85a2c" /></linearGradient>
+        <linearGradient id={`${id}fr`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#e39b55" /><stop offset="1" stopColor="#b8642f" /></linearGradient>
       </defs>
-      <path className="pp-sh__l1" d="M0 120 C60 96 110 92 170 108 C230 124 280 100 340 96 C370 94 390 100 400 104 L400 200 L0 200 Z" fill={`url(#${id}a)`} />
-      <path className="pp-sh__l2" d="M0 150 C50 124 120 118 190 140 C250 158 300 132 360 126 C380 124 395 128 400 130 L400 200 L0 200 Z" fill={`url(#${id}b)`} />
-      <path d="M190 140 C220 150 245 152 268 146" stroke="#f6d7ab" strokeWidth="1" fill="none" opacity=".7" />
-      <path className="pp-sh__l3" d="M0 178 C70 156 140 160 210 176 C270 190 330 168 400 164 L400 200 L0 200 Z" fill={`url(#${id}c)`} />
-      <path d="M40 172 C80 162 120 162 160 170" stroke="#e9b27c" strokeWidth=".8" fill="none" opacity=".6" />
+      {/* far dunes: sunlit face + shadow face split along the crest */}
+      <g className="pp-sh__l1">
+        <path d="M0 122 C40 108 70 98 110 92 C150 98 170 112 210 120 L210 200 L0 200 Z" fill={`url(#${id}lit)`} />
+        <path d="M110 92 C140 104 170 116 210 120 C240 112 270 100 300 94 L300 200 L110 200 Z" fill={`url(#${id}sh)`} opacity=".55" />
+        <path d="M210 120 C250 108 270 98 300 94 C340 100 370 110 400 114 L400 200 L210 200 Z" fill={`url(#${id}lit)`} />
+        <path d="M0 122 C40 108 70 98 110 92 C140 104 170 116 210 120 C250 108 270 98 300 94 C340 100 370 110 400 114" stroke="#fff1d2" strokeWidth="1.2" fill="none" opacity=".9" />
+      </g>
+      {/* middle dune */}
+      <g className="pp-sh__l2">
+        <path d="M0 160 C50 142 100 132 150 128 C200 134 240 150 290 158 L290 200 L0 200 Z" fill={`url(#${id}lit2)`} />
+        <path d="M150 128 C190 140 230 152 290 158 C320 150 360 140 400 138 L400 200 L150 200 Z" fill={`url(#${id}sh2)`} />
+        <path d="M0 160 C50 142 100 132 150 128 C190 140 230 152 290 158 C320 150 360 140 400 138" stroke="#ffe4b5" strokeWidth="1" fill="none" opacity=".85" />
+        <path d="M30 168 C70 158 110 152 140 150 M60 176 C100 166 140 160 170 160" stroke="#fbd193" strokeWidth=".7" fill="none" opacity=".7" />
+      </g>
+      {/* front sand with ripples */}
+      <path d="M0 182 C80 168 160 170 240 180 C300 188 350 178 400 174 L400 200 L0 200 Z" fill={`url(#${id}fr)`} />
+      <path d="M20 190 C70 182 120 182 170 188 M220 192 C270 184 320 184 370 186" stroke="#f0b26d" strokeWidth=".8" fill="none" opacity=".75" />
     </svg>
   );
   if (season === 'Winter') {
-    const tree = (x: number, y: number, h: number, c: string) => (
-      <g transform={`translate(${x} ${y})`} fill={c}>
-        <path d={`M0 ${-h} L${h * 0.32} ${-h * 0.45} L${h * 0.14} ${-h * 0.45} L${h * 0.4} 0 L${-h * 0.4} 0 L${-h * 0.14} ${-h * 0.45} L${-h * 0.32} ${-h * 0.45} Z`} />
-      </g>
-    );
+    const pine = (x: number, y: number, h: number, dark: string) => {
+      const w = h * 0.42;
+      const tiers = [0, 0.3, 0.58];
+      return (
+        <g transform={`translate(${x} ${y})`}>
+          <rect x={-1.6} y={-h * 0.12} width="3.2" height={h * 0.14} fill="#4a3a33" />
+          {tiers.map((t, i) => {
+            const top = -h + t * h, base = -h * 0.12 - (2 - i) * h * 0.12, half = w * (0.55 + i * 0.22);
+            return (
+              <g key={i}>
+                <path d={`M0 ${top} L${half} ${base} L${-half} ${base} Z`} fill={dark} />
+                <path d={`M0 ${top} L${half * 0.55} ${top + (base - top) * 0.55} L${half * 0.2} ${top + (base - top) * 0.5} L0 ${top + (base - top) * 0.62} L${-half * 0.2} ${top + (base - top) * 0.5} L${-half * 0.55} ${top + (base - top) * 0.55} Z`} fill="#ffffff" opacity=".92" />
+                <path d={`M${-half} ${base} L${half} ${base}`} stroke="#ffffff" strokeWidth="1.6" strokeLinecap="round" opacity=".9" />
+              </g>
+            );
+          })}
+        </g>
+      );
+    };
     return (
       <svg className="pp-sh__land pp-sh__land--winter" viewBox="0 0 400 200" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
         <defs>
-          <linearGradient id={`${id}m`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ffffff" /><stop offset="1" stopColor="#c9d6e4" /></linearGradient>
-          <linearGradient id={`${id}g`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ffffff" /><stop offset="1" stopColor="#e6edf4" /></linearGradient>
+          <linearGradient id={`${id}lit`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ffffff" /><stop offset="1" stopColor="#d4e2f0" /></linearGradient>
+          <linearGradient id={`${id}sh`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#a9c1dc" /><stop offset="1" stopColor="#7f9cc0" /></linearGradient>
+          <linearGradient id={`${id}g`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ffffff" /><stop offset="1" stopColor="#dfe9f4" /></linearGradient>
         </defs>
-        <path d="M0 132 L40 104 L70 120 L118 76 L160 116 L196 96 L240 124 L292 82 L336 114 L372 98 L400 110 L400 200 L0 200 Z" fill={`url(#${id}m)`} opacity=".85" />
-        <path d="M118 76 L104 90 L114 88 L120 96 L128 86 L136 92 Z M292 82 L280 94 L290 92 L296 100 L304 90 L312 95 Z" fill="#ffffff" />
-        {tree(30, 166, 40, '#7d93ad')}{tree(58, 170, 30, '#8ea2ba')}{tree(330, 168, 44, '#7d93ad')}{tree(360, 172, 32, '#8ea2ba')}{tree(300, 174, 24, '#9aaec4')}
-        <path d="M0 166 C80 150 150 156 220 168 C290 180 340 160 400 158 L400 200 L0 200 Z" fill={`url(#${id}g)`} />
+        {/* mountains: light face / shadow face */}
+        <path d="M-10 140 L60 78 L120 140 Z" fill={`url(#${id}lit)`} />
+        <path d="M60 78 L120 140 L84 140 Z" fill={`url(#${id}sh)`} />
+        <path d="M80 140 L180 50 L290 140 Z" fill={`url(#${id}lit)`} />
+        <path d="M180 50 L290 140 L210 140 C214 120 200 100 196 80 Z" fill={`url(#${id}sh)`} />
+        <path d="M250 140 L340 70 L420 140 Z" fill={`url(#${id}lit)`} />
+        <path d="M340 70 L420 140 L360 140 Z" fill={`url(#${id}sh)`} />
+        <path d="M180 50 L166 64 L174 63 L180 70 L188 62 L196 66 Z M60 78 L52 86 L58 86 L62 92 L68 86 Z M340 70 L330 80 L338 79 L343 85 L350 78 Z" fill="#ffffff" />
+        <path d="M0 150 C90 136 170 140 250 150 C320 158 360 146 400 144 L400 200 L0 200 Z" fill="#eef4fa" />
+        {pine(34, 178, 54, '#2f5566')}{pine(66, 182, 40, '#3c6476')}{pine(318, 180, 58, '#2f5566')}{pine(352, 184, 42, '#3c6476')}{pine(288, 186, 30, '#4a7286')}{pine(98, 188, 28, '#4a7286')}
+        <path d="M0 182 C90 170 180 174 260 182 C320 188 360 180 400 178 L400 200 L0 200 Z" fill={`url(#${id}g)`} />
       </svg>
     );
   }

@@ -79,7 +79,7 @@ export const SeasonsGallery: React.FC<SeasonsGalleryProps> = ({
             <div
               key={card.id}
               onClick={openSeason}
-              className={`pp-sh pp-sh--${seasonName.toLowerCase()} pp-scard flex-shrink-0 w-[240px] sm:w-auto cursor-pointer aspect-[3/4] sm:aspect-[9/13]`}
+              className={`pp-sh pp-sh--${seasonName.toLowerCase()} pp-scard flex-shrink-0 w-[168px] sm:w-auto cursor-pointer aspect-[4/5] sm:aspect-[3/4]`}
             >
               <SeasonArt season={seasonName} scale={0.7} />
               <span className="pp-sh__grain" aria-hidden="true" />
