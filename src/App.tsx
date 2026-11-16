@@ -32,7 +32,7 @@ import { FragranceProduct, CartItem, JournalArticle } from './types';
 import { fetchPublicProducts, fetchHomepageData, fetchStoreSettings, getErrorMessage } from './services/api';
 import { Shield } from 'lucide-react';
 import { ThemeProvider } from './context/ThemeContext';
-import { initSmoothScroll, prepareReveal, startReveal, scrollToTop } from './lib/motion';
+import { initSmoothScroll, prepareReveal, startReveal, scrollToTop, restoreScroll, rememberScroll } from './lib/motion';
 
 // The hidden preview page never sends real orders (checked once, before any in-app navigation)
 const IS_PREVIEW = typeof window !== 'undefined' && window.location.pathname.includes('preview.html');
@@ -46,6 +46,8 @@ export default function App() {
 }
 
 function StorefrontApp() {
+  // We put the visitor back where they were ourselves (see restoreScroll)
+  useEffect(() => { try { window.history.scrollRestoration = 'manual'; } catch { /* ignore */ } }, []);
 
   const [products, setProducts] = useState<FragranceProduct[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -154,6 +156,8 @@ function StorefrontApp() {
 
       // If user navigated via browser back/forward (popstate), trigger page intro transition
       if (!isInitialLoad.current) {
+        const backY = window.history.state?.ppY;
+        if (typeof backY === 'number') restoreScroll(backY);
         setRoute((prev) => {
           const routeChanged =
             prev.path !== nextRoute.path ||
@@ -223,6 +227,7 @@ function StorefrontApp() {
     const targetUrl = `/products/${slugOrId}`;
     const isNewPage = route.path !== 'product' || route.productSlugOrId !== slugOrId;
     if (window.location.pathname !== targetUrl) {
+      rememberScroll();
       window.history.pushState({}, '', targetUrl);
     }
     setRoute({ path: 'product', productSlugOrId: slugOrId });
@@ -236,6 +241,7 @@ function StorefrontApp() {
     const targetUrl = `/collections/${slug}`;
     const isNewPage = route.path !== 'collection' || route.collectionSlug !== slug;
     if (window.location.pathname !== targetUrl) {
+      rememberScroll();
       window.history.pushState({}, '', targetUrl);
     }
     setRoute({ path: 'collection', collectionSlug: slug });
@@ -254,12 +260,14 @@ function StorefrontApp() {
       window.setTimeout(() => document.getElementById(url.slice(1))?.scrollIntoView({ behavior: 'smooth' }), route.path !== 'home' ? 500 : 50);
       return;
     }
+    rememberScroll();
     window.history.pushState({}, '', url);
     setRoute({ path: 'collection', collectionSlug: 'all' });
     setCollectionKey((k) => k + 1);
     scrollToTop();
   };
   const openTesters = () => {
+    rememberScroll();
     window.history.pushState({}, '', '/collections/all?size=1.5ml');
     setRoute({ path: 'collection', collectionSlug: 'all' });
     setCollectionKey((k) => k + 1);
@@ -269,6 +277,7 @@ function StorefrontApp() {
   const navigateToHome = () => {
     const isNewPage = route.path !== 'home';
     if (window.location.pathname !== '/' && window.location.hash !== '#admin') {
+      rememberScroll();
       window.history.pushState({}, '', '/');
     }
     setRoute({ path: 'home' });
