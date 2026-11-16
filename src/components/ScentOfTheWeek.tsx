@@ -46,20 +46,16 @@ const ScentOfTheWeek: React.FC<Props> = ({ products, onSelectProduct, onAddToCar
   const week = data?.week ?? 0;
 
   return (
-    <section className="pp-sotw" aria-label="Scent of the week">
-      <div className="pp-sotw__head">
-        <div className="pp-sotw__meta">
-          <span className="pp-sotw__live"><i aria-hidden="true" />Scent of the week</span>
-          <span className="pp-sotw__line" aria-hidden="true" />
-          <span className="pp-sotw__wk">Nº {week}</span>
-        </div>
-        <h2 className="pp-sotw__title">
-          <span className="pp-sotw__w1">This week's</span>
-          <em className="pp-sotw__w2">favourites</em>
+    <section className="pp-sotw pp-week" aria-label="Scent of the week">
+      <div className="pp-week__head">
+        <h2 className="pp-week__title">
+          <span>This week's</span>
+          <em>favourites</em>
         </h2>
+        <span className="pp-week__badge"><i aria-hidden="true" />Week {week}</span>
       </div>
 
-      <GlassRail products={picks} badge={(_, i) => `No. ${i + 1}`} onSelectProduct={onSelectProduct} onAddToCart={onAddToCart} />
+      <GlassRail products={picks} badge={(_, i) => String(i + 1).padStart(2, '0')} onSelectProduct={onSelectProduct} onAddToCart={onAddToCart} />
     </section>
   );
 };
