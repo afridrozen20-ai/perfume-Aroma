@@ -1534,3 +1534,4 @@ html,body{max-width:100%;overflow-x:hidden}
 
 @media (prefers-reduced-motion:reduce){.pp-sh *{animation:none!important}}
 .pp-lite .pp-sh__haze path,.pp-lite .pp-sh__leaf{filter:none}
+.pp-sh__title em{font-family:'Cormorant Garamond',Georgia,serif!important;font-weight:500!important;font-style:italic}
