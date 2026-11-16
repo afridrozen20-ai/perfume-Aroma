@@ -2,6 +2,7 @@ import logoRound from '../assets/brand/logo-round.webp';
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Search, Palette, Check, ChevronDown, ShoppingBag, Menu as MenuIcon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import MenuDrawer from './MenuDrawer';
 
 interface HeaderProps {
   cartCount: number;
@@ -11,6 +12,7 @@ interface HeaderProps {
   onOpenFinder?: () => void;
   onNavigateHome?: () => void;
   onNavigateToCollection?: (slug: string) => void;
+  onOpenCollection?: (url: string) => void;
   storeSettings?: any;
 }
 
@@ -21,6 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenFinder,
   onNavigateHome,
   onNavigateToCollection,
+  onOpenCollection,
   storeSettings
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -160,159 +163,14 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Slide-out Menu Drawer for both Mobile and Desktop Menu */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm animate-fade-in flex justify-end">
-          <div
-            className="w-full max-w-sm sm:max-w-md h-full p-6 sm:p-8 shadow-2xl flex flex-col justify-between overflow-y-auto"
-            style={{
-              backgroundColor: 'var(--theme-surface)',
-              color: 'var(--theme-primary)',
-            }}
-          >
-            <div className="space-y-8">
-              {/* Drawer Header */}
-              <div
-                className="flex items-center justify-between border-b pb-4"
-                style={{ borderColor: 'var(--theme-border-subtle)' }}
-              >
-                <span className="pp-logo w-11 h-11"><img src={logoRound} alt="Pure Portions by Arrina" width={44} height={44} /></span>
-                <button
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="p-1 hover:opacity-70 transition-opacity cursor-pointer"
-                  aria-label="Close menu"
-                >
-                  <X className="w-6 h-6 stroke-[2.5]" />
-                </button>
-              </div>
-
-              {/* Theme Selector Section in Mobile Drawer */}
-              <div
-                className="p-4 rounded-xl border space-y-3"
-                style={{
-                  backgroundColor: 'var(--theme-surface-card)',
-                  borderColor: 'var(--theme-border-subtle)',
-                }}
-              >
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
-                  <Palette className="w-4 h-4" />
-                  <span>Colour Scheme</span>
-                </div>
-                <div className="space-y-1.5">
-                  {themes.map((t) => {
-                    const isSelected = t.id === theme;
-                    return (
-                      <button
-                        key={t.id}
-                        onClick={() => setTheme(t.id)}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
-                          isSelected ? 'font-bold' : 'hover:opacity-80'
-                        }`}
-                        style={{
-                          backgroundColor: isSelected ? 'var(--theme-surface)' : 'transparent',
-                          color: 'var(--theme-primary)',
-                          border: isSelected ? '1px solid var(--theme-border)' : '1px solid transparent',
-                        }}
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <div className="flex items-center -space-x-1">
-                            <span
-                              className="w-4 h-4 rounded-full border border-black/20"
-                              style={{ backgroundColor: t.colors.primary }}
-                            />
-                            <span
-                              className="w-4 h-4 rounded-full border border-black/20"
-                              style={{ backgroundColor: t.colors.secondary }}
-                            />
-                            <span
-                              className="w-4 h-4 rounded-full border border-black/20"
-                              style={{ backgroundColor: t.colors.accent }}
-                            />
-                          </div>
-                          <span>{t.name}</span>
-                        </div>
-                        {isSelected && <Check className="w-4 h-4" />}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Navigation Links */}
-              <nav className="flex flex-col space-y-4 text-2xl font-semibold tracking-tight">
-                <button
-                  onClick={() => handleCollectionClick('all')}
-                  className="text-left hover:opacity-75 transition-opacity"
-                >
-                  Shop
-                </button>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onOpenFinder?.();
-                  }}
-                  className="text-left hover:opacity-75 transition-opacity"
-                >
-                  AI Scent Finder
-                </button>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    const el = document.getElementById('new-arrivals');
-                    if (el) {
-                      el.scrollIntoView({ behavior: 'smooth' });
-                    } else {
-                      handleCollectionClick('all');
-                    }
-                  }}
-                  className="text-left hover:opacity-75 transition-opacity"
-                >
-                  Explore Decants
-                </button>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    const el = document.getElementById('studio-section') || document.getElementById('why-section');
-                    el?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="text-left hover:opacity-75 transition-opacity"
-                >
-                  About Us
-                </button>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onOpenSearch();
-                  }}
-                  className="text-left hover:opacity-75 transition-opacity inline-flex items-center gap-2 pt-2 text-xl"
-                >
-                  <Search className="w-5 h-5 stroke-[2.5]" />
-                  <span>Search Catalog</span>
-                </button>
-              </nav>
-
-              {/* Store & Contact Information */}
-              <div
-                className="pt-6 border-t space-y-2 text-sm opacity-90"
-                style={{ borderColor: 'var(--theme-border-subtle)' }}
-              >
-                <p className="font-bold tracking-wider uppercase text-xs">Customer Care & Studio</p>
-                <p>Location: Dhaka, Bangladesh · Nationwide delivery</p>
-                {storeSettings?.contact_email && /@/.test(storeSettings.contact_email) && <p>Email: {storeSettings.contact_email}</p>}
-                <p>Phone: {storeSettings?.contact_phone || '+880 1972-911234'}</p>
-              </div>
-            </div>
-
-            <div
-              className="pt-6 border-t text-xs opacity-80 flex justify-between items-center"
-              style={{ borderColor: 'var(--theme-border-subtle)' }}
-            >
-              <span>INSTAGRAM</span>
-              <span>© 2026</span>
-            </div>
-          </div>
-        </div>
-      )}
+      <MenuDrawer
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        onOpenSearch={onOpenSearch}
+        onOpenFinder={onOpenFinder}
+        onOpenCollection={(url) => (onOpenCollection ? onOpenCollection(url) : (window.location.href = url))}
+        storeSettings={storeSettings}
+      />
     </header>
   );
 };

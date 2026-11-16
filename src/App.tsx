@@ -247,6 +247,18 @@ function StorefrontApp() {
 
   // Bottom bar "1.5ml Tester" → all perfumes available as 1.5ml testers
   const [collectionKey, setCollectionKey] = useState(0);
+  // Menu links: a collection URL with filters, or "#id" for a home-page section
+  const openCollectionUrl = (url: string) => {
+    if (url.startsWith('#')) {
+      if (route.path !== 'home') navigateToHome();
+      window.setTimeout(() => document.getElementById(url.slice(1))?.scrollIntoView({ behavior: 'smooth' }), route.path !== 'home' ? 500 : 50);
+      return;
+    }
+    window.history.pushState({}, '', url);
+    setRoute({ path: 'collection', collectionSlug: 'all' });
+    setCollectionKey((k) => k + 1);
+    scrollToTop();
+  };
   const openTesters = () => {
     window.history.pushState({}, '', '/collections/all?size=1.5ml');
     setRoute({ path: 'collection', collectionSlug: 'all' });
@@ -421,6 +433,7 @@ function StorefrontApp() {
         onOpenFinder={() => setIsFinderOpen(true)}
         onNavigateHome={navigateToHome}
         onNavigateToCollection={navigateToCollection}
+        onOpenCollection={openCollectionUrl}
         storeSettings={storeSettings}
       />
 
