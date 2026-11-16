@@ -1735,3 +1735,6 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-week .pp-sotw__card.is-open .pp-sotw__img{transform:translateX(-50%) translateY(-24px) scale(.56)}
 .pp-week .pp-sotw__card.is-open .pp-sotw__name{font-size:14.5px;margin-bottom:5px}
 @media (min-width:768px){.pp-week{margin:12px auto;max-width:1240px}.pp-week .pp-sotw__card{flex-basis:210px;max-width:210px;height:290px}.pp-week__title em{font-size:52px}}
+.pp-week .pp-sotw__rank{z-index:3;font-size:24px;top:9px;left:13px}
+.pp-week .pp-sotw__img{top:40px;height:46%;border-radius:12px}
+@media (min-width:768px){.pp-week .pp-sotw__img{top:44px;height:48%}}
