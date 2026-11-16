@@ -1862,31 +1862,3 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-menu__wa{margin-top:24px;padding:12px 14px}
 .pp-menu__wa b{font-size:13.5px}
 .pp-menu__label{margin-top:24px}
-/* ===== Reviews: real customer messages ===== */
-.pp-rev{flex-shrink:0;width:270px;min-height:220px;padding:22px 22px 18px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--theme-border-subtle);background:var(--theme-surface-card);border-radius:2px}
-@media (min-width:640px){.pp-rev{width:320px}}
-.pp-rev__q{opacity:.35;color:var(--theme-primary)}
-.pp-rev__text{margin-top:12px;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:15px;line-height:1.5;color:var(--theme-text-primary);display:-webkit-box;-webkit-line-clamp:7;-webkit-box-orient:vertical;overflow:hidden}
-.pp-rev__foot{margin-top:16px;padding-top:12px;border-top:1px solid var(--theme-border-subtle);display:flex;flex-direction:column;gap:6px}
-.pp-rev__prod{align-self:flex-start;font-size:10.5px;letter-spacing:.06em;padding:3px 9px;border-radius:999px;background:rgba(201,163,92,.14);color:#7a5c22}
-.pp-rev__who{margin:0;font-size:12px;color:var(--theme-primary);display:flex;align-items:baseline;gap:8px}
-.pp-rev__who b{font-weight:600}
-.pp-rev__who i{font-style:normal;font-size:10.5px;letter-spacing:.06em;color:var(--theme-text-secondary);opacity:.8}
-.pp-rev--wide{width:auto;min-height:0;break-inside:avoid;margin-bottom:12px}
-.pp-rev--wide .pp-rev__text{-webkit-line-clamp:unset;display:block}
-.pp-revall{position:fixed;inset:0;z-index:70;display:flex;align-items:flex-end;justify-content:center}
-@media (min-width:768px){.pp-revall{align-items:center}}
-.pp-revall__veil{position:absolute;inset:0;background:rgba(10,10,10,.4);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:ppMenuFade .3s both}
-.pp-revall__sheet{position:relative;width:100%;max-width:1100px;max-height:92vh;overflow-y:auto;overscroll-behavior:contain;background:#fff;border-radius:22px 22px 0 0;padding:18px 16px 30px;animation:ppRevUp .45s cubic-bezier(.2,.9,.2,1) both}
-@media (min-width:768px){.pp-revall__sheet{border-radius:18px;padding:26px 28px 34px;max-height:88vh}}
-@keyframes ppRevUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
-.pp-revall__head{position:sticky;top:-18px;z-index:2;display:flex;align-items:flex-end;justify-content:space-between;background:#fff;padding:6px 2px 14px;margin-bottom:6px}
-.pp-revall__head p{margin:0;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:#9b9b9b}
-.pp-revall__head h3{margin:6px 0 0;font-family:'Cormorant Garamond',Georgia,serif !important;font-weight:500;font-size:28px;line-height:1;color:#111}
-.pp-revall__head h3 em{font-style:italic}
-.pp-revall__head button{width:38px;height:38px;border-radius:50%;border:1px solid #e6e6e6;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.pp-revall__grid{columns:1;column-gap:12px}
-@media (min-width:640px){.pp-revall__grid{columns:2}}
-@media (min-width:1024px){.pp-revall__grid{columns:3}}
-.pp-rev__stars{display:flex;gap:2px}
-.pp-revall__head h3 em{font-family:'Cormorant Garamond',Georgia,serif !important;font-weight:500}
