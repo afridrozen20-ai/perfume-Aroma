@@ -267,10 +267,16 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 borderColor: 'var(--theme-border-subtle)',
               }}
             >
+              {/* Bottle-tinted liquid-glass aura, same look as the New Arrivals / collection cards */}
+              <div
+                aria-hidden="true"
+                className="pp-pdp__aura"
+                style={{ ['--img' as string]: `url("${activeImage}")` } as React.CSSProperties}
+              />
               <img
                 src={activeImage}
                 alt={product.name}
-                className="max-h-[82%] max-w-[82%] object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-105"
+                className="relative z-[1] max-h-[82%] max-w-[82%] object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-105"
                 referrerPolicy="no-referrer"
               />
 
@@ -506,28 +512,21 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               <div
                 key={relProd.id}
                 onClick={() => onNavigateToProduct(relProd)}
-                className="bg-white border border-zinc-200/90 p-4 flex flex-col items-center text-center cursor-pointer group hover:border-zinc-400 transition-all shadow-xs"
+                className="pp-like group"
+                style={{ ['--img' as string]: `url("${relProd.image}")` } as React.CSSProperties}
               >
-                <div className="w-full aspect-square bg-[#fafafa] p-3 flex items-center justify-center overflow-hidden mb-3">
-                  <img
-                    src={relProd.image}
-                    alt={relProd.name}
-                    className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-500"
-                    referrerPolicy="no-referrer"
-                  />
+                <span className="pp-like__aura" aria-hidden="true" />
+                <div className="pp-like__img">
+                  <img src={relProd.image} alt={relProd.name} loading="lazy" referrerPolicy="no-referrer" />
                 </div>
-                <span className="text-[9px] font-sans tracking-widest text-zinc-400 uppercase">
-                  {relProd.brand}
-                </span>
-                <h4 className="font-serif text-xs sm:text-sm font-normal text-zinc-900 mt-0.5 line-clamp-1 group-hover:text-amber-800 transition-colors">
-                  {relProd.name}
-                </h4>
-                <p className="text-[11px] text-zinc-600 font-sans mt-1 tabular-nums">
-                  From <span className="font-semibold text-zinc-900">৳ {relProd.startingPrice}</span>
-                </p>
-                {sharedFor(relProd.id).length > 0 && (
-                  <p className="pp-like__shared">Also {sharedFor(relProd.id).join(' · ')}</p>
-                )}
+                <div className="pp-like__glass">
+                  <span className="pp-like__brand">{relProd.brand}</span>
+                  <h4 className="pp-like__name">{relProd.name}</h4>
+                  <p className="pp-like__price tabular-nums">From <b>৳{relProd.startingPrice}</b></p>
+                  {sharedFor(relProd.id).length > 0 && (
+                    <p className="pp-like__shared">Also {sharedFor(relProd.id).join(' · ')}</p>
+                  )}
+                </div>
               </div>
             ))}
           </div>

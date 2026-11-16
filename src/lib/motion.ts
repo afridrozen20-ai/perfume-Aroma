@@ -39,7 +39,10 @@ export function initSmoothScroll() {
  * Goes through Lenis when it is active: otherwise Lenis keeps animating toward the old
  * scroll position and the new (shorter) page ends up scrolled to the bottom.
  */
+let restoring = false;
+
 export function scrollToTop() {
+  if (restoring) return; // Back button: restoreScroll is putting the visitor back where they were
   if (lenis) {
     lenis.scrollTo(0, { immediate: true, force: true });
     // pages change height when products load → make Lenis re-measure on the next frames
@@ -62,6 +65,7 @@ function inHorizontalScroller(el: Element): boolean {
 function prepare(el: HTMLElement, kind: 'card' | 'heading') {
   if (el.dataset.ppMotion) return;
   el.dataset.ppMotion = '1';
+  if (performance.now() < skipUntil) return;
   const r = el.getBoundingClientRect();
   // Already scrolled past (e.g. user jumped down) → just show it
   if (r.bottom < 0) return;
@@ -70,7 +74,7 @@ function prepare(el: HTMLElement, kind: 'card' | 'heading') {
     el.style.setProperty('--pp-x', mobile ? '70px' : '120px');
     el.style.setProperty('--pp-y', '0px');
   } else if (kind === 'card') {
-    el.style.setProperty('--pp-y', mobile ? '110px' : '220px');
+    el.style.setProperty('--pp-y', mobile ? '48px' : '120px');
   } else {
     el.style.setProperty('--pp-y', mobile ? '28px' : '40px');
   }
@@ -90,6 +94,13 @@ function scan(root: ParentNode = document) {
 
 let enabled = false;
 
+// Phone/browser Back or Forward: the page the visitor already saw comes back as it was,
+// with no entrance animation (otherwise bottles jump and drop in one after another).
+let skipUntil = 0;
+if (typeof window !== 'undefined') {
+  window.addEventListener('popstate', () => { skipUntil = performance.now() + 2500; });
+}
+
 /** Call on page load: hides cards/headings that will animate (under the intro overlay). */
 export function prepareReveal() {
   if (enabled || reducedMotion() || !('IntersectionObserver' in window)) return;
@@ -97,10 +108,12 @@ export function prepareReveal() {
   scan();
 
   // Products load from the server and pages change without reloading → watch for new cards
-  let timer = 0;
+  // Scan before the next paint, so new cards are never shown for a moment and then hidden again
+  let queued = false;
   mo = new MutationObserver(() => {
-    window.clearTimeout(timer);
-    timer = window.setTimeout(scan, 120);
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; scan(); });
   });
   // Only watch for added/removed elements (not text changes), and only inside the page content
   const target = document.getElementById('root') || document.body;
@@ -148,4 +161,28 @@ export function startReveal() {
   );
 
   document.querySelectorAll<HTMLElement>('.pp-rv').forEach((el) => io!.observe(el));
+}
+
+
+/** Back/Forward: put the visitor back where they were on that page, once its products have rendered. */
+export function restoreScroll(y: number) {
+  restoring = true;
+  let tries = 0;
+  const go = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    if (max >= y - 2 || tries > 40) {
+      if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+      window.scrollTo({ top: y, left: 0, behavior: 'instant' as ScrollBehavior });
+      window.setTimeout(() => { restoring = false; }, 150);
+      return;
+    }
+    tries++;
+    requestAnimationFrame(go);
+  };
+  requestAnimationFrame(go);
+}
+
+/** Remember how far down the current page is before opening another one. */
+export function rememberScroll() {
+  try { window.history.replaceState({ ...(window.history.state || {}), ppY: window.scrollY }, ''); } catch { /* ignore */ }
 }
