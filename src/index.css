@@ -1699,3 +1699,4 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-sotw__grid .pp-sotw__img{top:2px;-webkit-mask-image:radial-gradient(ellipse 58% 70% at 50% 44%,#000 50%,rgba(0,0,0,.55) 74%,transparent 100%);mask-image:radial-gradient(ellipse 58% 70% at 50% 44%,#000 50%,rgba(0,0,0,.55) 74%,transparent 100%)}
 .pp-sotw__grid .pp-sotw__glass{border-top:0;padding:4px 6px 8px}
 @media (min-width:640px){.pp-sotw__grid .pp-sotw__card{height:330px}}
+.pp-sotw__grid .pp-sotw__img{-webkit-mask-image:radial-gradient(ellipse 48% 56% at 50% 46%,#000 42%,rgba(0,0,0,.5) 68%,transparent 100%);mask-image:radial-gradient(ellipse 48% 56% at 50% 46%,#000 42%,rgba(0,0,0,.5) 68%,transparent 100%)}
