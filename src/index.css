@@ -1641,3 +1641,4 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-new__more{display:flex;justify-content:center;padding:8px 22px 0}
 .pp-new__more button{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;padding:12px 22px;border:1px solid var(--theme-primary);color:var(--theme-primary);background:transparent;cursor:pointer;transition:background .2s,color .2s}
 .pp-new__more button:hover{background:var(--theme-primary);color:var(--theme-bg)}
+.pp-sotw__card{overflow:clip}
