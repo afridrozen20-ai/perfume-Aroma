@@ -416,6 +416,22 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
         if (wantedSizes.length) {
           list = list.filter((p) => (p.sizes || []).some((s) => wantedSizes.includes(normSize(s.size))));
         }
+        // For Him / For Her (default order): Niche → Designer → Arabian;
+        // inside each group that side's perfumes first, then Unisex
+        if (sideGender && (!filters.sort || filters.sort === 'featured')) {
+          const houseRank = (c?: string) => {
+            const v = String(c || '').toLowerCase();
+            if (v.includes('niche')) return 0;
+            if (v.includes('designer')) return 1;
+            if (v.includes('arab')) return 2;
+            return 3;
+          };
+          const sideRank = (g?: string) => (String(g || '').toLowerCase() === sideGender.toLowerCase() ? 0 : 1);
+          list = list
+            .map((p, i) => ({ p, i }))
+            .sort((a, b) => houseRank(a.p.category) - houseRank(b.p.category) || sideRank(a.p.gender) - sideRank(b.p.gender) || a.i - b.i)
+            .map((x) => x.p);
+        }
         setFilteredProducts(list);
         setLoadingProducts(false);
       }
