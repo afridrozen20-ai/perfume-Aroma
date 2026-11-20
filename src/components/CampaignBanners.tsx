@@ -39,85 +39,55 @@ export const CampaignBanners: React.FC<CampaignBannersProps> = ({ onSelectCatego
           </h2>
         </div>
 
-        {/* 2-Column Grid with Narrow Gutter */}
+        {/* 2-Column Grid: each banner is one tappable image card (no text bar) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-          {/* For Him Card */}
-          <div
-            onClick={() => onNavigateToCollection ? onNavigateToCollection('forhim') : onSelectCategory('Him')}
-            className="group relative cursor-pointer overflow-hidden flex flex-col rounded-xs border shadow-xs"
-            style={{
-              backgroundColor: 'var(--theme-surface-card)',
-              borderColor: 'var(--theme-border-subtle)',
-            }}
-          >
-            <div className={`relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden ${forHimImage ? 'bg-zinc-900' : 'bg-[#f3f3f4]'}`}>
-              {forHimImage && (
-                <img
-                  src={forHimImage}
-                  alt={`${forHimTitle} luxury fragrance decants campaign set`}
-                  className="w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-700 ease-out"
-                  referrerPolicy="no-referrer"
-                  loading="lazy"
-                />
-              )}
-            </div>
-
-            {/* Themed Lower Bar */}
+          {[
+            { key: 'him', title: forHimTitle, cta: forHimButtonText, image: forHimImage, arrow: '#ffffff', go: () => (onNavigateToCollection ? onNavigateToCollection('forhim') : onSelectCategory('Him')) },
+            { key: 'her', title: forHerTitle, cta: forHerButtonText, image: forHerImage, arrow: '#5a2a33', go: () => (onNavigateToCollection ? onNavigateToCollection('forher') : onSelectCategory('Her')) },
+          ].map((card) => (
             <div
-              className="px-5 py-3.5 flex items-center justify-between border-t transition-colors"
-              style={{
-                backgroundColor: 'var(--theme-btn-bg)',
-                color: 'var(--theme-btn-text)',
-                borderColor: 'var(--theme-border-subtle)',
-              }}
+              key={card.key}
+              role="link"
+              tabIndex={0}
+              aria-label={`${card.title} – ${card.cta}`}
+              onClick={card.go}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.go(); } }}
+              className="group relative cursor-pointer overflow-hidden rounded-md shadow-sm hover:shadow-lg transition-shadow duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              style={{ backgroundColor: 'var(--theme-surface-card)' }}
             >
-              <span className="font-serif text-sm sm:text-base font-normal tracking-wide">
-                {forHimTitle}
-              </span>
-              <span className="text-[10px] sm:text-[11px] font-sans tracking-[0.18em] uppercase opacity-90 group-hover:opacity-100 group-hover:underline underline-offset-4 transition-all">
-                {forHimButtonText}
-              </span>
-            </div>
-          </div>
+              <div className={`relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden ${card.image ? 'bg-zinc-900' : 'bg-[#f3f3f4]'}`}>
+                {card.image ? (
+                  <img
+                    src={card.image}
+                    alt={`${card.title} – luxury perfume decants`}
+                    className="w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+                    referrerPolicy="no-referrer"
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className="absolute inset-0 flex items-center justify-center font-serif text-2xl tracking-[0.16em] uppercase text-[#111]">
+                    {card.title}
+                  </span>
+                )}
 
-          {/* For Her Card */}
-          <div
-            onClick={() => onNavigateToCollection ? onNavigateToCollection('forher') : onSelectCategory('Her')}
-            className="group relative cursor-pointer overflow-hidden flex flex-col rounded-xs border shadow-xs"
-            style={{
-              backgroundColor: 'var(--theme-surface-card)',
-              borderColor: 'var(--theme-border-subtle)',
-            }}
-          >
-            <div className={`relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden ${forHerImage ? 'bg-zinc-900' : 'bg-[#f3f3f4]'}`}>
-              {forHerImage && (
-                <img
-                  src={forHerImage}
-                  alt={`${forHerTitle} luxury fragrance decants campaign vanity`}
-                  className="w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-700 ease-out"
-                  referrerPolicy="no-referrer"
-                  loading="lazy"
-                />
-              )}
+                {/* Liquid-glass arrow (iOS style) – shows the card is tappable */}
+                <span
+                  aria-hidden="true"
+                  className="absolute right-3 bottom-3 sm:right-4 sm:bottom-4 w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-transform duration-500 group-hover:translate-x-0.5 group-active:scale-95"
+                  style={{
+                    color: card.arrow,
+                    background: 'linear-gradient(145deg, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.14) 55%, rgba(255,255,255,0.22) 100%)',
+                    backdropFilter: 'blur(14px) saturate(180%)',
+                    WebkitBackdropFilter: 'blur(14px) saturate(180%)',
+                    border: '1px solid rgba(255,255,255,0.55)',
+                    boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.75), inset 0 -2px 6px rgba(0,0,0,0.10), 0 8px 22px rgba(0,0,0,0.22)',
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                </span>
+              </div>
             </div>
-
-            {/* Themed Lower Bar */}
-            <div
-              className="px-5 py-3.5 flex items-center justify-between border-t transition-colors"
-              style={{
-                backgroundColor: 'var(--theme-btn-bg)',
-                color: 'var(--theme-btn-text)',
-                borderColor: 'var(--theme-border-subtle)',
-              }}
-            >
-              <span className="font-serif text-sm sm:text-base font-normal tracking-wide">
-                {forHerTitle}
-              </span>
-              <span className="text-[10px] sm:text-[11px] font-sans tracking-[0.18em] uppercase opacity-90 group-hover:opacity-100 group-hover:underline underline-offset-4 transition-all">
-                {forHerButtonText}
-              </span>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

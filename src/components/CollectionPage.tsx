@@ -279,6 +279,14 @@ const DEFAULT_FILTER_STATE: FilterState = {
   search: ''
 };
 
+// 'forhim' → 'Him', 'forher' → 'Her' (these pages show that side plus Unisex)
+const genderSideOf = (slug?: string): 'Him' | 'Her' | null => {
+  const s = String(slug || '').toLowerCase().trim();
+  if (['forhim', 'for-him', 'him', 'men'].includes(s)) return 'Him';
+  if (['forher', 'for-her', 'her', 'women'].includes(s)) return 'Her';
+  return null;
+};
+
 export const CollectionPage: React.FC<CollectionPageProps> = ({
   collectionSlug,
   allProducts,
@@ -373,12 +381,15 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     let isMounted = true;
     setLoadingProducts(true);
 
+    // For Him / For Her also include Unisex perfumes
+    const sideGender = genderSideOf(collectionSlug);
     const queryParams: Record<string, string> = {
-      collection: collectionSlug,
+      collection: sideGender ? 'all' : collectionSlug,
       sort: filters.sort
     };
 
     if (filters.gender.length) queryParams.gender = filters.gender.join(',');
+    else if (sideGender) queryParams.gender = `${sideGender},Unisex`;
     if (filters.family.length) queryParams.family = filters.family.join(',');
     if (filters.season.length) queryParams.season = filters.season.join(',');
     if (filters.occasion.length) queryParams.occasion = filters.occasion.join(',');
@@ -425,11 +436,16 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
   }, [allProducts]);
 
   // Option lists
-  const GENDER_OPTIONS = [
+  const ALL_GENDER_OPTIONS = [
     { label: 'For Him', value: 'Him' },
     { label: 'For Her', value: 'Her' },
     { label: 'Unisex', value: 'Unisex' }
   ];
+  // Inside For Him / For Her only offer that side + Unisex
+  const sideOfPage = genderSideOf(collectionSlug);
+  const GENDER_OPTIONS = sideOfPage
+    ? ALL_GENDER_OPTIONS.filter((g) => g.value === sideOfPage || g.value === 'Unisex')
+    : ALL_GENDER_OPTIONS;
 
   const FAMILY_OPTIONS = [
     'Floral', 'Woody', 'Amber / Oriental', 'Fresh / Citrus', 'Gourmand',
