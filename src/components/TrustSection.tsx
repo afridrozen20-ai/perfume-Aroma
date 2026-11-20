@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { FragranceProduct } from '../types';
 import { categoryOf, type BrandCategory } from '../lib/brandCategory';
+import { thumb } from '../lib/img';
 
 interface BrandItem {
   name: string;
@@ -46,11 +47,11 @@ const SERIF_HOUSES = new Set([
 const brandStyle = (name: string) => (SERIF_HOUSES.has(name.trim().toUpperCase()) ? 'is-serif' : 'is-sans');
 
 
-const CATEGORY_ORDER: BrandCategory[] = ['Designer', 'Niche', 'Arabian'];
+const CATEGORY_ORDER: BrandCategory[] = ['Niche', 'Designer', 'Arabian'];
 const CATEGORY_NOTE: Record<BrandCategory, string> = {
   Designer: 'Fashion-house icons',
   Niche: 'Artisan & rare',
-  Arabian: 'Middle-Eastern craft',
+  Arabian: 'Arabian artistry',
 };
 
 export const TrustSection: React.FC<TrustSectionProps> = ({
@@ -73,7 +74,7 @@ export const TrustSection: React.FC<TrustSectionProps> = ({
       const existing = brandMap.get(bName);
       if (existing) {
         existing.count += 1;
-        if (!existing.image && p.image) {
+        if ((!existing.image || !/\.webp$/i.test(existing.image)) && p.image && /\.webp$/i.test(p.image)) {
           existing.image = p.image;
         }
       } else {
@@ -155,31 +156,14 @@ export const TrustSection: React.FC<TrustSectionProps> = ({
 
         {/* Section 2: Replaced Snapshot with SHOP BY BRANDS */}
         <div id="shop-by-brands" className="pt-4 sm:pt-6">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-2">
-            <div>
-              <span
-                className="text-[11px] sm:text-xs tracking-[0.25em] uppercase font-bold"
-                style={{ color: 'var(--theme-primary)' }}
-              >
-                THE HOUSES
-              </span>
-              <h3
-                className="font-sans font-black text-2xl sm:text-3xl md:text-4xl uppercase tracking-tight mt-1"
-                style={{ color: 'var(--theme-primary)' }}
-              >
-                Shop by brands
-              </h3>
-            </div>
-            <p className="text-xs sm:text-sm font-semibold uppercase max-w-md opacity-80" style={{ color: 'var(--theme-primary)' }}>
-              Select a fragrance house below to explore their dedicated collection and authentic decants.
+          <div className="pp-house-head">
+            <span className="pp-house-eyebrow">The Houses</span>
+            <h3 className="pp-house-title">Shop by House</h3>
+            <span className="pp-house-rule" aria-hidden="true" />
+            <p className="pp-house-sub">
+              {brandsList.length} houses · {products.length} perfumes — from rare niche ateliers to fashion icons and Arabian masters.
             </p>
           </div>
-
-          {/* Thick Solid Horizontal Divider */}
-          <div
-            className="w-full h-[3.5px] sm:h-[4.5px] md:h-[5px] mt-2 mb-8"
-            style={{ backgroundColor: 'var(--theme-primary)' }}
-          />
 
           {/* Category switch: All / Designer / Niche / Arabian */}
           <div className="pp-glass-group pp-brand-tabs mb-5" role="tablist" aria-label="Brand category">
@@ -202,23 +186,29 @@ export const TrustSection: React.FC<TrustSectionProps> = ({
             const list = brandsList.filter((b) => categoryOf(b.name) === cat);
             if (!list.length) return null;
             return (
-              <div key={cat} className="mb-7">
-                <div className="flex items-baseline justify-between mb-2.5">
-                  <span className="pp-brand-cat">{cat}</span>
-                  <span className="pp-brand-cat-note">{CATEGORY_NOTE[cat]} · {list.length} houses</span>
+              <div key={cat} className={`pp-house-group is-${cat.toLowerCase()}`}>
+                <div className="pp-house-cat">
+                  <span className="pp-house-cat__name">{cat}</span>
+                  <span className="pp-house-cat__line" aria-hidden="true" />
+                  <span className="pp-house-cat__note">{CATEGORY_NOTE[cat]} · {list.length}</span>
                 </div>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 sm:gap-3">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-2.5 sm:gap-3.5">
                   {list.map((brand) => (
-                  <div
-                    key={brand.slug}
-                    onClick={() => handleBrandClick(brand.slug)}
-                    className="group cursor-pointer flex flex-col transition-all duration-300"
-                  >
-                    <div className="pp-brand-tile">
-                      <span className={`pp-brand-name ${brandStyle(brand.name)}`}>{brand.name}</span>
-                      <span className="pp-brand-count">{brand.count}</span>
-                    </div>
-                  </div>
+                    <button
+                      key={brand.slug}
+                      type="button"
+                      onClick={() => handleBrandClick(brand.slug)}
+                      className="group pp-house-card"
+                      aria-label={`${brand.name} – ${brand.count} perfumes`}
+                    >
+                      <span className="pp-house-card__stage">
+                        {brand.image && /\.webp$/i.test(brand.image) && (
+                          <img src={thumb(brand.image, 320)} alt="" loading="lazy" className="pp-house-card__bottle" />
+                        )}
+                      </span>
+                      <span className={`pp-house-card__name ${brandStyle(brand.name)}`}>{brand.name}</span>
+                      <span className="pp-house-card__count">{brand.count} {brand.count === 1 ? 'perfume' : 'perfumes'}</span>
+                    </button>
                   ))}
                 </div>
               </div>
