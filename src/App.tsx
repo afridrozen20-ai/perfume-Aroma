@@ -519,13 +519,15 @@ function StorefrontApp() {
               campaignData={homepageData?.sections?.campaign_banners?.content}
             />
 
-            {/* G. Premium Video Product Showcase Carousel */}
-            <VideoSection
-              videoData={homepageData?.sections?.video_showcase?.content || homepageData?.sections?.video_hero?.content}
-              products={products}
-              onSelectProduct={(p) => navigateToProduct(p)}
-              onExploreClick={handleExploreClick}
-            />
+            {/* G. Premium Video Product Showcase Carousel — shown only while the section is switched on in Admin → Homepage */}
+            {(homepageData?.sections?.video_showcase || homepageData?.sections?.video_hero) && (
+              <VideoSection
+                videoData={homepageData?.sections?.video_showcase?.content || homepageData?.sections?.video_hero?.content}
+                products={products}
+                onSelectProduct={(p) => navigateToProduct(p)}
+                onExploreClick={handleExploreClick}
+              />
+            )}
 
             {/* Dynamic Custom Product Sections */}
             <CustomProductSections
