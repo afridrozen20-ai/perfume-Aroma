@@ -137,9 +137,17 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right: Actions (Theme Selector, Bag (count), Menu) */}
         <div
-          className="flex items-center gap-4 sm:gap-6 text-lg lg:text-xl font-medium tracking-tight"
+          className="flex items-center gap-2.5 sm:gap-5 text-lg lg:text-xl font-medium tracking-tight"
           style={{ color: 'var(--theme-primary)' }}
         >
+          <button
+            onClick={onOpenSearch}
+            className="p-1.5 hover:opacity-70 transition-opacity cursor-pointer inline-flex items-center"
+            aria-label="Search perfumes"
+          >
+            <Search className="w-[21px] h-[21px]" strokeWidth={1.4} />
+          </button>
+
           <button
             onClick={onOpenCart}
             className="relative p-1.5 hover:opacity-70 transition-opacity cursor-pointer inline-flex items-center"

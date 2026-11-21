@@ -152,15 +152,22 @@ export const SeasonsGallery: React.FC<SeasonsGalleryProps> = ({
       </div>
       <div className="pp-seas__grid">
         {editorialOrder.map((name, idx) => (
-          <button key={name} type="button" className={`pp-seas__card is-photo is-${name.toLowerCase()}`} onClick={() => openSeasonByName(name)}>
-            <img className="pp-seas__img" src={`/api/img.php?src=${encodeURIComponent(`/uploads/pp-season-${name.toLowerCase()}.jpg`)}&w=480`} alt="" loading="lazy" />
-            <span className="pp-seas__shade" aria-hidden="true" />
-            <span className="pp-seas__no">0{idx + 1}</span>
-            <span className="pp-seas__name">{name}</span>
-            <span className="pp-seas__tags">{SEASON_TAGS[name]}</span>
-            <span className="pp-seas__foot">
-              <span>{seasonCounts?.[name] ? `${seasonCounts[name]} scents` : 'Explore'}</span>
-              <span aria-hidden="true" className="pp-seas__arrow">→</span>
+          <button
+            key={name}
+            type="button"
+            className={`pp-sh pp-sh--${name.toLowerCase()} pp-seas2`}
+            style={{ animationDelay: `${idx * 90}ms` }}
+            onClick={() => openSeasonByName(name)}
+          >
+            <SeasonArt season={name as any} scale={0.62} />
+            <span className="pp-sh__grain" aria-hidden="true" />
+            <span className="pp-sh__sheen" aria-hidden="true" />
+            <span className="pp-seas2__top">
+              <span className="pp-seas2__name">{name}</span>
+              <span className="pp-seas2__tags">{SEASON_TAGS[name]}</span>
+            </span>
+            <span className="pp-seas2__go">
+              {seasonCounts?.[name] ? `${seasonCounts[name]} scents` : 'Explore'} <span aria-hidden="true">→</span>
             </span>
           </button>
         ))}
