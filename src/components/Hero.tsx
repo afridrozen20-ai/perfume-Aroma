@@ -71,6 +71,12 @@ export const Hero: React.FC<HeroProps> = ({
     el.style.backgroundPosition = '';
     if (subRef.current) { subRef.current.classList.remove('is-touching'); subRef.current.style.backgroundPosition = ''; }
   };
+  const seasonCounts: Record<string, number> = {};
+  for (const p of products) {
+    const ss: string[] = ((p as any).scentProfile?.seasons || []) as string[];
+    const all = ss.includes('All Seasons');
+    for (const n of ['Summer', 'Winter', 'Spring', 'Autumn']) if (all || ss.includes(n) || (n === 'Autumn' && ss.includes('Fall'))) seasonCounts[n] = (seasonCounts[n] || 0) + 1;
+  }
   const testerFrom = testerCount ? Math.min(...testerPrices.filter((n) => n > 0)) : 0;
 
   return (
@@ -82,41 +88,18 @@ export const Hero: React.FC<HeroProps> = ({
       }}
     >
       <div className="w-full px-5 sm:px-8 md:px-12">
-        {/* Massive Centered Pure Portions By Arrina Branding Header */}
-        <div className="w-full overflow-x-clip select-none py-2 sm:py-4">
-          <h1 className="w-full text-center select-none flex flex-col items-center justify-center py-2 sm:py-4" aria-label="Pure Portions by Arrina">
-            <span className="relative inline-block px-[7vw] sm:px-[6vw]">
-              <LeafSprig idSuffix="l" className="pp-sprig absolute left-0 top-1/2 -translate-y-[46%] h-[31vw] sm:h-[23vw] md:h-[18vw] lg:h-[15vw] w-auto -z-0" />
-              <LeafSprig idSuffix="r" flip className="pp-sprig absolute right-0 top-1/2 -translate-y-[46%] h-[31vw] sm:h-[23vw] md:h-[18vw] lg:h-[15vw] w-auto -z-0" />
-              <span
-                ref={markRef}
-                className="pp-wordmark pp-write pp-silver-text whitespace-nowrap text-[16.5vw] sm:text-[13vw] md:text-[11vw] lg:text-[9.5vw]"
-                data-text="Pure Portions"
-                onPointerDown={(e) => followLight(e.clientX)}
-                onPointerMove={(e) => followLight(e.clientX)}
-                onPointerUp={releaseLight}
-                onPointerLeave={releaseLight}
-                onPointerCancel={releaseLight}
-                onTouchMove={(e) => e.touches[0] && followLight(e.touches[0].clientX)}
-                onTouchEnd={releaseLight}
-              >
-                Pure Portions
-              </span>
-            </span>
-            <span className="pp-sub pp-after-write flex items-center justify-center gap-3 sm:gap-5 -mt-[1.5vw] whitespace-nowrap text-[5vw] sm:text-[3.6vw] md:text-[2.8vw] lg:text-[2.4vw]">
-              <span className="inline-block h-px w-[7vw] sm:w-[5vw] bg-current opacity-70" aria-hidden="true" />
-              <span ref={subRef} className="pp-silver-text">By Arrina</span>
-              <span className="inline-block h-px w-[7vw] sm:w-[5vw] bg-current opacity-70" aria-hidden="true" />
-            </span>
-            <AtomizerFlourish className="pp-flourish w-[62vw] max-w-[420px] h-auto mt-1 sm:mt-2" />
+        {/* Brand header — one clean wordmark, a single line of positioning and two clear actions */}
+        <div className="pp-h2 select-none">
+          <h1 className="pp-h2__mark" aria-label="Pure Portions by Arrina">
+            <span className="pp-h2__script">Pure Portions</span>
+            <span className="pp-h2__by"><i aria-hidden="true" />By Arrina<i aria-hidden="true" /></span>
           </h1>
+          <p className="pp-h2__line">Authentic luxury perfume, decanted by the millilitre.</p>
+          <div className="pp-h2__actions">
+            <button type="button" className="pp-h2__btn is-solid" onClick={() => (onNavigateToCollection ? onNavigateToCollection('all') : onExploreClick?.())}>Shop all perfumes</button>
+            {onOpenTesters && <button type="button" className="pp-h2__btn" onClick={onOpenTesters}>Try 1.5 ml testers</button>}
+          </div>
         </div>
-
-        {/* Thick Solid Horizontal Divider */}
-        <div
-          className="w-full h-px mt-4 sm:mt-6 mb-6 sm:mb-8"
-          style={{ backgroundImage: 'linear-gradient(90deg, transparent, #b8bbc3 20%, #e4e6ea 50%, #b8bbc3 80%, transparent)' }}
-        />
 
         {/* 1.5ml tester feature — image is set in Admin → Homepage → Campaigns */}
         {onOpenTesters && (
@@ -129,7 +112,7 @@ export const Hero: React.FC<HeroProps> = ({
                 <span className="pp-tester__eyebrow"><i>New</i>1.5 ml testers</span>
                 <span className="pp-tester__title">{testerData?.title || 'Wear it before you own it.'}</span>
                 <span className="pp-tester__sub">
-                  {testerData?.subtitle || `${testerCount ? `${testerCount} designer & niche scents` : 'Designer & niche scents'}${testerFrom ? ` · from ৳${testerFrom}` : ''}`}
+                  {testerData?.subtitle || `${testerCount ? `${testerCount} designer & niche scents` : 'Designer & niche scents'} in a 1.5 ml vial`}
                 </span>
                 <span className="pp-tester__cta">Explore testers <span aria-hidden="true">→</span></span>
               </span>
@@ -144,6 +127,7 @@ export const Hero: React.FC<HeroProps> = ({
             onExploreClick={onExploreClick}
             onNavigateToCollection={onNavigateToCollection}
             hideHeader={true}
+            seasonCounts={seasonCounts}
           />
         </div>
       </div>

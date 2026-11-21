@@ -8,6 +8,7 @@ interface SeasonsGalleryProps {
   onExploreClick?: () => void;
   onNavigateToCollection?: (slug: string) => void;
   hideHeader?: boolean;
+  seasonCounts?: Record<string, number>;
 }
 
 const defaultSeasonCards: SeasonCardData[] = [
@@ -45,7 +46,8 @@ export const SeasonsGallery: React.FC<SeasonsGalleryProps> = ({
   seasonsData,
   onExploreClick,
   onNavigateToCollection,
-  hideHeader = false
+  hideHeader = false,
+  seasonCounts
 }) => {
   const sectionTitle = seasonsData?.section_title || 'SEASONS';
   const sectionSubtitle = seasonsData?.section_subtitle || 'CHOOSE YOURS';
@@ -129,8 +131,43 @@ export const SeasonsGallery: React.FC<SeasonsGalleryProps> = ({
     </div>
   );
 
+  // Editorial season tiles used on the homepage (no illustrations: colour, type and a count)
+  const SEASON_TAGS: Record<string, string> = {
+    Spring: 'Floral · Fresh · Fruity',
+    Summer: 'Citrus · Aquatic · Green',
+    Autumn: 'Woody · Spice · Leather',
+    Winter: 'Amber · Oud · Vanilla',
+  };
+  const editorialOrder = ['Spring', 'Summer', 'Autumn', 'Winter'];
+  const openSeasonByName = (name: string) => {
+    if (!onNavigateToCollection) return onExploreClick?.();
+    window.history.pushState({}, '', `/collections/all?season=${encodeURIComponent(name)}`);
+    onNavigateToCollection('all');
+  };
+  const editorial = (
+    <div className="pp-seas">
+      <div className="pp-seas__head">
+        <span className="pp-kicker">Shop by season</span>
+        <span className="pp-seas__hint">What does the weather call for?</span>
+      </div>
+      <div className="pp-seas__grid">
+        {editorialOrder.map((name, idx) => (
+          <button key={name} type="button" className={`pp-seas__card is-${name.toLowerCase()}`} onClick={() => openSeasonByName(name)}>
+            <span className="pp-seas__no">0{idx + 1}</span>
+            <span className="pp-seas__name">{name}</span>
+            <span className="pp-seas__tags">{SEASON_TAGS[name]}</span>
+            <span className="pp-seas__foot">
+              <span>{seasonCounts?.[name] ? `${seasonCounts[name]} scents` : 'Explore'}</span>
+              <span aria-hidden="true" className="pp-seas__arrow">→</span>
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
   if (hideHeader) {
-    return <div id="seasons" className="w-full">{cardsContent}</div>;
+    return <div id="seasons" className="w-full">{editorial}</div>;
   }
 
   return (
