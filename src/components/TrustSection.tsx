@@ -192,7 +192,7 @@ export const TrustSection: React.FC<TrustSectionProps> = ({
                   <span className="pp-house-cat__line" aria-hidden="true" />
                   <span className="pp-house-cat__note">{CATEGORY_NOTE[cat]} · {list.length}</span>
                 </div>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-2.5 sm:gap-3.5">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 sm:gap-3">
                   {list.map((brand) => (
                     <button
                       key={brand.slug}
@@ -201,12 +201,8 @@ export const TrustSection: React.FC<TrustSectionProps> = ({
                       className="group pp-house-card"
                       aria-label={`${brand.name} – ${brand.count} perfumes`}
                     >
-                      <span className="pp-house-card__stage">
-                        {brand.image && /\.webp$/i.test(brand.image) && (
-                          <img src={thumb(brand.image, 320)} alt="" loading="lazy" className="pp-house-card__bottle" />
-                        )}
-                      </span>
-                      <span className={`pp-house-card__name ${brandStyle(brand.name)}`}>{brand.name}</span>
+                      <span className="pp-house-card__name">{brand.name}</span>
+                      <span className="pp-house-card__bar" aria-hidden="true" />
                       <span className="pp-house-card__count">{brand.count} {brand.count === 1 ? 'perfume' : 'perfumes'}</span>
                     </button>
                   ))}
