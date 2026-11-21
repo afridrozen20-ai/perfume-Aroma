@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { FragranceProduct, SeasonsGalleryData } from '../types';
 import { SeasonsGallery } from './SeasonsGallery';
 import { LeafSprig, AtomizerFlourish } from './BrandOrnaments';
+import { thumb } from '../lib/img';
 
 /** Placeholder 1.5ml glass vial until a photo is added in the admin */
 const TesterVial: React.FC = () => (
@@ -88,15 +89,27 @@ export const Hero: React.FC<HeroProps> = ({
       }}
     >
       <div className="w-full px-5 sm:px-8 md:px-12">
-        {/* Brand header — one clean wordmark, a single line of positioning and two clear actions */}
-        <div className="pp-h2 select-none">
-          <h1 className="pp-h2__mark" aria-label="Pure Portions by Arrina">
-            <span className="pp-h2__script">Pure Portions</span>
-            <span className="pp-h2__by"><i aria-hidden="true" />By Arrina<i aria-hidden="true" /></span>
-          </h1>
-          <p className="pp-h2__line">Authentic luxury perfume, decanted by the millilitre.</p>
-          <div className="pp-h2__actions">
-            <button type="button" className="pp-h2__btn is-solid" onClick={() => (onNavigateToCollection ? onNavigateToCollection('all') : onExploreClick?.())}>Shop all perfumes</button>
+        {/* Brand header — wordmark on a soft silk photograph, one line of positioning and one action */}
+        <div className="pp-h3 select-none">
+          <img
+            className="pp-h3__bg"
+            src={thumb('/uploads/pp-hero-silk.jpg', 720)}
+            srcSet={`${thumb('/uploads/pp-hero-silk.jpg', 720)} 720w, /uploads/pp-hero-silk.jpg 1600w`}
+            sizes="100vw"
+            alt=""
+            aria-hidden="true"
+          />
+          <span className="pp-h3__veil" aria-hidden="true" />
+          <div className="pp-h3__inner">
+            <span className="pp-kicker pp-h3__kicker">Perfume decant atelier · Est. 2025</span>
+            <h1 className="pp-h2__mark" aria-label="Pure Portions by Arrina">
+              <span className="pp-h2__script">Pure Portions</span>
+              <span className="pp-h2__by"><i aria-hidden="true" />By Arrina<i aria-hidden="true" /></span>
+            </h1>
+            <p className="pp-h2__line">Authentic luxury perfume, decanted by the millilitre.</p>
+            <div className="pp-h2__actions">
+              <button type="button" className="pp-h2__btn is-solid" onClick={() => (onNavigateToCollection ? onNavigateToCollection('all') : onExploreClick?.())}>Shop all perfumes</button>
+            </div>
           </div>
         </div>
 

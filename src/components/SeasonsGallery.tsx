@@ -152,7 +152,9 @@ export const SeasonsGallery: React.FC<SeasonsGalleryProps> = ({
       </div>
       <div className="pp-seas__grid">
         {editorialOrder.map((name, idx) => (
-          <button key={name} type="button" className={`pp-seas__card is-${name.toLowerCase()}`} onClick={() => openSeasonByName(name)}>
+          <button key={name} type="button" className={`pp-seas__card is-photo is-${name.toLowerCase()}`} onClick={() => openSeasonByName(name)}>
+            <img className="pp-seas__img" src={`/api/img.php?src=${encodeURIComponent(`/uploads/pp-season-${name.toLowerCase()}.jpg`)}&w=480`} alt="" loading="lazy" />
+            <span className="pp-seas__shade" aria-hidden="true" />
             <span className="pp-seas__no">0{idx + 1}</span>
             <span className="pp-seas__name">{name}</span>
             <span className="pp-seas__tags">{SEASON_TAGS[name]}</span>
