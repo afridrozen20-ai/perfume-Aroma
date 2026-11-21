@@ -97,7 +97,6 @@ export const Hero: React.FC<HeroProps> = ({
           <p className="pp-h2__line">Authentic luxury perfume, decanted by the millilitre.</p>
           <div className="pp-h2__actions">
             <button type="button" className="pp-h2__btn is-solid" onClick={() => (onNavigateToCollection ? onNavigateToCollection('all') : onExploreClick?.())}>Shop all perfumes</button>
-            {onOpenTesters && <button type="button" className="pp-h2__btn" onClick={onOpenTesters}>Try 1.5 ml testers</button>}
           </div>
         </div>
 
@@ -112,7 +111,7 @@ export const Hero: React.FC<HeroProps> = ({
                 <span className="pp-tester__eyebrow"><i>New</i>1.5 ml testers</span>
                 <span className="pp-tester__title">{testerData?.title || 'Wear it before you own it.'}</span>
                 <span className="pp-tester__sub">
-                  {testerData?.subtitle || `${testerCount ? `${testerCount} designer & niche scents` : 'Designer & niche scents'} in a 1.5 ml vial`}
+                  {testerData?.subtitle || `${testerCount ? `${testerCount} designer & niche scents` : 'Designer & niche scents'}, ready to try`}
                 </span>
                 <span className="pp-tester__cta">Explore testers <span aria-hidden="true">→</span></span>
               </span>

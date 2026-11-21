@@ -133,10 +133,10 @@ export const SeasonsGallery: React.FC<SeasonsGalleryProps> = ({
 
   // Editorial season tiles used on the homepage (no illustrations: colour, type and a count)
   const SEASON_TAGS: Record<string, string> = {
-    Spring: 'Floral · Fresh · Fruity',
-    Summer: 'Citrus · Aquatic · Green',
-    Autumn: 'Woody · Spice · Leather',
-    Winter: 'Amber · Oud · Vanilla',
+    Spring: 'Floral · Fresh',
+    Summer: 'Citrus · Aquatic',
+    Autumn: 'Woody · Spice',
+    Winter: 'Amber · Oud',
   };
   const editorialOrder = ['Spring', 'Summer', 'Autumn', 'Winter'];
   const openSeasonByName = (name: string) => {
