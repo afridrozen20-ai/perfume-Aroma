@@ -159,7 +159,7 @@ export const SeasonsGallery: React.FC<SeasonsGalleryProps> = ({
             style={{ animationDelay: `${idx * 90}ms` }}
             onClick={() => openSeasonByName(name)}
           >
-            <SeasonArt season={name as any} scale={0.62} />
+            <SeasonArt season={name as any} scale={0.5} />
             <span className="pp-sh__grain" aria-hidden="true" />
             <span className="pp-sh__sheen" aria-hidden="true" />
             <span className="pp-seas2__top">

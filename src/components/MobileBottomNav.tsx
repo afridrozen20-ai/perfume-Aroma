@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Home, LayoutGrid, Search, ShoppingBag, Sparkles } from 'lucide-react';
+import { Home, LayoutGrid, Sparkles } from 'lucide-react';
 
 interface MobileBottomNavProps {
   activeTab: 'home' | 'shop' | 'search' | 'bag' | 'ai';
   cartCount: number;
   onNavigateHome: () => void;
   onNavigateShop: () => void;
-  onOpenSearch: () => void;
+  onOpenSearch?: () => void;
   onOpenCart: () => void;
   onSelectAI: () => void;
   onOpenTesters?: () => void;
@@ -75,12 +75,6 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       action: onOpenTesters || onNavigateShop,
     },
     {
-      id: 'search' as const,
-      label: 'Search',
-      icon: Search,
-      action: onOpenSearch,
-    },
-    {
       id: 'ai' as const,
       label: 'AI',
       icon: Sparkles,
@@ -89,7 +83,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   ];
 
   return (
-    <div className={`pp-dock fixed bottom-3 left-1/2 z-40 w-[82%] max-w-[320px] md:hidden pointer-events-none pb-[env(safe-area-inset-bottom)] select-none${hidden ? ' is-hidden' : ''}`}>
+    <div className={`pp-dock fixed bottom-3 left-1/2 z-40 w-[72%] max-w-[280px] md:hidden pointer-events-none pb-[env(safe-area-inset-bottom)] select-none${hidden ? ' is-hidden' : ''}`}>
       {hint && !hidden && (
         <div className="pp-finder-hint pointer-events-auto" role="status">
           <span className="pp-finder-hint__eyebrow">Scent Finder</span>
