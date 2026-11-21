@@ -2020,3 +2020,5 @@ html,body{max-width:100%;overflow-x:hidden}
 .pp-seas__card.is-photo .pp-seas__no { opacity: .85; text-shadow: 0 1px 6px rgba(0,0,0,.35); }
 .pp-seas__card.is-photo .pp-seas__name { text-shadow: 0 2px 14px rgba(0,0,0,.35); }
 .pp-seas__card.is-photo .pp-seas__tags { opacity: .9; }
+
+.pp-tester__sub { text-wrap: balance; }

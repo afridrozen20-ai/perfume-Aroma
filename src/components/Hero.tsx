@@ -101,7 +101,7 @@ export const Hero: React.FC<HeroProps> = ({
           />
           <span className="pp-h3__veil" aria-hidden="true" />
           <div className="pp-h3__inner">
-            <span className="pp-kicker pp-h3__kicker">Perfume decant atelier · Est. 2025</span>
+            <span className="pp-kicker pp-h3__kicker">Perfume decant atelier</span>
             <h1 className="pp-h2__mark" aria-label="Pure Portions by Arrina">
               <span className="pp-h2__script">Pure Portions</span>
               <span className="pp-h2__by"><i aria-hidden="true" />By Arrina<i aria-hidden="true" /></span>
